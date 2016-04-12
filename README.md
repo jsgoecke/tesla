@@ -18,7 +18,7 @@ go get github.com/jsgoecke/tesla
 
 ## Tokens
 
-You may get your tokens to use as client)id and client_secret [here](http://pastebin.com/fX6ejAHd).
+You may get your tokens to use as client_id and client_secret [here](http://pastebin.com/fX6ejAHd).
 
 ## Usage
 
