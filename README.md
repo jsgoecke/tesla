@@ -1,6 +1,6 @@
 # tesla
 
-This library provides a wrapper around the API to easily query and command the a [https://www.teslamotors.com/models](Telsa Model S) remotely in Go.
+This library provides a wrapper around the API to easily query and command the a [Tesla Model S](https://www.teslamotors.com/models) remotely in Go.
 
 ![Go Tesla Gopher](https://dl.dropboxusercontent.com/u/25511/Images/gotesla.png)
 
