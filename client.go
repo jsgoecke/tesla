@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -70,7 +69,6 @@ func (c Client) authorize(auth *Auth) (*Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(token)
 	return token, nil
 }
 
