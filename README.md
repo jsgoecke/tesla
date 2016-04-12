@@ -1,5 +1,5 @@
 # tesla
-[![wercker status](https://app.wercker.com/status/570d4242a67d5d650b121999/m "wercker status")](https://app.wercker.com/project/bykey/570d4242a67d5d650b121999)
+[![wercker status](https://app.wercker.com/status/c8e21c53ed5763b0b58f763670753732/m "wercker status")](https://app.wercker.com/project/bykey/c8e21c53ed5763b0b58f763670753732)
 
 This library provides a wrapper around the API to easily query and command the a [Tesla Model S](https://www.teslamotors.com/models) remotely in Go.
 
