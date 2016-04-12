@@ -60,7 +60,7 @@ func main() {
 
 ## Credits
 
-Thank you to [https://github.com/timdorr](Tim Dorr) who did the heavy lifting to document the Tesla API and also created the [https://github.com/timdorr/model-s-api](model-s-api Ruby Gem).
+Thank you to [Tim Dorr](https://github.com/timdorr) who did the heavy lifting to document the Tesla API and also created the [model-s-api Ruby Gem](https://github.com/timdorr/model-s-api).
 
 ## Copyright & License
 
