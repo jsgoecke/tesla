@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	StreamEventString = `1460828294924,65,9550.3,88,10,76,30.493001,-100.457018,,,227,184,75`
+	StreamEventString = `1460905367,65,9550.3,88,10,76,30.493001,-100.457018,,,227,184,75`
 )
 
 func TestStreamSpec(t *testing.T) {
@@ -25,11 +25,12 @@ func TestStreamSpec(t *testing.T) {
 	StreamingURL = ts.URL
 
 	Convey("Should get stream events", t, func() {
-		eventChan := vehicle.Stream()
+		eventChan, err := vehicle.Stream()
+		So(err, ShouldBeNil)
 		event := <-eventChan
-		So(event.Timestamp, ShouldEqual, "1460828294924")
+		So(event.Speed, ShouldEqual, 65)
 		event = <-eventChan
-		So(event.Timestamp, ShouldEqual, "1460828294924")
+		So(event.Speed, ShouldEqual, 65)
 		event = <-eventChan
 		So(event, ShouldBeNil)
 	})

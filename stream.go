@@ -2,10 +2,10 @@ package tesla
 
 import (
 	"bufio"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -14,33 +14,33 @@ var (
 )
 
 type StreamEvent struct {
-	Timestamp  string  `json:"timestamp"`
-	Speed      int     `json:"speed"`
-	Odometer   float64 `json:"odometer"`
-	Soc        int     `json:"soc"`
-	Elevation  int     `json:"elevation"`
-	EstHeading int     `json:"est_heading"`
-	EstLat     float64 `json:"est_lat"`
-	EstLng     float64 `json:"est_lng"`
-	Power      int     `json:"power"`
-	ShiftState string  `json:"shift_state"`
-	Range      int     `json:"range"`
-	EstRange   int     `json:"est_range"`
-	Heading    int     `json:"heading"`
+	Timestamp  time.Time `json:"timestamp"`
+	Speed      int       `json:"speed"`
+	Odometer   float64   `json:"odometer"`
+	Soc        int       `json:"soc"`
+	Elevation  int       `json:"elevation"`
+	EstHeading int       `json:"est_heading"`
+	EstLat     float64   `json:"est_lat"`
+	EstLng     float64   `json:"est_lng"`
+	Power      int       `json:"power"`
+	ShiftState string    `json:"shift_state"`
+	Range      int       `json:"range"`
+	EstRange   int       `json:"est_range"`
+	Heading    int       `json:"heading"`
 }
 
-func (v Vehicle) Stream() chan *StreamEvent {
+func (v Vehicle) Stream() (chan *StreamEvent, error) {
 	url := StreamingURL + "/stream/" + strconv.Itoa(v.VehicleID) + "/?values=" + StreamParams
 	req, _ := http.NewRequest("GET", url, nil)
 	req.SetBasicAuth(ActiveClient.Auth.Email, v.Tokens[0])
 	resp, err := ActiveClient.HTTP.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
 	eventChan := make(chan *StreamEvent)
 	go readStream(resp, eventChan)
-	return eventChan
+	return eventChan, nil
 }
 
 func readStream(resp *http.Response, eventChan chan *StreamEvent) {
@@ -60,7 +60,8 @@ func readStream(resp *http.Response, eventChan chan *StreamEvent) {
 func parseStreamEvent(event string) *StreamEvent {
 	data := strings.Split(event, ",")
 	streamEvent := &StreamEvent{}
-	streamEvent.Timestamp = data[0]
+	timestamp, _ := strconv.ParseInt(data[0], 10, 64)
+	streamEvent.Timestamp = time.Unix(timestamp, 0)
 	streamEvent.Speed, _ = strconv.Atoi(data[1])
 	streamEvent.Odometer, _ = strconv.ParseFloat(data[2], 64)
 	streamEvent.Soc, _ = strconv.Atoi(data[3])
