@@ -2,7 +2,6 @@ package tesla
 
 import (
 	"bufio"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -30,18 +29,18 @@ type StreamEvent struct {
 	Heading    int       `json:"heading"`
 }
 
-func (v Vehicle) Stream() chan *StreamEvent {
+func (v Vehicle) Stream() (chan *StreamEvent, error) {
 	url := StreamingURL + "/stream/" + strconv.Itoa(v.VehicleID) + "/?values=" + StreamParams
 	req, _ := http.NewRequest("GET", url, nil)
 	req.SetBasicAuth(ActiveClient.Auth.Email, v.Tokens[0])
 	resp, err := ActiveClient.HTTP.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
 	eventChan := make(chan *StreamEvent)
 	go readStream(resp, eventChan)
-	return eventChan
+	return eventChan, nil
 }
 
 func readStream(resp *http.Response, eventChan chan *StreamEvent) {

@@ -25,7 +25,8 @@ func TestStreamSpec(t *testing.T) {
 	StreamingURL = ts.URL
 
 	Convey("Should get stream events", t, func() {
-		eventChan := vehicle.Stream()
+		eventChan, err := vehicle.Stream()
+		So(err, ShouldBeNil)
 		event := <-eventChan
 		So(event.Speed, ShouldEqual, 65)
 		event = <-eventChan
