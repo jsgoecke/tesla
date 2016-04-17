@@ -56,11 +56,11 @@ func main() {
 	eventChan := vehicle.Stream(client)
 	for {
 		event := <-eventChan
-		if event.Timestamp == "" {
+		if event != nil {
+			fmt.Println(event)
+		} else {
 			fmt.Println("Done!")
 			break
-		} else {
-			fmt.Println(event)
 		}
 	}
 }

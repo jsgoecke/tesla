@@ -53,7 +53,7 @@ func readStream(resp *http.Response, eventChan chan *StreamEvent) {
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
-			eventChan <- &StreamEvent{}
+			eventChan <- nil // &StreamEvent{}
 			break
 		} else {
 			streamEvent := parseStreamEvent(string(line))

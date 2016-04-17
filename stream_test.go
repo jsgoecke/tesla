@@ -40,7 +40,7 @@ func TestStreamSpec(t *testing.T) {
 		event = <-eventChan
 		So(event.Timestamp, ShouldEqual, "1460828294924")
 		event = <-eventChan
-		So(event.Timestamp, ShouldEqual, "")
+		So(event, ShouldBeNil)
 	})
 
 	AuthURL = previousAuthURL
