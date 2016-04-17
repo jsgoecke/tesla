@@ -51,4 +51,16 @@ func main() {
 	fmt.Println(vehicle.Start(os.Getenv("TESLA_PASSWORD")))
 	fmt.Println(vehicle.OpenTrunk("rear"))
 	fmt.Println(vehicle.OpenTrunk("front"))
+
+	// Stream vehicle events
+	eventChan := vehicle.Stream(client)
+	for {
+		event := <-eventChan
+		if event.Timestamp == "" {
+			fmt.Println("HTTP Stream timeout!")
+			break
+		} else {
+			fmt.Println(event)
+		}
+	}
 }

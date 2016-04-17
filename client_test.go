@@ -1,6 +1,7 @@
 package tesla
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -107,6 +108,11 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			"/api/1/vehicles/1234/command/remote_start_drive?password=foo":
 			w.WriteHeader(200)
 			w.Write([]byte(CommandResponseJSON))
+		case "/stream/123/?values=speed,odometer,soc,elevation,est_heading,est_lat,est_lng,power,shift_state,range,est_range,heading":
+			w.WriteHeader(200)
+			b := bytes.NewBufferString(StreamEventString + "\n" + StreamEventString + "\n")
+			b.WriteTo(w)
+			b.WriteTo(w)
 		}
 	}))
 }

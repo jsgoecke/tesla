@@ -51,6 +51,18 @@ func main() {
 
 	fmt.Println(status)
 	fmt.Println(vehicle.HonkHorn())
+
+	// Stream vehicle events
+	eventChan := vehicle.Stream(client)
+	for {
+		event := <-eventChan
+		if event.Timestamp == "" {
+			fmt.Println("Done!")
+			break
+		} else {
+			fmt.Println(event)
+		}
+	}
 }
 ```
 
