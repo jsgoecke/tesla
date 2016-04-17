@@ -17,15 +17,6 @@ func TestStreamSpec(t *testing.T) {
 	previousURL := BaseURL
 	AuthURL = ts.URL + "/oauth/token"
 	BaseURL = ts.URL + "/api/1"
-
-	auth := &Auth{
-		GrantType:    "password",
-		ClientID:     "abc123",
-		ClientSecret: "def456",
-		Email:        "elon@tesla.com",
-		Password:     "go",
-	}
-	client, _ := NewClient(auth)
 	vehicle := &Vehicle{}
 	vehicle.VehicleID = 123
 	vehicle.Tokens = []string{"456", "789"}
@@ -34,7 +25,7 @@ func TestStreamSpec(t *testing.T) {
 	StreamingURL = ts.URL
 
 	Convey("Should get stream events", t, func() {
-		eventChan := vehicle.Stream(client)
+		eventChan := vehicle.Stream()
 		event := <-eventChan
 		So(event.Timestamp, ShouldEqual, "1460828294924")
 		event = <-eventChan
