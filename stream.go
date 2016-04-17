@@ -48,7 +48,7 @@ func readStream(resp *http.Response, eventChan chan *StreamEvent) {
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
-			eventChan <- nil // &StreamEvent{}
+			eventChan <- nil
 			break
 		} else {
 			streamEvent := parseStreamEvent(string(line))
@@ -61,7 +61,7 @@ func parseStreamEvent(event string) *StreamEvent {
 	data := strings.Split(event, ",")
 	streamEvent := &StreamEvent{}
 	timestamp, _ := strconv.ParseInt(data[0], 10, 64)
-	streamEvent.Timestamp = time.Unix(timestamp, 0)
+	streamEvent.Timestamp = time.Unix(0, timestamp*int64(time.Millisecond))
 	streamEvent.Speed, _ = strconv.Atoi(data[1])
 	streamEvent.Odometer, _ = strconv.ParseFloat(data[2], 64)
 	streamEvent.Soc, _ = strconv.Atoi(data[3])
