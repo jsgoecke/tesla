@@ -69,7 +69,6 @@ func main() {
 
 ## ToDo
 
-* Provide access to the streaming API and a means to process data coming from it.
 * Implement the summon features.
 
 ## Credits
