@@ -54,15 +54,17 @@ func main() {
 	fmt.Println(vehicle.OpenTrunk("front"))
 
 	// Stream vehicle events
-	eventChan := vehicle.Stream()
-	for {
-		event := <-eventChan
-		if event != nil {
-			eventJSON, _ := json.Marshal(event)
-			fmt.Println(string(eventJSON))
-		} else {
-			fmt.Println("HTTP Stream timeout!")
-			break
+	eventChan, err := vehicle.Stream()
+	if err != nil {
+		for {
+			event := <-eventChan
+			if event != nil {
+				eventJSON, _ := json.Marshal(event)
+				fmt.Println(string(eventJSON))
+			} else {
+				fmt.Println("HTTP Stream timeout!")
+				break
+			}
 		}
 	}
 }
