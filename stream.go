@@ -29,11 +29,11 @@ type StreamEvent struct {
 	Heading    int     `json:"heading"`
 }
 
-func (v Vehicle) Stream(c *Client) chan *StreamEvent {
+func (v Vehicle) Stream() chan *StreamEvent {
 	url := StreamingURL + "/stream/" + strconv.Itoa(v.VehicleID) + "/?values=" + StreamParams
 	req, _ := http.NewRequest("GET", url, nil)
-	req.SetBasicAuth(c.Auth.Email, v.Tokens[0])
-	resp, err := c.HTTP.Do(req)
+	req.SetBasicAuth(ActiveClient.Auth.Email, v.Tokens[0])
+	resp, err := ActiveClient.HTTP.Do(req)
 	if err != nil {
 		fmt.Println(err)
 	}

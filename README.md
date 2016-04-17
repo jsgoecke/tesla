@@ -53,7 +53,7 @@ func main() {
 	fmt.Println(vehicle.HonkHorn())
 
 	// Stream vehicle events
-	eventChan := vehicle.Stream(client)
+	eventChan := vehicle.Stream()
 	for {
 		event := <-eventChan
 		if event != nil {

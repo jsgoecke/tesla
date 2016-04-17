@@ -54,7 +54,7 @@ func main() {
 	fmt.Println(vehicle.OpenTrunk("front"))
 
 	// Stream vehicle events
-	eventChan := vehicle.Stream(client)
+	eventChan := vehicle.Stream()
 	for {
 		event := <-eventChan
 		if event != nil {
