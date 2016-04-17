@@ -57,7 +57,8 @@ func main() {
 	for {
 		event := <-eventChan
 		if event != nil {
-			fmt.Println(event)
+			eventJSON, _ := json.Marshal(event)
+			fmt.Println(string(eventJSON))
 		} else {
 			fmt.Println("Done!")
 			break

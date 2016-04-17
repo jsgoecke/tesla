@@ -14,19 +14,19 @@ var (
 )
 
 type StreamEvent struct {
-	Timestamp  string `json:"timestamp"`
-	Speed      string `json:"speed"`
-	Odometer   string `json:"odometer"`
-	Soc        string `json:"soc"`
-	Elevation  string `json:"elevation"`
-	EstHeading string `json:"est_heading"`
-	EstLat     string `json:"est_lat"`
-	EstLng     string `json:"est_lng"`
-	Power      string `json:"power"`
-	ShiftState string `json:"shift_state"`
-	Range      string `json:"range"`
-	EstRange   string `json:"est_range"`
-	Heading    string `json:"heading"`
+	Timestamp  string  `json:"timestamp"`
+	Speed      int     `json:"speed"`
+	Odometer   float64 `json:"odometer"`
+	Soc        int     `json:"soc"`
+	Elevation  int     `json:"elevation"`
+	EstHeading int     `json:"est_heading"`
+	EstLat     float64 `json:"est_lat"`
+	EstLng     float64 `json:"est_lng"`
+	Power      int     `json:"power"`
+	ShiftState string  `json:"shift_state"`
+	Range      int     `json:"range"`
+	EstRange   int     `json:"est_range"`
+	Heading    int     `json:"heading"`
 }
 
 func (v Vehicle) Stream(c *Client) chan *StreamEvent {
@@ -61,16 +61,17 @@ func parseStreamEvent(event string) *StreamEvent {
 	data := strings.Split(event, ",")
 	streamEvent := &StreamEvent{}
 	streamEvent.Timestamp = data[0]
-	streamEvent.Speed = data[1]
-	streamEvent.Soc = data[2]
-	streamEvent.Elevation = data[3]
-	streamEvent.EstHeading = data[4]
-	streamEvent.EstLat = data[5]
-	streamEvent.EstLng = data[6]
-	streamEvent.Power = data[7]
-	streamEvent.ShiftState = data[8]
-	streamEvent.Range = data[9]
-	streamEvent.EstRange = data[10]
-	streamEvent.Heading = data[11]
+	streamEvent.Speed, _ = strconv.Atoi(data[1])
+	streamEvent.Odometer, _ = strconv.ParseFloat(data[2], 64)
+	streamEvent.Soc, _ = strconv.Atoi(data[3])
+	streamEvent.Elevation, _ = strconv.Atoi(data[4])
+	streamEvent.EstHeading, _ = strconv.Atoi(data[5])
+	streamEvent.EstLat, _ = strconv.ParseFloat(data[6], 64)
+	streamEvent.EstLng, _ = strconv.ParseFloat(data[7], 64)
+	streamEvent.Power, _ = strconv.Atoi(data[8])
+	streamEvent.ShiftState = data[9]
+	streamEvent.Range, _ = strconv.Atoi(data[10])
+	streamEvent.EstRange, _ = strconv.Atoi(data[11])
+	streamEvent.Heading, _ = strconv.Atoi(data[12])
 	return streamEvent
 }
