@@ -51,6 +51,19 @@ func main() {
 
 	fmt.Println(status)
 	fmt.Println(vehicle.HonkHorn())
+
+	// Stream vehicle events
+	eventChan := vehicle.Stream(client)
+	for {
+		event := <-eventChan
+		if event != nil {
+			eventJSON, _ := json.Marshal(event)
+			fmt.Println(string(eventJSON))
+		} else {
+			fmt.Println("Done!")
+			break
+		}
+	}
 }
 ```
 

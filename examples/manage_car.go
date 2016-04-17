@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -51,4 +52,17 @@ func main() {
 	fmt.Println(vehicle.Start(os.Getenv("TESLA_PASSWORD")))
 	fmt.Println(vehicle.OpenTrunk("rear"))
 	fmt.Println(vehicle.OpenTrunk("front"))
+
+	// Stream vehicle events
+	eventChan := vehicle.Stream(client)
+	for {
+		event := <-eventChan
+		if event != nil {
+			eventJSON, _ := json.Marshal(event)
+			fmt.Println(string(eventJSON))
+		} else {
+			fmt.Println("HTTP Stream timeout!")
+			break
+		}
+	}
 }
