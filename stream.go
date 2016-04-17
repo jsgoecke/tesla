@@ -33,11 +33,6 @@ func (v Vehicle) Stream(c *Client) chan *StreamEvent {
 	url := StreamingURL + "/stream/" + strconv.Itoa(v.VehicleID) + "/?values=" + StreamParams
 	req, _ := http.NewRequest("GET", url, nil)
 	req.SetBasicAuth(c.Auth.Email, v.Tokens[0])
-	if c.Token != nil {
-		req.Header.Set("Authorization", "Bearer "+c.Token.AccessToken)
-	}
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/json")
 	resp, err := c.HTTP.Do(req)
 	if err != nil {
 		fmt.Println(err)

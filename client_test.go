@@ -48,12 +48,9 @@ func serveHTTP(t *testing.T) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		body, _ := ioutil.ReadAll(req.Body)
 		req.Body.Close()
-		Convey("HTTP headers should be present", t, func() {
-			So(req.Header["Accept"][0], ShouldEqual, "application/json")
-			So(req.Header["Content-Type"][0], ShouldEqual, "application/json")
-		})
 		switch req.URL.String() {
 		case "/oauth/token":
+			checkHeaders(t, req)
 			Convey("Request body should be set correctly", t, func() {
 				auth := &Auth{}
 				json.Unmarshal(body, auth)
@@ -67,33 +64,42 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			w.WriteHeader(200)
 			w.Write([]byte("{\"access_token\": \"ghi789\"}"))
 		case "/api/1/vehicles":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(VehiclesJSON))
 		case "/api/1/vehicles/1234/mobile_enabled":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(TrueJSON))
 		case "/api/1/vehicles/1234/data_request/charge_state":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(ChargeStateJSON))
 		case "/api/1/vehicles/1234/data_request/climate_state":
 			w.WriteHeader(200)
 			w.Write([]byte(ClimateStateJSON))
 		case "/api/1/vehicles/1234/data_request/drive_state":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(DriveStateJSON))
 		case "/api/1/vehicles/1234/data_request/gui_settings":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(GuiSettingsJSON))
 		case "/api/1/vehicles/1234/data_request/vehicle_state":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(VehicleStateJSON))
 		case "/api/1/vehicles/1234/wake_up":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(WakeupResponseJSON))
 		case "/api/1/vehicles/1234/command/charge_standard":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(ChargeAlreadySetJSON))
 		case "/api/1/vehicles/1234/command/charge_start":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(ChargedJSON))
 		case "/api/1/vehicles/1234/command/charge_stop",
@@ -106,6 +112,7 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			"/api/1/vehicles/1234/command/door_lock",
 			"/api/1/vehicles/1234/command/set_temps?driver_temp=72&passenger_temp=72",
 			"/api/1/vehicles/1234/command/remote_start_drive?password=foo":
+			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(CommandResponseJSON))
 		case "/stream/123/?values=speed,odometer,soc,elevation,est_heading,est_lat,est_lng,power,shift_state,range,est_range,heading":
@@ -115,4 +122,11 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			b.WriteTo(w)
 		}
 	}))
+}
+
+func checkHeaders(t *testing.T, req *http.Request) {
+	Convey("HTTP headers should be present", t, func() {
+		So(req.Header["Accept"][0], ShouldEqual, "application/json")
+		So(req.Header["Content-Type"][0], ShouldEqual, "application/json")
+	})
 }
