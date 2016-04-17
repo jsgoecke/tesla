@@ -70,6 +70,7 @@ func main() {
 ## ToDo
 
 * Implement the summon features.
+* Coerce timestamp in event struct.
 
 ## Credits
 
