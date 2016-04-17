@@ -119,7 +119,6 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			w.WriteHeader(200)
 			b := bytes.NewBufferString(StreamEventString + "\n" + StreamEventString + "\n")
 			b.WriteTo(w)
-			b.WriteTo(w)
 		}
 	}))
 }
