@@ -52,6 +52,10 @@ func main() {
 	fmt.Println(status)
 	fmt.Println(vehicle.HonkHorn())
 
+	// Autopark
+	vehicle.AutoparkForward()
+	vehicle.AutoparkReverse()
+
 	// Stream vehicle events
 	eventChan, err := vehicle.Stream()
 	if err != nil {

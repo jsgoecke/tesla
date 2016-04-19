@@ -1,8 +1,12 @@
 package tesla
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -13,9 +17,45 @@ type CommandResponse struct {
 	} `json:"response"`
 }
 
+func (v Vehicle) AutoparkForward() error {
+	return v.autoPark("start_forward")
+}
+
+func (v Vehicle) AutoparkReverse() error {
+	return v.autoPark("start_reverse")
+}
+
+func (v Vehicle) autoPark(action string) error {
+	driveState, _ := v.DriveState()
+	data := url.Values{}
+	data.Set("vehicle_id", strconv.Itoa(v.VehicleID))
+	data.Add("lat", strconv.FormatFloat(driveState.Latitude, 'f', 6, 64))
+	data.Add("lon", strconv.FormatFloat(driveState.Longitude, 'f', 6, 64))
+	data.Add("action", action)
+
+	u, _ := url.ParseRequestURI(BaseURL)
+	u.Path = "/api/1/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/autopark_request"
+	urlStr := fmt.Sprintf("%v", u)
+	fmt.Println(urlStr)
+
+	client := &http.Client{}
+	req, _ := http.NewRequest("POST", urlStr, bytes.NewBufferString(data.Encode()))
+	req.Header.Set("Authorization", "Bearer "+ActiveClient.Token.AccessToken)
+	req.Header.Set("Accept", "application/json")
+
+	resp, _ := client.Do(req)
+	fmt.Println(resp)
+	return nil
+}
+
+func (v Vehicle) TriggerHomelink() error {
+	// url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/trigger_homelink"
+	return nil
+}
+
 func (v Vehicle) Wakeup() (*Vehicle, error) {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/wake_up"
-	body, err := sendCommand(url)
+	body, err := sendCommand(url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -29,19 +69,19 @@ func (v Vehicle) Wakeup() (*Vehicle, error) {
 
 func (v Vehicle) OpenChargePort() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_port_door_open"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
 func (v Vehicle) SetChargeLimitStandard() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_standard"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
 func (v Vehicle) SetChargeLimitMax() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_max_range"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
@@ -53,25 +93,25 @@ func (v Vehicle) SetChargeLimitMax() error {
 
 func (v Vehicle) StartCharging() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_start"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
 func (v Vehicle) StopCharging() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_stop"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
 func (v Vehicle) FlashLights() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/flash_lights"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
 func (v *Vehicle) HonkHorn() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/honk_horn"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
@@ -83,7 +123,7 @@ func (v *Vehicle) HonkHorn() error {
 
 func (v Vehicle) LockDoors() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/door_lock"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
@@ -97,13 +137,13 @@ func (v Vehicle) SetTemprature(driver float64, passenger float64) error {
 
 func (v Vehicle) StartAirConditioning() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/auto_conditioning_start"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
 func (v Vehicle) StopAirConditioning() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/auto_conditioning_stop"
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
@@ -115,7 +155,7 @@ func (v Vehicle) StopAirConditioning() error {
 
 func (v Vehicle) Start(password string) error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/remote_start_drive?password=" + password
-	_, err := sendCommand(url)
+	_, err := sendCommand(url, nil)
 	return err
 }
 
@@ -126,8 +166,8 @@ func (v Vehicle) OpenTrunk(trunk string) error {
 	return err
 }
 
-func sendCommand(url string) ([]byte, error) {
-	body, err := ActiveClient.post(url, nil)
+func sendCommand(url string, reqBody []byte) ([]byte, error) {
+	body, err := ActiveClient.post(url, reqBody)
 	if err != nil {
 		return nil, err
 	}

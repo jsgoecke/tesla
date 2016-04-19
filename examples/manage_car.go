@@ -52,6 +52,8 @@ func main() {
 	fmt.Println(vehicle.Start(os.Getenv("TESLA_PASSWORD")))
 	fmt.Println(vehicle.OpenTrunk("rear"))
 	fmt.Println(vehicle.OpenTrunk("front"))
+	fmt.Println(vehicle.AutoparkForward())
+	fmt.Println(vehicle.AutoparkReverse())
 
 	// Stream vehicle events
 	eventChan, err := vehicle.Stream()
