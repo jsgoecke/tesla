@@ -31,21 +31,22 @@ func (v Vehicle) AutoparkReverse() error {
 func (v Vehicle) autoPark(action string) error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/autopark_request"
 	driveState, _ := v.DriveState()
-	autoParkRequest := &AutoParkRequest{}
-	autoParkRequest.VehicleID = v.VehicleID
-	autoParkRequest.Lat = driveState.Latitude
-	autoParkRequest.Lon = driveState.Longitude
-	autoParkRequest.Action = action
+	autoParkRequest := &AutoParkRequest{
+		VehicleID: v.VehicleID,
+		Lat:       driveState.Latitude,
+		Lon:       driveState.Longitude,
+		Action:    action,
+	}
 	body, _ := json.Marshal(autoParkRequest)
 
 	_, err := sendCommand(apiUrl, body)
 	return err
 }
 
-func (v Vehicle) TriggerHomelink() error {
-	// apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/trigger_homelink"
-	return nil
-}
+// func (v Vehicle) TriggerHomelink() error {
+// 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/trigger_homelink"
+// 	return nil
+// }
 
 func (v Vehicle) Wakeup() (*Vehicle, error) {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/wake_up"
