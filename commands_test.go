@@ -30,6 +30,22 @@ func TestCommandsSpec(t *testing.T) {
 	}
 	client, _ := NewClient(auth)
 
+	Convey("Should auto park car forward", t, func() {
+		vehicles, err := client.Vehicles()
+		So(err, ShouldBeNil)
+		vehicle := vehicles[0]
+		err = vehicle.AutoparkForward()
+		So(err, ShouldBeNil)
+	})
+
+	Convey("Should auto park car forward", t, func() {
+		vehicles, err := client.Vehicles()
+		So(err, ShouldBeNil)
+		vehicle := vehicles[0]
+		err = vehicle.AutoparkReverse()
+		So(err, ShouldBeNil)
+	})
+
 	Convey("Should wakeup the car", t, func() {
 		vehicles, err := client.Vehicles()
 		So(err, ShouldBeNil)

@@ -1,12 +1,8 @@
 package tesla
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"net/http"
-	"net/url"
 	"strconv"
 )
 
@@ -15,6 +11,13 @@ type CommandResponse struct {
 		Reason string `json:"reason"`
 		Result bool   `json:"result"`
 	} `json:"response"`
+}
+
+type AutoParkRequest struct {
+	VehicleID int     `json:"vehicle_id"`
+	Lat       float64 `json:"lat"`
+	Lon       float64 `json:"lon"`
+	Action    string  `json:"action"`
 }
 
 func (v Vehicle) AutoparkForward() error {
@@ -26,27 +29,17 @@ func (v Vehicle) AutoparkReverse() error {
 }
 
 func (v Vehicle) autoPark(action string) error {
+	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/autopark_request"
 	driveState, _ := v.DriveState()
-	data := url.Values{}
-	data.Set("vehicle_id", strconv.Itoa(v.VehicleID))
-	data.Add("lat", strconv.FormatFloat(driveState.Latitude, 'f', 6, 64))
-	data.Add("lon", strconv.FormatFloat(driveState.Longitude, 'f', 6, 64))
-	data.Add("action", action)
+	autoParkRequest := &AutoParkRequest{}
+	autoParkRequest.VehicleID = v.VehicleID
+	autoParkRequest.Lat = driveState.Latitude
+	autoParkRequest.Lon = driveState.Longitude
+	autoParkRequest.Action = action
+	body, _ := json.Marshal(autoParkRequest)
 
-	u, _ := url.ParseRequestURI(BaseURL)
-	u.Path = "/api/1/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/autopark_request"
-	urlStr := fmt.Sprintf("%v", u)
-
-	client := &http.Client{}
-	req, err := http.NewRequest("POST", urlStr, bytes.NewBufferString(data.Encode()))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Authorization", "Bearer "+ActiveClient.Token.AccessToken)
-	req.Header.Set("Accept", "application/json")
-
-	_, err = client.Do(req)
-	return nil
+	_, err := sendCommand(apiUrl, body)
+	return err
 }
 
 func (v Vehicle) TriggerHomelink() error {
@@ -172,13 +165,15 @@ func sendCommand(url string, reqBody []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	response := &CommandResponse{}
-	err = json.Unmarshal(body, response)
-	if err != nil {
-		return nil, err
-	}
-	if response.Response.Result != true && response.Response.Reason != "" {
-		return nil, errors.New(response.Response.Reason)
+	if len(body) > 0 {
+		response := &CommandResponse{}
+		err = json.Unmarshal(body, response)
+		if err != nil {
+			return nil, err
+		}
+		if response.Response.Result != true && response.Response.Reason != "" {
+			return nil, errors.New(response.Response.Reason)
+		}
 	}
 	return body, nil
 }

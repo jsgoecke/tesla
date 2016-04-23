@@ -119,6 +119,17 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			w.WriteHeader(200)
 			b := bytes.NewBufferString(StreamEventString + "\n" + StreamEventString + "\n")
 			b.WriteTo(w)
+		case "/api/1/vehicles/1234/command/autopark_request":
+			w.WriteHeader(200)
+			Convey("Auto park request should have appropriate body", t, func() {
+				autoParkRequest := &AutoParkRequest{}
+				err := json.Unmarshal(body, autoParkRequest)
+				So(err, ShouldBeNil)
+				So(autoParkRequest.Action, ShouldStartWith, "start_")
+				So(autoParkRequest.VehicleID, ShouldEqual, 456)
+				So(autoParkRequest.Lat, ShouldEqual, 35.1)
+				So(autoParkRequest.Lon, ShouldEqual, 20.2)
+			})
 		}
 	}))
 }
