@@ -1,9 +1,16 @@
 # tesla
 [![wercker status](https://app.wercker.com/status/c8e21c53ed5763b0b58f763670753732/m "wercker status")](https://app.wercker.com/project/bykey/c8e21c53ed5763b0b58f763670753732)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/jsgoecke/tesla/master/images/gotesla.png">
+  <img src="https://raw.githubusercontent.com/jsgoecke/tesla/master/images/tesla.png">
+</p>
+
 This library provides a wrapper around the API to easily query and command the a [Tesla Model S](https://www.teslamotors.com/models) remotely in Go.
 
-![Go Tesla Gopher](https://dl.dropboxusercontent.com/u/25511/Images/gotesla.png)
+## Library Documentation
+
+[https://godoc.org/github.com/jsgoecke/tesla](https://godoc.org/github.com/jsgoecke/tesla)
 
 ## API Documentation
 

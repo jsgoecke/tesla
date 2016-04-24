@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+// Contains the current charge states that exist within the vehicle
 type ChargeState struct {
 	ChargingState               string      `json:"charging_state"`
 	ChargeLimitSoc              int         `json:"charge_limit_soc"`
@@ -49,6 +50,7 @@ type ChargeState struct {
 	ManagedChargingStartTime    interface{} `json:"managed_charging_start_time"`
 }
 
+// Contains the current climate states availale from the vehicle
 type ClimateState struct {
 	InsideTemp              float64     `json:"inside_temp"`
 	OutsideTemp             float64     `json:"outside_temp"`
@@ -68,6 +70,7 @@ type ClimateState struct {
 	SmartPreconditioning    bool        `json:"smart_preconditioning"`
 }
 
+// Contains the current drive state of the vehicle
 type DriveState struct {
 	ShiftState interface{} `json:"shift_state"`
 	Speed      float64     `json:"speed"`
@@ -77,6 +80,7 @@ type DriveState struct {
 	GpsAsOf    int         `json:"gps_as_of"`
 }
 
+// Contains the current GUI settings of the vehicle
 type GuiSettings struct {
 	GuiDistanceUnits    string `json:"gui_distance_units"`
 	GuiTemperatureUnits string `json:"gui_temperature_units"`
@@ -85,6 +89,7 @@ type GuiSettings struct {
 	GuiRangeDisplay     string `json:"gui_range_display"`
 }
 
+// Contains the current state of the vehicle
 type VehicleState struct {
 	APIVersion              int     `json:"api_version"`
 	CalendarSupported       bool    `json:"calendar_supported"`
@@ -120,6 +125,7 @@ type VehicleState struct {
 	WheelType               string  `json:"wheel_type"`
 }
 
+// Represents the request to get the states of the vehicle
 type StateRequest struct {
 	Response struct {
 		*ChargeState
@@ -130,10 +136,12 @@ type StateRequest struct {
 	} `json:"response"`
 }
 
+// The response when a state is requested
 type Response struct {
 	Bool bool `json:"response"`
 }
 
+// Returns if the vehicle is mobile enabled for Tesla API control
 func (v *Vehicle) MobileEnabled() (bool, error) {
 	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/mobile_enabled")
 	if err != nil {
@@ -147,6 +155,7 @@ func (v *Vehicle) MobileEnabled() (bool, error) {
 	return response.Bool, nil
 }
 
+// Returns the charge state of the vehicle
 func (v *Vehicle) ChargeState() (*ChargeState, error) {
 	stateRequest, err := fetchState("/charge_state", v.ID)
 	if err != nil {
@@ -155,6 +164,7 @@ func (v *Vehicle) ChargeState() (*ChargeState, error) {
 	return stateRequest.Response.ChargeState, nil
 }
 
+// Returns the climate state of the vehicle
 func (v Vehicle) ClimateState() (*ClimateState, error) {
 	stateRequest, err := fetchState("/climate_state", v.ID)
 	if err != nil {
@@ -171,6 +181,7 @@ func (v Vehicle) DriveState() (*DriveState, error) {
 	return stateRequest.Response.DriveState, nil
 }
 
+// Returns the GUI settings of the vehicle
 func (v Vehicle) GuiSettings() (*GuiSettings, error) {
 	stateRequest, err := fetchState("/gui_settings", v.ID)
 	if err != nil {
@@ -187,6 +198,7 @@ func (v Vehicle) VehicleState() (*VehicleState, error) {
 	return stateRequest.Response.VehicleState, nil
 }
 
+// A utility function to fetch the appropriate state of the vehicle
 func fetchState(resource string, id int64) (*StateRequest, error) {
 	stateRequest := &StateRequest{}
 	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(id, 10) + "/data_request" + resource)

@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// Response from the Tesla API after POSTing a command
 type CommandResponse struct {
 	Response struct {
 		Reason string `json:"reason"`
@@ -13,6 +14,8 @@ type CommandResponse struct {
 	} `json:"response"`
 }
 
+// Required elements to POST an Autopark/Summon request
+// for the vehicle
 type AutoParkRequest struct {
 	VehicleID int     `json:"vehicle_id"`
 	Lat       float64 `json:"lat"`
@@ -20,14 +23,17 @@ type AutoParkRequest struct {
 	Action    string  `json:"action"`
 }
 
+// Causes the vehicle to pull forward
 func (v Vehicle) AutoparkForward() error {
 	return v.autoPark("start_forward")
 }
 
+// Causes the vehicle to go in reverse
 func (v Vehicle) AutoparkReverse() error {
 	return v.autoPark("start_reverse")
 }
 
+// Performs the actual auto park/summon request for the vehicle
 func (v Vehicle) autoPark(action string) error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/autopark_request"
 	driveState, _ := v.DriveState()
@@ -43,11 +49,13 @@ func (v Vehicle) autoPark(action string) error {
 	return err
 }
 
+// TBD
 // func (v Vehicle) TriggerHomelink() error {
 // 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/trigger_homelink"
 // 	return nil
 // }
 
+// Wakes up the vehicle when it is powered off
 func (v Vehicle) Wakeup() (*Vehicle, error) {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/wake_up"
 	body, err := sendCommand(apiUrl, nil)
@@ -62,66 +70,79 @@ func (v Vehicle) Wakeup() (*Vehicle, error) {
 	return vehicleResponse.Response, nil
 }
 
+// Opens the charge port so you may insert your charging cable
 func (v Vehicle) OpenChargePort() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_port_door_open"
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// Sets the charge limit to the standard setting
 func (v Vehicle) SetChargeLimitStandard() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_standard"
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// Sets the charge limit to the max limit
 func (v Vehicle) SetChargeLimitMax() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_max_range"
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// TBD
 // func (v Vehicle) SetChargeLimit(limit int) error {
 // 	url := BaseURL + "/vehicles/" + strconv.Itoa(v.VehicleID) + "/command/set_charge_limit?=" + strconv.Itoa(limit)
 // 	_, err := v.Client.postURLEncoded(url, nil)
 // 	return err
 // }
 
+// Starts the charging of the vehicle after you have inserted the
+// charging cable
 func (v Vehicle) StartCharging() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_start"
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// Stop the charging of the vehicle
 func (v Vehicle) StopCharging() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_stop"
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// Flashes the lights of the vehicle
 func (v Vehicle) FlashLights() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/flash_lights"
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// Honks the horn of the vehicle
 func (v *Vehicle) HonkHorn() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/honk_horn"
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// TBD
 // func (v Vehicle) UnlockDoors() error {
 // 	apiUrl := BaseURL + "/vehicles/" + strconv.Itoa(v.VehicleID) + "/command/unlock_doors"
 // 	_, err := v.Client.postURLEncoded(apiUrl, nil)
 // 	return err
 // }
 
+// Locks the doors of the vehicle
 func (v Vehicle) LockDoors() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/door_lock"
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// Sets the temprature of the vehicle, where you may set the driver
+// zone and the passenger zone to seperate temperatures
 func (v Vehicle) SetTemprature(driver float64, passenger float64) error {
 	driveTemp := strconv.FormatFloat(driver, 'f', -1, 32)
 	passengerTemp := strconv.FormatFloat(passenger, 'f', -1, 32)
@@ -130,30 +151,36 @@ func (v Vehicle) SetTemprature(driver float64, passenger float64) error {
 	return err
 }
 
+// Starts the air conditioning in the car
 func (v Vehicle) StartAirConditioning() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/auto_conditioning_start"
 	_, err := sendCommand(url, nil)
 	return err
 }
 
+// Stops the air conditioning in the car
 func (v Vehicle) StopAirConditioning() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/auto_conditioning_stop"
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// TBD
 // func (v Vehicle) MovePanoRoof(state string, percent int) error {
 // 	apiUrl := BaseURL + "/vehicles/" + strconv.Itoa(v.VehicleID) + "/command/sun_roof_control?"
 // 	_, err := v.Client.postURLEncoded(apiUrl, nil)
 // 	return err
 // }
 
+// Starts the car by turning it on, requires the password to be sent
+// again
 func (v Vehicle) Start(password string) error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/remote_start_drive?password=" + password
 	_, err := sendCommand(apiUrl, nil)
 	return err
 }
 
+// Opens the trunk, where values may be 'front' or 'rear'
 func (v Vehicle) OpenTrunk(trunk string) error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/trunk_open" // ?which_trunk=" + trunk
 	theJson := `{"which_trunk": "` + trunk + `"}`
@@ -161,6 +188,7 @@ func (v Vehicle) OpenTrunk(trunk string) error {
 	return err
 }
 
+// Sends a command to the vehicle
 func sendCommand(url string, reqBody []byte) ([]byte, error) {
 	body, err := ActiveClient.post(url, reqBody)
 	if err != nil {
