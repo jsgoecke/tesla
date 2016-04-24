@@ -5,6 +5,10 @@ This library provides a wrapper around the API to easily query and command the a
 
 ![Go Tesla Gopher](https://dl.dropboxusercontent.com/u/25511/Images/gotesla.png)
 
+## Library Documentation
+
+[https://godoc.org/github.com/jsgoecke/tesla](https://godoc.org/github.com/jsgoecke/tesla)
+
 ## API Documentation
 
 [View Tesla JSON API Documentation](http://docs.timdorr.apiary.io/)
