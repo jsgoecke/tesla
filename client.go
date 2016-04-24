@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// Required authorization credentials for the Tesla API
 type Auth struct {
 	GrantType    string `json:"grant_type"`
 	ClientID     string `json:"client_id"`
@@ -18,12 +19,16 @@ type Auth struct {
 	StreamingURL string
 }
 
+// The token and related elements returned after a successful auth
+// by the Tesla API
 type Token struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
 }
 
+// Provides the client and associated elements for interacting with the
+// Tesla API
 type Client struct {
 	Auth  *Auth
 	Token *Token
@@ -36,6 +41,7 @@ var (
 	ActiveClient *Client
 )
 
+// Generates a new client for the Tesla API
 func NewClient(auth *Auth) (*Client, error) {
 	if auth.URL == "" {
 		auth.URL = BaseURL
@@ -57,6 +63,7 @@ func NewClient(auth *Auth) (*Client, error) {
 	return client, nil
 }
 
+// Authorizes against the Tesla API with the appropriate credentials
 func (c Client) authorize(auth *Auth) (*Token, error) {
 	auth.GrantType = "password"
 	data, _ := json.Marshal(auth)
@@ -91,11 +98,11 @@ func (c Client) post(url string, body []byte) ([]byte, error) {
 	return c.processRequest(req)
 }
 
-// // Calls an HTTP PUT
-// func put(resource string, body []byte) ([]byte, error) {
-// 	req, _ := http.NewRequest("PUT", BaseURL+resource, bytes.NewBuffer(body))
-// 	return processRequest(req)
-// }
+// Calls an HTTP PUT
+func (c Client) put(resource string, body []byte) ([]byte, error) {
+	req, _ := http.NewRequest("PUT", BaseURL+resource, bytes.NewBuffer(body))
+	return c.processRequest(req)
+}
 
 // Processes a HTTP POST/PUT request
 func (c Client) processRequest(req *http.Request) ([]byte, error) {
@@ -115,6 +122,7 @@ func (c Client) processRequest(req *http.Request) ([]byte, error) {
 	return body, nil
 }
 
+// Sets the required headers for calls to the Tesla API
 func (c Client) setHeaders(req *http.Request) {
 	if c.Token != nil {
 		req.Header.Set("Authorization", "Bearer "+c.Token.AccessToken)
