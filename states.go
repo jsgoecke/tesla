@@ -92,6 +92,8 @@ type GuiSettings struct {
 // Contains the current state of the vehicle
 type VehicleState struct {
 	APIVersion              int     `json:"api_version"`
+	AutoParkState           string  `json:"autopark_state"`
+	AutoParkStateV2         string  `json:"autopark_state_v2"`
 	CalendarSupported       bool    `json:"calendar_supported"`
 	CarType                 string  `json:"car_type"`
 	CarVersion              string  `json:"car_version"`
@@ -116,6 +118,7 @@ type VehicleState struct {
 	RoofColor               string  `json:"roof_color"`
 	Rt                      int     `json:"rt"`
 	SeatType                int     `json:"seat_type"`
+	SpoilerType             string  `json:"spoiler_type"`
 	SunRoofInstalled        int     `json:"sun_roof_installed"`
 	SunRoofPercentOpen      int     `json:"sun_roof_percent_open"`
 	SunRoofState            string  `json:"sun_roof_state"`

@@ -46,6 +46,14 @@ func TestCommandsSpec(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
+	Convey("Should toggle the garage door based on Homelink", t, func() {
+		vehicles, err := client.Vehicles()
+		So(err, ShouldBeNil)
+		vehicle := vehicles[0]
+		err = vehicle.TriggerHomelink()
+		So(err, ShouldBeNil)
+	})
+
 	Convey("Should wakeup the car", t, func() {
 		vehicles, err := client.Vehicles()
 		So(err, ShouldBeNil)
