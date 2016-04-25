@@ -92,6 +92,7 @@ type GuiSettings struct {
 // Contains the current state of the vehicle
 type VehicleState struct {
 	APIVersion              int     `json:"api_version"`
+	AutoParkState           string  `json:"autopark_state"`
 	AutoParkStateV2         string  `json:"autopark_state_v2"`
 	CalendarSupported       bool    `json:"calendar_supported"`
 	CarType                 string  `json:"car_type"`
