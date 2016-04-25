@@ -17,10 +17,10 @@ type CommandResponse struct {
 // Required elements to POST an Autopark/Summon request
 // for the vehicle
 type AutoParkRequest struct {
-	VehicleID int     `json:"vehicle_id"`
+	VehicleID int     `json:"vehicle_id,omitempty"`
 	Lat       float64 `json:"lat"`
 	Lon       float64 `json:"lon"`
-	Action    string  `json:"action"`
+	Action    string  `json:"action,omitempty"`
 }
 
 // Causes the vehicle to pull forward
@@ -49,11 +49,22 @@ func (v Vehicle) autoPark(action string) error {
 	return err
 }
 
-// TBD
-// func (v Vehicle) TriggerHomelink() error {
-// 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/trigger_homelink"
-// 	return nil
-// }
+// Opens and closes the configured Homelink garage door of the vehicle
+// keep in mind this is a toggle and the garage door state is unknown
+// a major limitation of Homelink
+func (v Vehicle) TriggerHomelink() error {
+	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/trigger_homelink"
+	driveState, _ := v.DriveState()
+	autoParkRequest := &AutoParkRequest{
+		Lat: driveState.Latitude,
+		Lon: driveState.Longitude,
+	}
+	body, _ := json.Marshal(autoParkRequest)
+
+	_, err := sendCommand(apiUrl, body)
+	return err
+	return nil
+}
 
 // Wakes up the vehicle when it is powered off
 func (v Vehicle) Wakeup() (*Vehicle, error) {
