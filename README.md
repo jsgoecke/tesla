@@ -79,10 +79,9 @@ func main() {
 }
 ```
 
-## ToDo
+## Examples
 
-* Implement the summon features.
-* Coerce timestamp in event struct.
+* [Commanding a Tesla Model S with the Amazon Echo](https://medium.com/@jsgoecke/commanding-a-tesla-model-s-with-the-amazon-echo-a06f975364b8#.xoctd3yni)
 
 ## Credits
 
