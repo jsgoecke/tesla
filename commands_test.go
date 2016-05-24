@@ -30,6 +30,14 @@ func TestCommandsSpec(t *testing.T) {
 	}
 	client, _ := NewClient(auth)
 
+	Convey("Should auto park abort Autopark", t, func() {
+		vehicles, err := client.Vehicles()
+		So(err, ShouldBeNil)
+		vehicle := vehicles[0]
+		err = vehicle.AutoparkAbort()
+		So(err, ShouldBeNil)
+	})
+
 	Convey("Should auto park car forward", t, func() {
 		vehicles, err := client.Vehicles()
 		So(err, ShouldBeNil)
@@ -43,6 +51,14 @@ func TestCommandsSpec(t *testing.T) {
 		So(err, ShouldBeNil)
 		vehicle := vehicles[0]
 		err = vehicle.AutoparkReverse()
+		So(err, ShouldBeNil)
+	})
+
+	Convey("Should toggle the garage door based on Homelink", t, func() {
+		vehicles, err := client.Vehicles()
+		So(err, ShouldBeNil)
+		vehicle := vehicles[0]
+		err = vehicle.TriggerHomelink()
 		So(err, ShouldBeNil)
 	})
 

@@ -125,8 +125,17 @@ func serveHTTP(t *testing.T) *httptest.Server {
 				autoParkRequest := &AutoParkRequest{}
 				err := json.Unmarshal(body, autoParkRequest)
 				So(err, ShouldBeNil)
-				So(autoParkRequest.Action, ShouldStartWith, "start_")
+				So(autoParkRequest.Action, shouldBeValidAutoparkCommand)
 				So(autoParkRequest.VehicleID, ShouldEqual, 456)
+				So(autoParkRequest.Lat, ShouldEqual, 35.1)
+				So(autoParkRequest.Lon, ShouldEqual, 20.2)
+			})
+		case "/api/1/vehicles/1234/command/trigger_homelink":
+			w.WriteHeader(200)
+			Convey("Auto park request should have appropriate body", t, func() {
+				autoParkRequest := &AutoParkRequest{}
+				err := json.Unmarshal(body, autoParkRequest)
+				So(err, ShouldBeNil)
 				So(autoParkRequest.Lat, ShouldEqual, 35.1)
 				So(autoParkRequest.Lon, ShouldEqual, 20.2)
 			})
@@ -139,4 +148,12 @@ func checkHeaders(t *testing.T, req *http.Request) {
 		So(req.Header["Accept"][0], ShouldEqual, "application/json")
 		So(req.Header["Content-Type"][0], ShouldEqual, "application/json")
 	})
+}
+
+func shouldBeValidAutoparkCommand(actual interface{}, expected ...interface{}) string {
+	if actual == "start_forward" || actual == "start_reverse" || actual == "abort" {
+		return ""
+	} else {
+		return "The Autopark command should pass start_forward, start_reverse or abort"
+	}
 }
