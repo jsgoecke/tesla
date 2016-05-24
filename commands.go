@@ -23,6 +23,11 @@ type AutoParkRequest struct {
 	Action    string  `json:"action,omitempty"`
 }
 
+// Causes the vehicle to abort the Autopark request
+func (v Vehicle) AutoparkAbort() error {
+	return v.autoPark("abort")
+}
+
 // Causes the vehicle to pull forward
 func (v Vehicle) AutoparkForward() error {
 	return v.autoPark("start_forward")
