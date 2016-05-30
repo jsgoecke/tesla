@@ -47,6 +47,7 @@ func main() {
 	fmt.Println(vehicle.SetChargeLimitMax())
 	fmt.Println(vehicle.StartAirConditioning())
 	fmt.Println(vehicle.StopAirConditioning())
+	fmt.Println(vehicle.UnlockDoors())
 	fmt.Println(vehicle.LockDoors())
 	fmt.Println(vehicle.SetTemprature(72.0, 72.0))
 	fmt.Println(vehicle.Start(os.Getenv("TESLA_PASSWORD")))

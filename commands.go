@@ -143,12 +143,12 @@ func (v *Vehicle) HonkHorn() error {
 	return err
 }
 
-// TBD
-// func (v Vehicle) UnlockDoors() error {
-// 	apiUrl := BaseURL + "/vehicles/" + strconv.Itoa(v.VehicleID) + "/command/unlock_doors"
-// 	_, err := v.Client.postURLEncoded(apiUrl, nil)
-// 	return err
-// }
+// Unlock the car's doors
+func (v Vehicle) UnlockDoors() error {
+	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/door_unlock"
+	_, err := sendCommand(apiUrl, nil)
+	return err
+}
 
 // Locks the doors of the vehicle
 func (v Vehicle) LockDoors() error {

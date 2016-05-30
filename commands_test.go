@@ -142,6 +142,14 @@ func TestCommandsSpec(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
+	Convey("Should unlock the doors", t, func() {
+		vehicles, err := client.Vehicles()
+		So(err, ShouldBeNil)
+		vehicle := vehicles[0]
+		err = vehicle.UnlockDoors()
+		So(err, ShouldBeNil)
+	})
+
 	Convey("Should lock the doors", t, func() {
 		vehicles, err := client.Vehicles()
 		So(err, ShouldBeNil)
