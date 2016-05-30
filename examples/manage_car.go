@@ -54,6 +54,10 @@ func main() {
 	fmt.Println(vehicle.OpenTrunk("front"))
 	fmt.Println(vehicle.AutoparkForward())
 	fmt.Println(vehicle.AutoparkReverse())
+	fmt.Println(vehicle.MovePanoRoof("vent", 0))
+	fmt.Println(vehicle.MovePanoRoof("open", 0))
+	fmt.Println(vehicle.MovePanoRoof("move", 50))
+	fmt.Println(vehicle.MovePanoRoof("close", 0))
 
 	// Stream vehicle events
 	eventChan, err := vehicle.Stream()

@@ -181,12 +181,14 @@ func (v Vehicle) StopAirConditioning() error {
 	return err
 }
 
-// TBD
-// func (v Vehicle) MovePanoRoof(state string, percent int) error {
-// 	apiUrl := BaseURL + "/vehicles/" + strconv.Itoa(v.VehicleID) + "/command/sun_roof_control?"
-// 	_, err := v.Client.postURLEncoded(apiUrl, nil)
-// 	return err
-// }
+// The desired state of the panoramic roof. The approximate percent open
+// values for each state are open = 100%, close = 0%, comfort = 80%, vent = %15, move = set %
+func (v Vehicle) MovePanoRoof(state string, percent int) error {
+	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/sun_roof_control"
+	theJson := `{"state": "` + state + `", "percent":` + strconv.Itoa(percent) + `}`
+	_, err := ActiveClient.post(apiUrl, []byte(theJson))
+	return err
+}
 
 // Starts the car by turning it on, requires the password to be sent
 // again
