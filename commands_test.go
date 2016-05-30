@@ -165,6 +165,28 @@ func TestCommandsSpec(t *testing.T) {
 		err = vehicle.Start("foo")
 	})
 
+	Convey("Should move the Pano Roof around", t, func() {
+		vehicles, err := client.Vehicles()
+		So(err, ShouldBeNil)
+		vehicle := vehicles[0]
+		Convey("Should vent the pano roof", func() {
+			err := vehicle.MovePanoRoof("vent", 0)
+			So(err, ShouldBeNil)
+		})
+		Convey("Should open the pano roof", func() {
+			err := vehicle.MovePanoRoof("open", 0)
+			So(err, ShouldBeNil)
+		})
+		Convey("Should move the pano roof to 50", func() {
+			err := vehicle.MovePanoRoof("move", 50)
+			So(err, ShouldBeNil)
+		})
+		Convey("Should close the pano roof", func() {
+			err := vehicle.MovePanoRoof("close", 0)
+			So(err, ShouldBeNil)
+		})
+	})
+
 	AuthURL = previousAuthURL
 	BaseURL = previousURL
 }

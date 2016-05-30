@@ -139,6 +139,26 @@ func serveHTTP(t *testing.T) *httptest.Server {
 				So(autoParkRequest.Lat, ShouldEqual, 35.1)
 				So(autoParkRequest.Lon, ShouldEqual, 20.2)
 			})
+		case "/api/1/vehicles/1234/command/sun_roof_control":
+			w.WriteHeader(200)
+			Convey("Should set the Pano roof appropriately", t, func() {
+				passed := false
+				strBody := string(body)
+				if strBody == `{"state": "vent", "percent":0}` {
+					passed = true
+				}
+				if strBody == `{"state": "open", "percent":0}` {
+					passed = true
+				}
+				if strBody == `{"state": "move", "percent":50}` {
+					passed = true
+				}
+				if strBody == `{"state": "close", "percent":0}` {
+					passed = true
+				}
+				So(passed, ShouldBeTrue)
+
+			})
 		}
 	}))
 }
