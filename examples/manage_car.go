@@ -55,12 +55,15 @@ func main() {
 	fmt.Println(vehicle.Start(os.Getenv("TESLA_PASSWORD")))
 	fmt.Println(vehicle.OpenTrunk("rear"))
 	fmt.Println(vehicle.OpenTrunk("front"))
-	fmt.Println(vehicle.AutoparkForward())
-	fmt.Println(vehicle.AutoparkReverse())
 	fmt.Println(vehicle.MovePanoRoof("vent", 0))
 	fmt.Println(vehicle.MovePanoRoof("open", 0))
 	fmt.Println(vehicle.MovePanoRoof("move", 50))
 	fmt.Println(vehicle.MovePanoRoof("close", 0))
+
+	// Take care with these, as the car will move
+	fmt.Println(vehicle.AutoparkForward())
+	fmt.Println(vehicle.AutoparkReverse())
+	// Take care with these, as the car will move
 
 	// Stream vehicle events
 	eventChan, err := vehicle.Stream()
