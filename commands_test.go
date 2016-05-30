@@ -94,6 +94,14 @@ func TestCommandsSpec(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
+	Convey("Should set the car charge limit", t, func() {
+		vehicles, err := client.Vehicles()
+		So(err, ShouldBeNil)
+		vehicle := vehicles[0]
+		err = vehicle.SetChargeLimit(50)
+		So(err, ShouldBeNil)
+	})
+
 	Convey("Should set the car to standard charge level", t, func() {
 		vehicles, err := client.Vehicles()
 		So(err, ShouldBeNil)
