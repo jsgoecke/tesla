@@ -41,6 +41,7 @@ func main() {
 	fmt.Println(vehicle.FlashLights())
 	fmt.Println(vehicle.Wakeup())
 	fmt.Println(vehicle.OpenChargePort())
+	fmt.Println(vehicle.ResetValetPIN())
 	fmt.Println(vehicle.SetChargeLimitStandard())
 	fmt.Println(vehicle.SetChargeLimit(50))
 	fmt.Println(vehicle.StartCharging())

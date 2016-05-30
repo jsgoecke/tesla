@@ -116,6 +116,7 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			"/api/1/vehicles/1234/command/auto_conditioning_stop",
 			"/api/1/vehicles/1234/command/door_unlock",
 			"/api/1/vehicles/1234/command/door_lock",
+			"/api/1/vehicles/1234/command/reset_valet_pin",
 			"/api/1/vehicles/1234/command/set_temps?driver_temp=72&passenger_temp=72",
 			"/api/1/vehicles/1234/command/remote_start_drive?password=foo":
 			checkHeaders(t, req)

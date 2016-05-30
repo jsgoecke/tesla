@@ -93,6 +93,13 @@ func (v Vehicle) OpenChargePort() error {
 	return err
 }
 
+// Resets the PIN set for valet mode, if set
+func (v Vehicle) ResetValetPIN() error {
+	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/reset_valet_pin"
+	_, err := sendCommand(apiUrl, nil)
+	return err
+}
+
 // Sets the charge limit to the standard setting
 func (v Vehicle) SetChargeLimitStandard() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_standard"
