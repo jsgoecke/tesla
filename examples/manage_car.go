@@ -59,6 +59,7 @@ func main() {
 	fmt.Println(vehicle.MovePanoRoof("open", 0))
 	fmt.Println(vehicle.MovePanoRoof("move", 50))
 	fmt.Println(vehicle.MovePanoRoof("close", 0))
+	fmt.Println(vehicle.TriggerHomeLink())
 
 	// Take care with these, as the car will move
 	fmt.Println(vehicle.AutoparkForward())
