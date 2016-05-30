@@ -107,12 +107,13 @@ func (v Vehicle) SetChargeLimitMax() error {
 	return err
 }
 
-// TBD
-// func (v Vehicle) SetChargeLimit(limit int) error {
-// 	url := BaseURL + "/vehicles/" + strconv.Itoa(v.VehicleID) + "/command/set_charge_limit?=" + strconv.Itoa(limit)
-// 	_, err := v.Client.postURLEncoded(url, nil)
-// 	return err
-// }
+// Set the charge limit to a custom percentage
+func (v Vehicle) SetChargeLimit(percent int) error {
+	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/set_charge_limit"
+	theJson := `{"percent": ` + strconv.Itoa(percent) + `}`
+	_, err := ActiveClient.post(apiUrl, []byte(theJson))
+	return err
+}
 
 // Starts the charging of the vehicle after you have inserted the
 // charging cable

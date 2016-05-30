@@ -94,6 +94,11 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(WakeupResponseJSON))
+		case "/api/1/vehicles/1234/command/set_charge_limit":
+			w.WriteHeader(200)
+			Convey("Should receive a set charge limit request", t, func() {
+				So(string(body), ShouldEqual, `{"percent": 50}`)
+			})
 		case "/api/1/vehicles/1234/command/charge_standard":
 			checkHeaders(t, req)
 			w.WriteHeader(200)
