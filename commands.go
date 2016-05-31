@@ -54,6 +54,21 @@ func (v Vehicle) autoPark(action string) error {
 	return err
 }
 
+// TBD based on Github issue #7
+// Toggles defrost on and off, locations values are 'front' or 'rear'
+// func (v Vehicle) Defrost(location string, state bool) error {
+// 	command := location + "_defrost_"
+// 	if state {
+// 		command += "on"
+// 	} else {
+// 		command += "off"
+// 	}
+// 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/" + command
+// 	fmt.Println(apiUrl)
+// 	_, err := sendCommand(apiUrl, nil)
+// 	return err
+// }
+
 // Opens and closes the configured Homelink garage door of the vehicle
 // keep in mind this is a toggle and the garage door state is unknown
 // a major limitation of Homelink
