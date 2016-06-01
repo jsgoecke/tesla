@@ -66,7 +66,7 @@ func main() {
 	// Stream vehicle events
 	eventChan, errChan, err := vehicle.Stream()
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 	} else {
 		for {
 			select {
