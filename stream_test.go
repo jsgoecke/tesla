@@ -29,7 +29,7 @@ func TestStreamSpec(t *testing.T) {
 		eventChan, errChan, err := vehicle.Stream()
 		So(err, ShouldBeNil)
 
-		Convey("2 good, 1 bad, 1 empty", func() {
+		Convey("2 good, 1 bad", func() {
 			select {
 			case event := <-eventChan:
 				So(event.Speed, ShouldEqual, 65)
@@ -52,7 +52,7 @@ func TestStreamSpec(t *testing.T) {
 			case event := <-eventChan:
 				So(event, ShouldBeNil)
 			case err = <-errChan:
-				So(err.Error(), ShouldEqual, "EOF")
+				So(err.Error(), ShouldEqual, "HTTP stream closed")
 			}
 		})
 	})

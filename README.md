@@ -66,7 +66,8 @@ func main() {
 	// Stream vehicle events
 	eventChan, errChan, err := vehicle.Stream()
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
+		return
 	} else {
 		for {
 			select {
@@ -74,8 +75,15 @@ func main() {
 				eventJSON, _ := json.Marshal(event)
 				fmt.Println(string(eventJSON))
 			case err = <-errChan:
-				fmt.Println("HTTP Stream timeout!")
-				break
+				fmt.Println(err)
+				if err.Error() == "HTTP stream closed" {
+					fmt.Println("Reconnecting!")
+					eventChan, errChan, err := vehicle.Stream()
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+				}
 			}
 		}
 	}
