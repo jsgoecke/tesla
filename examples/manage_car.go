@@ -67,14 +67,14 @@ func main() {
 	// Take care with these, as the car will move
 
 	// Stream vehicle events
-	eventChan, err := vehicle.Stream()
+	eventChan, errChan, err := vehicle.Stream()
 	if err != nil {
 		for {
-			event := <-eventChan
-			if event != nil {
+			select {
+			case event := <-eventChan:
 				eventJSON, _ := json.Marshal(event)
 				fmt.Println(string(eventJSON))
-			} else {
+			case err = <-errChan:
 				fmt.Println("HTTP Stream timeout!")
 				break
 			}

@@ -64,16 +64,17 @@ func main() {
 	vehicle.AutoparkReverse()
 
 	// Stream vehicle events
-	eventChan, err := vehicle.Stream()
+	eventChan, errChan, err := vehicle.Stream()
 	if err != nil {
 		for {
-		event := <-eventChan
-		if event != nil {
-			eventJSON, _ := json.Marshal(event)
-			fmt.Println(string(eventJSON))
-		} else {
-			fmt.Println("Done!")
-			break
+			select {
+			case event := <-eventChan:
+				eventJSON, _ := json.Marshal(event)
+				fmt.Println(string(eventJSON))
+			case err = <-errChan:
+				fmt.Println("HTTP Stream timeout!")
+				break
+			}
 		}
 	}
 }

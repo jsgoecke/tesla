@@ -2,6 +2,7 @@ package tesla
 
 import (
 	"bufio"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -31,38 +32,47 @@ type StreamEvent struct {
 }
 
 // Requests a stream from the vehicle and returns a Go channel
-func (v Vehicle) Stream() (chan *StreamEvent, error) {
+func (v Vehicle) Stream() (chan *StreamEvent, chan error, error) {
 	url := StreamingURL + "/stream/" + strconv.Itoa(v.VehicleID) + "/?values=" + StreamParams
 	req, _ := http.NewRequest("GET", url, nil)
 	req.SetBasicAuth(ActiveClient.Auth.Email, v.Tokens[0])
 	resp, err := ActiveClient.HTTP.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	eventChan := make(chan *StreamEvent)
-	go readStream(resp, eventChan)
-	return eventChan, nil
+	errChan := make(chan error)
+	go readStream(resp, eventChan, errChan)
+	return eventChan, errChan, nil
 }
 
 // Reads the stream itself from the vehicle
-func readStream(resp *http.Response, eventChan chan *StreamEvent) {
+func readStream(resp *http.Response, eventChan chan *StreamEvent, errChan chan error) {
 	reader := bufio.NewReader(resp.Body)
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
-			eventChan <- nil
+			errChan <- err
 			break
 		} else {
-			streamEvent := parseStreamEvent(string(line))
-			eventChan <- streamEvent
+			streamEvent, err := parseStreamEvent(string(line))
+			if err == nil {
+				eventChan <- streamEvent
+			} else {
+				errChan <- err
+			}
 		}
 	}
 }
 
 // Parses the stream event, setting all of the appropriate data types
-func parseStreamEvent(event string) *StreamEvent {
+func parseStreamEvent(event string) (*StreamEvent, error) {
 	data := strings.Split(event, ",")
+	if len(data) != 13 {
+		return nil, errors.New("Bad message from Tesla API stream")
+	}
+
 	streamEvent := &StreamEvent{}
 	timestamp, _ := strconv.ParseInt(data[0], 10, 64)
 	streamEvent.Timestamp = time.Unix(0, timestamp*int64(time.Millisecond))
@@ -78,5 +88,5 @@ func parseStreamEvent(event string) *StreamEvent {
 	streamEvent.Range, _ = strconv.Atoi(data[10])
 	streamEvent.EstRange, _ = strconv.Atoi(data[11])
 	streamEvent.Heading, _ = strconv.Atoi(data[12])
-	return streamEvent
+	return streamEvent, nil
 }

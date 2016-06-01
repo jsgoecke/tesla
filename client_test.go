@@ -47,7 +47,7 @@ func TestClientSpec(t *testing.T) {
 func serveHTTP(t *testing.T) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		body, _ := ioutil.ReadAll(req.Body)
-		req.Body.Close()
+		defer req.Body.Close()
 		switch req.URL.String() {
 		case "/oauth/token":
 			checkHeaders(t, req)
@@ -124,7 +124,10 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			w.Write([]byte(CommandResponseJSON))
 		case "/stream/123/?values=speed,odometer,soc,elevation,est_heading,est_lat,est_lng,power,shift_state,range,est_range,heading":
 			w.WriteHeader(200)
-			b := bytes.NewBufferString(StreamEventString + "\n" + StreamEventString + "\n")
+			events := StreamEventString + "\n" +
+				StreamEventString + "\n" +
+				BadStreamEventString + "\n"
+			b := bytes.NewBufferString(events)
 			b.WriteTo(w)
 		case "/api/1/vehicles/1234/command/autopark_request":
 			w.WriteHeader(200)
