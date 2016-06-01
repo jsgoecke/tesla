@@ -61,7 +61,7 @@ func main() {
 	fmt.Println(vehicle.MovePanoRoof("close", 0))
 	fmt.Println(vehicle.TriggerHomelink())
 
-	// Take care with these, as the car will move
+	// // Take care with these, as the car will move
 	fmt.Println(vehicle.AutoparkForward())
 	fmt.Println(vehicle.AutoparkReverse())
 	// Take care with these, as the car will move
@@ -79,6 +79,7 @@ func main() {
 				fmt.Println(string(eventJSON))
 			case err = <-errChan:
 				fmt.Println(err)
+<<<<<<< HEAD
 				if err.Error() == "HTTP stream closed" {
 					fmt.Println("Reconnecting!")
 					eventChan, errChan, err := vehicle.Stream()
@@ -86,6 +87,12 @@ func main() {
 						fmt.Println(err)
 						return
 					}
+=======
+				fmt.Println("Reconnecting!")
+				eventChan, errChan, err = vehicle.Stream()
+				if err != nil {
+					break
+>>>>>>> master
 				}
 			}
 		}
