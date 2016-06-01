@@ -51,18 +51,16 @@ func (v Vehicle) Stream() (chan *StreamEvent, chan error, error) {
 func readStream(resp *http.Response, eventChan chan *StreamEvent, errChan chan error) {
 	reader := bufio.NewReader(resp.Body)
 	defer resp.Body.Close()
-	for {
-		line, err := reader.ReadBytes('\n')
-		if err != nil {
-			errChan <- err
-			break
+
+	scanner := bufio.NewScanner(reader)
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		streamEvent, err := parseStreamEvent(scanner.Text())
+		if err == nil {
+			eventChan <- streamEvent
 		} else {
-			streamEvent, err := parseStreamEvent(string(line))
-			if err == nil {
-				eventChan <- streamEvent
-			} else {
-				errChan <- err
-			}
+			errChan <- err
 		}
 	}
 }

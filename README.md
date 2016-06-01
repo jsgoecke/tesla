@@ -74,8 +74,7 @@ func main() {
 				eventJSON, _ := json.Marshal(event)
 				fmt.Println(string(eventJSON))
 			case err = <-errChan:
-				fmt.Println("HTTP Stream timeout!")
-				break
+				fmt.Println(err)
 			}
 		}
 	}

@@ -29,7 +29,7 @@ func TestStreamSpec(t *testing.T) {
 		eventChan, errChan, err := vehicle.Stream()
 		So(err, ShouldBeNil)
 
-		Convey("2 good, 1 bad, 1 empty", func() {
+		Convey("2 good, 1 bad", func() {
 			select {
 			case event := <-eventChan:
 				So(event.Speed, ShouldEqual, 65)
@@ -47,12 +47,6 @@ func TestStreamSpec(t *testing.T) {
 				So(event, ShouldBeNil)
 			case err = <-errChan:
 				So(err.Error(), ShouldEqual, "Bad message from Tesla API stream")
-			}
-			select {
-			case event := <-eventChan:
-				So(event, ShouldBeNil)
-			case err = <-errChan:
-				So(err.Error(), ShouldEqual, "EOF")
 			}
 		})
 	})
