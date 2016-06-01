@@ -81,15 +81,11 @@ func main() {
 				fmt.Println(err)
 				if err.Error() == "HTTP stream closed" {
 					fmt.Println("Reconnecting!")
-					eventChan, errChan, err := vehicle.Stream()
+					eventChan, errChan, err = vehicle.Stream()
 					if err != nil {
 						fmt.Println(err)
 						return
 					}
-				fmt.Println("Reconnecting!")
-				eventChan, errChan, err = vehicle.Stream()
-				if err != nil {
-					break
 				}
 			}
 		}
