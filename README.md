@@ -60,8 +60,10 @@ func main() {
 	fmt.Println(vehicle.HonkHorn())
 
 	// Autopark
+	// Use with care, as this will move your car
 	vehicle.AutoparkForward()
 	vehicle.AutoparkReverse()
+	// Use with care, as this will move your car
 
 	// Stream vehicle events
 	eventChan, errChan, err := vehicle.Stream()
