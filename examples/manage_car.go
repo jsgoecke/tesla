@@ -70,6 +70,7 @@ func main() {
 	eventChan, errChan, err := vehicle.Stream()
 	if err != nil {
 		fmt.Println(err)
+		return
 	} else {
 		for {
 			select {
@@ -78,6 +79,14 @@ func main() {
 				fmt.Println(string(eventJSON))
 			case err = <-errChan:
 				fmt.Println(err)
+				if err.Error() == "HTTP stream closed" {
+					fmt.Println("Reconnecting!")
+					eventChan, errChan, err := vehicle.Stream()
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+				}
 			}
 		}
 	}

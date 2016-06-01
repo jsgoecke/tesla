@@ -48,6 +48,12 @@ func TestStreamSpec(t *testing.T) {
 			case err = <-errChan:
 				So(err.Error(), ShouldEqual, "Bad message from Tesla API stream")
 			}
+			select {
+			case event := <-eventChan:
+				So(event, ShouldBeNil)
+			case err = <-errChan:
+				So(err.Error(), ShouldEqual, "HTTP stream closed")
+			}
 		})
 	})
 

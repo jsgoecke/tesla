@@ -37,6 +37,7 @@ func (v Vehicle) Stream() (chan *StreamEvent, chan error, error) {
 	req, _ := http.NewRequest("GET", url, nil)
 	req.SetBasicAuth(ActiveClient.Auth.Email, v.Tokens[0])
 	resp, err := ActiveClient.HTTP.Do(req)
+
 	if err != nil {
 		return nil, nil, err
 	}
@@ -44,16 +45,16 @@ func (v Vehicle) Stream() (chan *StreamEvent, chan error, error) {
 	eventChan := make(chan *StreamEvent)
 	errChan := make(chan error)
 	go readStream(resp, eventChan, errChan)
+
 	return eventChan, errChan, nil
 }
 
 // Reads the stream itself from the vehicle
 func readStream(resp *http.Response, eventChan chan *StreamEvent, errChan chan error) {
 	reader := bufio.NewReader(resp.Body)
-	defer resp.Body.Close()
-
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanLines)
+	defer resp.Body.Close()
 
 	for scanner.Scan() {
 		streamEvent, err := parseStreamEvent(scanner.Text())
@@ -63,6 +64,7 @@ func readStream(resp *http.Response, eventChan chan *StreamEvent, errChan chan e
 			errChan <- err
 		}
 	}
+	errChan <- errors.New("HTTP stream closed")
 }
 
 // Parses the stream event, setting all of the appropriate data types
