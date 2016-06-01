@@ -61,7 +61,7 @@ func main() {
 	fmt.Println(vehicle.MovePanoRoof("close", 0))
 	fmt.Println(vehicle.TriggerHomelink())
 
-	// Take care with these, as the car will move
+	// // Take care with these, as the car will move
 	fmt.Println(vehicle.AutoparkForward())
 	fmt.Println(vehicle.AutoparkReverse())
 	// Take care with these, as the car will move
@@ -77,8 +77,12 @@ func main() {
 				eventJSON, _ := json.Marshal(event)
 				fmt.Println(string(eventJSON))
 			case err = <-errChan:
-				fmt.Println("HTTP Stream timeout!")
-				break
+				fmt.Println(err)
+				fmt.Println("Reconnecting!")
+				eventChan, errChan, err = vehicle.Stream()
+				if err != nil {
+					break
+				}
 			}
 		}
 	}
