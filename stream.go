@@ -50,6 +50,7 @@ func (v Vehicle) Stream() (chan *StreamEvent, chan error, error) {
 // Reads the stream itself from the vehicle
 func readStream(resp *http.Response, eventChan chan *StreamEvent, errChan chan error) {
 	reader := bufio.NewReader(resp.Body)
+	defer resp.Body.Close()
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
