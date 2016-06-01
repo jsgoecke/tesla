@@ -79,8 +79,6 @@ func main() {
 				fmt.Println(string(eventJSON))
 			case err = <-errChan:
 				fmt.Println(err)
-<<<<<<< HEAD
-<<<<<<< HEAD
 				if err.Error() == "HTTP stream closed" {
 					fmt.Println("Reconnecting!")
 					eventChan, errChan, err := vehicle.Stream()
@@ -88,17 +86,10 @@ func main() {
 						fmt.Println(err)
 						return
 					}
-=======
-=======
->>>>>>> master
 				fmt.Println("Reconnecting!")
 				eventChan, errChan, err = vehicle.Stream()
 				if err != nil {
 					break
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> master
 				}
 			}
 		}
