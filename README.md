@@ -100,6 +100,13 @@ func main() {
 
 Thank you to [Tim Dorr](https://github.com/timdorr) who did the heavy lifting to document the Tesla API and also created the [model-s-api Ruby Gem](https://github.com/timdorr/model-s-api).
 
+## Current Issues
+
+Right now Tesla appears to have broken the Autopark and Homelink commands of their API in a recent cloud API update. I have started a thread [here](https://forums.teslamotors.com/forum/forums/cloud-api-autopark-homelink-commands-now-returning-400) and will update as information becomes available. And fix if/when the community discovers the fix. Keep an eye on these two issues for resolution:
+
+* [https://github.com/jsgoecke/tesla/issues/14](https://github.com/jsgoecke/tesla/issues/14)
+* [https://github.com/jsgoecke/tesla/issues/15](https://github.com/jsgoecke/tesla/issues/15)
+
 ## Copyright & License
 
 Copyright (c) 2016 Jason Goecke. Released under the terms of the MIT license. See LICENSE for details.
