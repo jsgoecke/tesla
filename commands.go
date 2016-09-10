@@ -82,7 +82,9 @@ func (v Vehicle) TriggerHomelink() error {
 	body, _ := json.Marshal(autoParkRequest)
 
 	_, err := sendCommand(apiUrl, body)
-	return err
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
