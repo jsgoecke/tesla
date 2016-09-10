@@ -82,10 +82,7 @@ func (v Vehicle) TriggerHomelink() error {
 	body, _ := json.Marshal(autoParkRequest)
 
 	_, err := sendCommand(apiUrl, body)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // Wakes up the vehicle when it is powered off
