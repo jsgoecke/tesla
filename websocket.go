@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -18,10 +19,15 @@ var (
 	WebSocketResource = "/connect/"
 )
 
-type homelinkCommand struct {
+type autoparkCommand struct {
 	MsgType   string  `json:"msg_type"`
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
+}
+
+type heartbeatCommand struct {
+	MsgType   string `json:"msg_type"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 // WebSocket encapsulates a controlling websocket to a vehicle.
@@ -31,14 +37,61 @@ type WebSocket struct {
 
 	conn *websocket.Conn
 
-	stateWB        sync.WaitGroup
-	autoparkState  string
-	homelinkNearby bool
+	autoparkStateWG    sync.WaitGroup
+	autoparkState      string
+	autoparkStateInit  bool
+	homelinkNearbyWG   sync.WaitGroup
+	homelinkNearby     bool
+	homelinkNearbyInit bool
 }
 
 // Close closes the underlying connection.
 func (s *WebSocket) Close() error {
 	return s.conn.Close()
+}
+
+func (s *WebSocket) Write(i interface{}) error {
+	log.Printf("Tesla: WriteJSON(%+v)", i)
+	return s.conn.WriteJSON(i)
+}
+
+// AutoparkReverse triggers autopark reverse via this connection.
+func (s *WebSocket) AutoparkReverse() error {
+	driveState, err := s.Vehicle.DriveState()
+	if err != nil {
+		return err
+	}
+
+	cmd := autoparkCommand{
+		MsgType:   "autopark:cmd_reverse",
+		Latitude:  driveState.Latitude,
+		Longitude: driveState.Longitude,
+	}
+
+	return s.Write(cmd)
+}
+
+// AutoparkAbort aborts autopark via this connection.
+func (s *WebSocket) AutoparkAbort() {
+	s.Write(map[string]interface{}{
+		"msg_type": "autopark:cmd_abort",
+	})
+}
+
+// AutoparkForward triggers autopark forward via this connection.
+func (s *WebSocket) AutoparkForward() error {
+	driveState, err := s.Vehicle.DriveState()
+	if err != nil {
+		return err
+	}
+
+	cmd := autoparkCommand{
+		MsgType:   "autopark:cmd_forward",
+		Latitude:  driveState.Latitude,
+		Longitude: driveState.Longitude,
+	}
+
+	return s.Write(cmd)
 }
 
 // ActivateHomelink triggers homelink via this connection.
@@ -48,25 +101,24 @@ func (s *WebSocket) ActivateHomelink() error {
 		return err
 	}
 
-	cmd := homelinkCommand{
+	cmd := autoparkCommand{
 		MsgType:   "homelink:cmd_trigger",
 		Latitude:  driveState.Latitude,
 		Longitude: driveState.Longitude,
 	}
 
-	log.Printf("Tesla: WriteJSON(%+v)", cmd)
-	return s.conn.WriteJSON(cmd)
+	return s.Write(cmd)
 }
 
 // AutoparkState waits for the state to be loaded over the socket, then returns it.
 func (s *WebSocket) AutoparkState() string {
-	s.stateWB.Wait()
+	s.autoparkStateWG.Wait()
 	return s.autoparkState
 }
 
 // HomelinkNearby wait for the state to be loaded over the socket, then returns it.
 func (s *WebSocket) HomelinkNearby() bool {
-	s.stateWB.Wait()
+	s.homelinkNearbyWG.Wait()
 	return s.homelinkNearby
 }
 
@@ -85,7 +137,8 @@ func (v *Vehicle) WebSocket() (*WebSocket, error) {
 		Output:  (<-chan map[string]interface{})(pipe),
 	}
 	// autopark state and homelink nearby
-	sock.stateWB.Add(2)
+	sock.homelinkNearbyWG.Add(1)
+	sock.autoparkStateWG.Add(1)
 
 	var err error
 	sock.conn, _, err = websocket.DefaultDialer.Dial(sockURL.String(), headers)
@@ -97,17 +150,45 @@ func (v *Vehicle) WebSocket() (*WebSocket, error) {
 		for {
 			msg := map[string]interface{}{}
 			err := sock.conn.ReadJSON(&msg)
+			log.Printf("Tesla: ReadJSON: %+v, %v", msg, err)
 			if err != nil {
 				close(pipe)
 				return
 			}
 			switch msg["msg_type"] {
+			case "control:hello":
+				freq := msg["autopark"].(map[string]interface{})["heartbeat_frequency"].(float64)
+				go func() {
+					for _ = range time.Tick(time.Millisecond * time.Duration(freq)) {
+						if err = sock.Write(heartbeatCommand{
+							MsgType:   "autopark:heartbeat_app",
+							Timestamp: time.Now().UnixNano() / int64(time.Second),
+						}); err != nil {
+							select {
+							case _, ok := <-pipe:
+								if ok {
+									close(pipe)
+								}
+							default:
+								close(pipe)
+							}
+							return
+						}
+					}
+				}()
 			case "autopark:status":
 				sock.autoparkState = msg["autopark_state"].(string)
-				sock.stateWB.Done()
+				if !sock.autoparkStateInit {
+					sock.autoparkStateWG.Done()
+					sock.autoparkStateInit = true
+				}
+
 			case "homelink:status":
 				sock.homelinkNearby = msg["homelink_nearby"].(bool)
-				sock.stateWB.Done()
+				if !sock.homelinkNearbyInit {
+					sock.homelinkNearbyWG.Done()
+					sock.homelinkNearbyInit = true
+				}
 			}
 			pipe <- msg
 		}
