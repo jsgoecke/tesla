@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -30,23 +29,27 @@ type heartbeatCommand struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
+// WebSocketStateListener receives updates from the websocket.
+type WebSocketStateListener interface {
+	ConnectionUp(bool)
+	AutoparkReady(bool)
+	HomelinkNearby(bool)
+}
+
 // WebSocket encapsulates a controlling websocket to a vehicle.
 type WebSocket struct {
 	Vehicle *Vehicle
 	Output  <-chan map[string]interface{}
 
-	conn *websocket.Conn
-
-	autoparkStateWG    sync.WaitGroup
-	autoparkState      string
-	autoparkStateInit  bool
-	homelinkNearbyWG   sync.WaitGroup
-	homelinkNearby     bool
-	homelinkNearbyInit bool
+	conn     *websocket.Conn
+	listener WebSocketStateListener
 }
 
 // Close closes the underlying connection.
 func (s *WebSocket) Close() error {
+	s.listener.ConnectionUp(false)
+	s.listener.AutoparkReady(false)
+	s.listener.HomelinkNearby(false)
 	return s.conn.Close()
 }
 
@@ -110,20 +113,8 @@ func (s *WebSocket) ActivateHomelink() error {
 	return s.Write(cmd)
 }
 
-// AutoparkState waits for the state to be loaded over the socket, then returns it.
-func (s *WebSocket) AutoparkState() string {
-	s.autoparkStateWG.Wait()
-	return s.autoparkState
-}
-
-// HomelinkNearby wait for the state to be loaded over the socket, then returns it.
-func (s *WebSocket) HomelinkNearby() bool {
-	s.homelinkNearbyWG.Wait()
-	return s.homelinkNearby
-}
-
 // Returns a WebSocket connected to the vehicle.
-func (v *Vehicle) WebSocket() (*WebSocket, error) {
+func (v *Vehicle) WebSocket(listener WebSocketStateListener) (*WebSocket, error) {
 	sockURL := url.URL{Scheme: "wss", Host: WebSocketServer, Path: WebSocketResource + strconv.Itoa(v.VehicleID)}
 
 	data := []byte(v.client.Auth.Email + ":" + v.Tokens[0])
@@ -133,18 +124,17 @@ func (v *Vehicle) WebSocket() (*WebSocket, error) {
 
 	pipe := make(chan map[string]interface{})
 	sock := &WebSocket{
-		Vehicle: v,
-		Output:  (<-chan map[string]interface{})(pipe),
+		Vehicle:  v,
+		Output:   (<-chan map[string]interface{})(pipe),
+		listener: listener,
 	}
-	// autopark state and homelink nearby
-	sock.homelinkNearbyWG.Add(1)
-	sock.autoparkStateWG.Add(1)
 
 	var err error
 	sock.conn, _, err = websocket.DefaultDialer.Dial(sockURL.String(), headers)
 	if err != nil {
 		return nil, err
 	}
+	sock.listener.ConnectionUp(true)
 
 	go func() {
 		for {
@@ -152,6 +142,9 @@ func (v *Vehicle) WebSocket() (*WebSocket, error) {
 			err := sock.conn.ReadJSON(&msg)
 			log.Printf("Tesla: ReadJSON: %+v, %v", msg, err)
 			if err != nil {
+				sock.listener.ConnectionUp(false)
+				sock.listener.AutoparkReady(false)
+				sock.listener.HomelinkNearby(false)
 				close(pipe)
 				return
 			}
@@ -177,18 +170,11 @@ func (v *Vehicle) WebSocket() (*WebSocket, error) {
 					}
 				}()
 			case "autopark:status":
-				sock.autoparkState = msg["autopark_state"].(string)
-				if !sock.autoparkStateInit {
-					sock.autoparkStateWG.Done()
-					sock.autoparkStateInit = true
-				}
+				sock.listener.AutoparkReady(msg["autopark_state"] == "ready")
 
 			case "homelink:status":
-				sock.homelinkNearby = msg["homelink_nearby"].(bool)
-				if !sock.homelinkNearbyInit {
-					sock.homelinkNearbyWG.Done()
-					sock.homelinkNearbyInit = true
-				}
+				sock.listener.HomelinkNearby(msg["homelink_nearby"].(bool))
+
 			}
 			pipe <- msg
 		}
