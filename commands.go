@@ -14,46 +14,6 @@ type CommandResponse struct {
 	} `json:"response"`
 }
 
-// Required elements to POST an Autopark/Summon request
-// for the vehicle
-type AutoParkRequest struct {
-	VehicleID int     `json:"vehicle_id,omitempty"`
-	Lat       float64 `json:"lat"`
-	Lon       float64 `json:"lon"`
-	Action    string  `json:"action,omitempty"`
-}
-
-// Causes the vehicle to abort the Autopark request
-func (v Vehicle) AutoparkAbort() error {
-	return v.autoPark("abort")
-}
-
-// Causes the vehicle to pull forward
-func (v Vehicle) AutoparkForward() error {
-	return v.autoPark("start_forward")
-}
-
-// Causes the vehicle to go in reverse
-func (v Vehicle) AutoparkReverse() error {
-	return v.autoPark("start_reverse")
-}
-
-// Performs the actual auto park/summon request for the vehicle
-func (v Vehicle) autoPark(action string) error {
-	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/autopark_request"
-	driveState, _ := v.DriveState()
-	autoParkRequest := &AutoParkRequest{
-		VehicleID: v.VehicleID,
-		Lat:       driveState.Latitude,
-		Lon:       driveState.Longitude,
-		Action:    action,
-	}
-	body, _ := json.Marshal(autoParkRequest)
-
-	_, err := sendCommand(apiUrl, body)
-	return err
-}
-
 // TBD based on Github issue #7
 // Toggles defrost on and off, locations values are 'front' or 'rear'
 // func (v Vehicle) Defrost(location string, state bool) error {
@@ -68,23 +28,6 @@ func (v Vehicle) autoPark(action string) error {
 // 	_, err := sendCommand(apiUrl, nil)
 // 	return err
 // }
-
-// Opens and closes the configured Homelink garage door of the vehicle
-// keep in mind this is a toggle and the garage door state is unknown
-// a major limitation of Homelink
-func (v Vehicle) TriggerHomelink() error {
-	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/trigger_homelink"
-	driveState, _ := v.DriveState()
-	autoParkRequest := &AutoParkRequest{
-		Lat: driveState.Latitude,
-		Lon: driveState.Longitude,
-	}
-	body, _ := json.Marshal(autoParkRequest)
-
-	_, err := sendCommand(apiUrl, body)
-	return err
-	return nil
-}
 
 // Wakes up the vehicle when it is powered off
 func (v Vehicle) Wakeup() (*Vehicle, error) {
