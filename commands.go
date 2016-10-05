@@ -126,10 +126,15 @@ func (v Vehicle) LockDoors() error {
 // Sets the temprature of the vehicle, where you may set the driver
 // zone and the passenger zone to seperate temperatures
 func (v Vehicle) SetTemperature(driver float64, passenger float64) error {
-	driveTemp := strconv.FormatFloat(driver, 'f', -1, 32)
-	passengerTemp := strconv.FormatFloat(passenger, 'f', -1, 32)
-	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/set_temps?driver_temp=" + driveTemp + "&passenger_temp=" + passengerTemp
-	_, err := ActiveClient.post(apiUrl, nil)
+	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/set_temps"
+	body, err := json.Marshal(map[string]interface{}{
+		"driver_temp":    driver,
+		"passenger_temp": passenger,
+	})
+	if err != nil {
+		return err
+	}
+	_, err = ActiveClient.post(apiUrl, body)
 	return err
 }
 
