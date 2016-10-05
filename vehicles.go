@@ -18,6 +18,8 @@ type Vehicle struct {
 	NotificationsEnabled   bool        `json:"notifications_enabled"`
 	BackseatToken          interface{} `json:"backseat_token"`
 	BackseatTokenUpdatedAt interface{} `json:"backseat_token_updated_at"`
+
+	client *Client
 }
 
 // The response that contains the vehicle details from the Tesla API
@@ -48,6 +50,9 @@ func (c *Client) Vehicles() (Vehicles, error) {
 	err = json.Unmarshal(body, vehiclesResponse)
 	if err != nil {
 		return nil, err
+	}
+	for i := range vehiclesResponse.Response {
+		vehiclesResponse.Response[i].client = c
 	}
 	return vehiclesResponse.Response, nil
 }
