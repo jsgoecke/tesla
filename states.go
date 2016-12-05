@@ -56,10 +56,15 @@ type ClimateState struct {
 	OutsideTemp             float64     `json:"outside_temp"`
 	DriverTempSetting       float64     `json:"driver_temp_setting"`
 	PassengerTempSetting    float64     `json:"passenger_temp_setting"`
+	LeftTempDirection       float64     `json:"left_temp_direction"`
+	RightTempDirection      float64     `json:"right_temp_direction"`
 	IsAutoConditioningOn    bool        `json:"is_auto_conditioning_on"`
-	IsFrontDefrosterOn      bool        `json:"is_front_defroster_on"`
+	IsFrontDefrosterOn      int         `json:"is_front_defroster_on"`
 	IsRearDefrosterOn       bool        `json:"is_rear_defroster_on"`
 	FanStatus               interface{} `json:"fan_status"`
+	IsClimateOn             bool        `json:"is_climate_on"`
+	MinAvailTemp            float64     `json:"min_avail_temp"`
+	MaxAvailTemp            float64     `json:"max_avail_temp"`
 	SeatHeaterLeft          int         `json:"seat_heater_left"`
 	SeatHeaterRight         int         `json:"seat_heater_right"`
 	SeatHeaterRearLeft      int         `json:"seat_heater_rear_left"`
