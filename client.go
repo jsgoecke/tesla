@@ -17,6 +17,7 @@ type Auth struct {
 	Password     string `json:"password"`
 	URL          string
 	StreamingURL string
+	HTTP         *http.Client
 }
 
 // The token and related elements returned after a successful auth
@@ -50,9 +51,13 @@ func NewClient(auth *Auth) (*Client, error) {
 		auth.StreamingURL = StreamingURL
 	}
 
+	hclient := auth.HTTP
+	if hclient == nil {
+		hclient = &http.Client{}
+	}
 	client := &Client{
 		Auth: auth,
-		HTTP: &http.Client{},
+		HTTP: hclient,
 	}
 	token, err := client.authorize(auth)
 	if err != nil {
