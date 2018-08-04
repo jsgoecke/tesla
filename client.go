@@ -41,8 +41,8 @@ var (
 	ActiveClient *Client
 )
 
-// Generates a new client for the Tesla API
-func NewClient(auth *Auth) (*Client, error) {
+// Generates a new client for the Tesla API, using a provided HTTP client
+func NewClientWithHttpClient(auth *Auth, hclient *http.Client) (*Client, error) {
 	if auth.URL == "" {
 		auth.URL = BaseURL
 	}
@@ -52,7 +52,7 @@ func NewClient(auth *Auth) (*Client, error) {
 
 	client := &Client{
 		Auth: auth,
-		HTTP: &http.Client{},
+		HTTP: hclient,
 	}
 	token, err := client.authorize(auth)
 	if err != nil {
@@ -63,10 +63,19 @@ func NewClient(auth *Auth) (*Client, error) {
 	return client, nil
 }
 
+// Generates a new client for the Tesla API
+func NewClient(auth *Auth) (*Client, error) {
+	hclient := &http.Client{}
+	return NewClientWithHttpClient(auth, hclient)
+}
+
 // Authorizes against the Tesla API with the appropriate credentials
 func (c Client) authorize(auth *Auth) (*Token, error) {
 	auth.GrantType = "password"
-	data, _ := json.Marshal(auth)
+	data, err := json.Marshal(auth)
+	if err != nil {
+		return nil, err
+	}
 	body, err := c.post(AuthURL, data)
 	if err != nil {
 		return nil, err
