@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 // Required authorization credentials for the Tesla API
@@ -25,6 +26,7 @@ type Token struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
+	Expires     int64
 }
 
 // Provides the client and associated elements for interacting with the
@@ -63,8 +65,36 @@ func NewClient(auth *Auth) (*Client, error) {
 	return client, nil
 }
 
+// NewClientWithToken Generates a new client for the Tesla API using an existing token
+func NewClientWithToken(auth *Auth, token *Token) (*Client, error) {
+	if auth.URL == "" {
+		auth.URL = BaseURL
+	}
+	if auth.StreamingURL == "" {
+		auth.StreamingURL = StreamingURL
+	}
+
+	client := &Client{
+		Auth:  auth,
+		HTTP:  &http.Client{},
+		Token: token,
+	}
+	if client.TokenExpired() {
+		return nil, errors.New("supplied token is expired")
+	}
+	ActiveClient = client
+	return client, nil
+}
+
+// TokenExpired indicates whether an existing token is within an hour of expiration
+func (c Client) TokenExpired() bool {
+	exp := time.Unix(c.Token.Expires, 0)
+	return time.Until(exp) < time.Duration(1*time.Hour)
+}
+
 // Authorizes against the Tesla API with the appropriate credentials
 func (c Client) authorize(auth *Auth) (*Token, error) {
+	now := time.Now()
 	auth.GrantType = "password"
 	data, _ := json.Marshal(auth)
 	body, err := c.post(AuthURL, data)
@@ -76,6 +106,7 @@ func (c Client) authorize(auth *Auth) (*Token, error) {
 	if err != nil {
 		return nil, err
 	}
+	token.Expires = now.Add(time.Second * time.Duration(token.ExpiresIn)).Unix()
 	return token, nil
 }
 

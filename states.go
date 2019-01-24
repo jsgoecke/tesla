@@ -82,7 +82,7 @@ type DriveState struct {
 	Latitude   float64     `json:"latitude"`
 	Longitude  float64     `json:"longitude"`
 	Heading    int         `json:"heading"`
-	GpsAsOf    int         `json:"gps_as_of"`
+	GpsAsOf    int64       `json:"gps_as_of"`
 }
 
 // Contains the current GUI settings of the vehicle
