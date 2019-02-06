@@ -187,6 +187,7 @@ func TestCommandsSpec(t *testing.T) {
 		So(err, ShouldBeNil)
 		vehicle := vehicles[0]
 		err = vehicle.Start("foo")
+		So(err, ShouldBeNil)
 	})
 
 	Convey("Should move the Pano Roof around", t, func() {

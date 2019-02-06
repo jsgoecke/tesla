@@ -83,7 +83,6 @@ func (v Vehicle) TriggerHomelink() error {
 
 	_, err := sendCommand(apiUrl, body)
 	return err
-	return nil
 }
 
 // Wakes up the vehicle when it is powered off
