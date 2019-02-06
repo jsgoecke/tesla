@@ -3,12 +3,11 @@ package tesla
 import (
 	"bytes"
 	"encoding/json"
+	. "github.com/smartystreets/goconvey/convey"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestClientSpec(t *testing.T) {
@@ -38,6 +37,71 @@ func TestClientSpec(t *testing.T) {
 	Convey("Should login and get an access token", t, func() {
 		So(err, ShouldBeNil)
 		So(client.Token.AccessToken, ShouldEqual, "ghi789")
+	})
+
+	AuthURL = previousAuthURL
+	BaseURL = previousURL
+}
+
+func TestTokenExpiredSpec(t *testing.T) {
+	// Expired token
+	expiredToken := &Token{
+		AccessToken: "foo",
+		TokenType:   "bar",
+		ExpiresIn:   1,
+		Expires:     0,
+	}
+
+	validToken := &Token{
+		AccessToken: "foo",
+		TokenType:   "bar",
+		ExpiresIn:   1,
+		Expires:     9999999999999,
+	}
+
+	client := &Client{
+		Token: expiredToken,
+	}
+
+	Convey("Should have an expired token", t, func() {
+		So(client.TokenExpired(), ShouldBeTrue)
+	})
+
+	client.Token = validToken
+	Convey("Should have a valid token", t, func() {
+		So(client.TokenExpired(), ShouldBeFalse)
+	})
+
+}
+
+func TestClientWithTokenSpec(t *testing.T) {
+	ts := serveHTTP(t)
+	defer ts.Close()
+	previousAuthURL := AuthURL
+	previousURL := BaseURL
+	AuthURL = ts.URL + "/oauth/token"
+	BaseURL = ts.URL + "/api/1"
+
+	auth := &Auth{
+		GrantType:    "password",
+		ClientID:     "abc123",
+		ClientSecret: "def456",
+		Email:        "elon@tesla.com",
+		Password:     "go",
+	}
+
+	validToken := &Token{
+		AccessToken: "foo",
+		TokenType:   "bar",
+		ExpiresIn:   1,
+		Expires:     99999999999,
+	}
+
+	client, err := NewClientWithToken(auth, validToken)
+
+	Convey("Should login with a valid access token", t, func() {
+		So(err, ShouldBeNil)
+		So(client.Token.AccessToken, ShouldEqual, "foo")
 	})
 
 	AuthURL = previousAuthURL
