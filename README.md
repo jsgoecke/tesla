@@ -109,4 +109,4 @@ Right now Tesla appears to have broken the Autopark and Homelink commands of the
 
 ## Copyright & License
 
-Copyright (c) 2016 Jason Goecke. Released under the terms of the MIT license. See LICENSE for details.
+Copyright (c) 2016-Present Jason Goecke. Released under the terms of the MIT license. See LICENSE for details.
