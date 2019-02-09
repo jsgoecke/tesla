@@ -59,7 +59,7 @@ type ClimateState struct {
 	LeftTempDirection       float64     `json:"left_temp_direction"`
 	RightTempDirection      float64     `json:"right_temp_direction"`
 	IsAutoConditioningOn    bool        `json:"is_auto_conditioning_on"`
-	IsFrontDefrosterOn      int         `json:"is_front_defroster_on"`
+	IsFrontDefrosterOn      bool        `json:"is_front_defroster_on"`
 	IsRearDefrosterOn       bool        `json:"is_rear_defroster_on"`
 	FanStatus               interface{} `json:"fan_status"`
 	IsClimateOn             bool        `json:"is_climate_on"`
