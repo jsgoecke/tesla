@@ -149,7 +149,7 @@ type Response struct {
 	Bool bool `json:"response"`
 }
 
-// Returns if the vehicle is mobile enabled for Tesla API control
+// MobileEnabled returns if the vehicle is mobile enabled for Tesla API control
 func (v *Vehicle) MobileEnabled() (bool, error) {
 	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/mobile_enabled")
 	if err != nil {
@@ -163,7 +163,7 @@ func (v *Vehicle) MobileEnabled() (bool, error) {
 	return response.Bool, nil
 }
 
-// Returns the charge state of the vehicle
+// ChargeState returns the charge state of the vehicle
 func (v *Vehicle) ChargeState() (*ChargeState, error) {
 	stateRequest, err := fetchState("/charge_state", v.ID)
 	if err != nil {
@@ -172,7 +172,7 @@ func (v *Vehicle) ChargeState() (*ChargeState, error) {
 	return stateRequest.Response.ChargeState, nil
 }
 
-// Returns the climate state of the vehicle
+// ClimateState returns the climate state of the vehicle
 func (v Vehicle) ClimateState() (*ClimateState, error) {
 	stateRequest, err := fetchState("/climate_state", v.ID)
 	if err != nil {
@@ -189,7 +189,7 @@ func (v Vehicle) DriveState() (*DriveState, error) {
 	return stateRequest.Response.DriveState, nil
 }
 
-// Returns the GUI settings of the vehicle
+// GuiSettings returns the GUI settings of the vehicle
 func (v Vehicle) GuiSettings() (*GuiSettings, error) {
 	stateRequest, err := fetchState("/gui_settings", v.ID)
 	if err != nil {
