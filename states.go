@@ -219,3 +219,18 @@ func fetchState(resource string, id int64) (*StateRequest, error) {
 	}
 	return stateRequest, nil
 }
+
+// Data : Get data of the vehicle (calling this will not permit the car to sleep)
+func (v Vehicle) Data(vid int64) (*StateRequest, error) {
+
+	stateRequest := &StateRequest{}
+	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/data")
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(body, stateRequest)
+	if err != nil {
+		return nil, err
+	}
+	return stateRequest, nil
+}
