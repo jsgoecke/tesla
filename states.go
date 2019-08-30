@@ -224,7 +224,7 @@ func fetchState(resource string, id int64) (*StateRequest, error) {
 func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 
 	stateRequest := &StateRequest{}
-	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/data")
+	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/vehicle_data")
 	if err != nil {
 		return nil, err
 	}
