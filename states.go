@@ -226,7 +226,8 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 
 	log.Println("Retreiving vehicle data : ", BaseURL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/data")
 	stateRequest := &StateRequest{}
-	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/data")
+	
+	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/service_data")
 	if err != nil {
 		return nil, err
 	}
@@ -234,5 +235,41 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// charge_state
+	stateRequestGui, err := fetchState("/charge_state", v.ID)
+	if err != nil {
+		return nil, err
+	}
+	stateRequest.Response.ChargeState = stateRequestGui.Response.ChargeState
+
+	// climate_state
+	stateRequestGui, err := fetchState("/climate_state", v.ID)
+	if err != nil {
+		return nil, err
+	}
+	stateRequest.Response.ClimateState = stateRequestGui.Response.ClimateState
+
+	// drive_state
+	stateRequestGui, err := fetchState("/drive_state", v.ID)
+	if err != nil {
+		return nil, err
+	}
+	stateRequest.Response.DriveState = stateRequestGui.Response.DriveState
+
+	// gui_settings
+	stateRequestGui, err := fetchState("/gui_settings", v.ID)
+	if err != nil {
+		return nil, err
+	}
+	stateRequest.Response.GuiSettings = stateRequestGui.Response.GuiSettings
+
+	// vehicle_state
+	stateRequestGui, err := fetchState("/vehicle_state", v.ID)
+	if err != nil {
+		return nil, err
+	}
+	stateRequest.Response.VehicleState = stateRequestGui.Response.VehicleState
+
 	return stateRequest, nil
 }
