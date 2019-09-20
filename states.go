@@ -237,14 +237,6 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 		return nil, err
 	}*/
 
-	// charge_state
-	stateRequestCharge, err := fetchState("/charge_state", v.ID)
-	if err != nil {
-		log.Println("Error getting charge_state")
-		return nil, err
-	}
-	stateRequest.Response.ChargeState = stateRequestCharge.Response.ChargeState
-
 	// climate_state
 	stateRequestClimate, err := fetchState("/climate_state", v.ID)
 	if err != nil {
@@ -276,6 +268,14 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 		return nil, err
 	}
 	stateRequest.Response.VehicleState = stateRequestVehicle.Response.VehicleState
+
+	// charge_state
+	stateRequestCharge, err := fetchState("/charge_state", v.ID)
+	if err != nil {
+		log.Println("Error getting charge_state")
+		return nil, err
+	}
+	stateRequest.Response.ChargeState = stateRequestCharge.Response.ChargeState
 
 	return stateRequest, nil
 }
