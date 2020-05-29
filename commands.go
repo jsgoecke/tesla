@@ -136,7 +136,7 @@ func (v Vehicle) SetChargeLimit(percent int) error {
 	return err
 }
 
-// Starts the charging of the vehicle after you have inserted the
+// StartCharging starts the charging of the vehicle after you have inserted the
 // charging cable
 func (v Vehicle) StartCharging() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/charge_start"
@@ -189,7 +189,7 @@ func (v Vehicle) SetTemprature(driver float64, passenger float64) error {
 	return err
 }
 
-// Starts the air conditioning in the car
+// StartAirConditioning starts the air conditioning in the car
 func (v Vehicle) StartAirConditioning() error {
 	url := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/auto_conditioning_start"
 	_, err := sendCommand(url, nil)
@@ -212,7 +212,7 @@ func (v Vehicle) MovePanoRoof(state string, percent int) error {
 	return err
 }
 
-// Starts the car by turning it on, requires the password to be sent
+// Start starts the car by turning it on, requires the password to be sent
 // again
 func (v Vehicle) Start(password string) error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/remote_start_drive?password=" + password
