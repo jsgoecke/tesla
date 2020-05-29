@@ -97,6 +97,10 @@ func main() {
 
 * [Commanding a Tesla Model S with the Amazon Echo](https://medium.com/@jsgoecke/commanding-a-tesla-model-s-with-the-amazon-echo-a06f975364b8#.xoctd3yni)
 
+## Pull Requests
+
+I appreciate all the pull requests to date, and have merged them when I can. I would kindly ask going forward if you do send a PR, please ensure it has the corresponding unit test, or unit test change, that passes. I have tried to write tests after the fact, but that is not best practice. Thank you!
+
 ## Credits
 
 Thank you to [Tim Dorr](https://github.com/timdorr) who did the heavy lifting to document the Tesla API and also created the [model-s-api Ruby Gem](https://github.com/timdorr/model-s-api).
