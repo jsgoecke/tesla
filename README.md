@@ -3,7 +3,8 @@
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/jsgoecke/tesla/master/images/gotesla.png">
-  <img src="https://raw.githubusercontent.com/jsgoecke/tesla/master/images/tesla.png">
+  <img src="https://raw.githubusercontent.com/jsgoecke/tesla/master/images/tesla-model-s.png">
+  <img src="https://raw.githubusercontent.com/jsgoecke/tesla/master/images/tesla-model-x.png">
 </p>
 
 This library provides a wrapper around the API to easily query and command the a [Tesla Model S](https://www.teslamotors.com/models) remotely in Go.
