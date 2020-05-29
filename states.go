@@ -3,6 +3,7 @@ package tesla
 import (
 	"encoding/json"
 	"strconv"
+	"log"
 )
 
 // Contains the current charge states that exist within the vehicle
@@ -59,7 +60,7 @@ type ClimateState struct {
 	LeftTempDirection       float64     `json:"left_temp_direction"`
 	RightTempDirection      float64     `json:"right_temp_direction"`
 	IsAutoConditioningOn    bool        `json:"is_auto_conditioning_on"`
-	IsFrontDefrosterOn      int         `json:"is_front_defroster_on"`
+	IsFrontDefrosterOn      bool         `json:"is_front_defroster_on"`
 	IsRearDefrosterOn       bool        `json:"is_rear_defroster_on"`
 	FanStatus               interface{} `json:"fan_status"`
 	IsClimateOn             bool        `json:"is_climate_on"`
@@ -219,5 +220,64 @@ func fetchState(resource string, id int64) (*StateRequest, error) {
 	if err != nil {
 		return nil, err
 	}
+	return stateRequest, nil
+}
+
+// Data : Get data of the vehicle (calling this will not permit the car to sleep)
+func (v Vehicle) Data(vid int64) (*StateRequest, error) {
+
+	log.Println("Retreiving vehicle data") 
+	stateRequest := &StateRequest{}
+
+	/*log.Println(BaseURL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/vehicle_data")
+	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/vehicle_data")
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(body, stateRequest)
+	if err != nil {
+		return nil, err
+	}*/
+
+	// climate_state
+	stateRequestClimate, err := fetchState("/climate_state", v.ID)
+	if err != nil {
+		log.Println("Error getting climate_state")
+		return nil, err
+	}
+	stateRequest.Response.ClimateState = stateRequestClimate.Response.ClimateState
+
+	// drive_state
+	stateRequestGui, err := fetchState("/drive_state", v.ID)
+	if err != nil {
+		log.Println("Error getting drive_state")
+		return nil, err
+	}
+	stateRequest.Response.DriveState = stateRequestGui.Response.DriveState
+
+	// gui_settings
+	stateRequestSettings, err := fetchState("/gui_settings", v.ID)
+	if err != nil {
+		log.Println("Error getting gui_settings")
+		return nil, err
+	}
+	stateRequest.Response.GuiSettings = stateRequestSettings.Response.GuiSettings
+
+	// vehicle_state
+	stateRequestVehicle, err := fetchState("/vehicle_state", v.ID)
+	if err != nil {
+		log.Println("Error getting vehicle_state")
+		return nil, err
+	}
+	stateRequest.Response.VehicleState = stateRequestVehicle.Response.VehicleState
+
+	// charge_state
+	stateRequestCharge, err := fetchState("/charge_state", v.ID)
+	if err != nil {
+		log.Println("Error getting charge_state")
+		return nil, err
+	}
+	stateRequest.Response.ChargeState = stateRequestCharge.Response.ChargeState
+
 	return stateRequest, nil
 }
