@@ -24,7 +24,7 @@ type AutoParkRequest struct {
 }
 
 type SentryData struct {
-	on bool `json:"on"`
+	Mode string `json:"on"`
 }
 
 // Causes the vehicle to abort the Autopark request
@@ -62,7 +62,7 @@ func (v Vehicle) autoPark(action string) error {
 func (v *Vehicle) EnableSentry() error {
 	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/set_sentry_mode"
 	sentryRequest := &SentryData{
-		on: true,
+		Mode: "true",
 	}
 
 	body, _ := json.Marshal(sentryRequest)
@@ -246,6 +246,7 @@ func (v Vehicle) OpenTrunk(trunk string) error {
 
 // Sends a command to the vehicle
 func sendCommand(url string, reqBody []byte) ([]byte, error) {
+
 	body, err := ActiveClient.post(url, reqBody)
 	if err != nil {
 		return nil, err
