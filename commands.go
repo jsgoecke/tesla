@@ -24,7 +24,7 @@ type AutoParkRequest struct {
 }
 
 type SentryData struct {
-	on bool `json:"on,omitempty"`
+	on bool `json:"on"`
 }
 
 // Causes the vehicle to abort the Autopark request
