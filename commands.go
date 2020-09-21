@@ -200,8 +200,9 @@ func (v Vehicle) LockDoors() error {
 func (v Vehicle) SetTemprature(driver float64, passenger float64) error {
 	driveTemp := strconv.FormatFloat(driver, 'f', -1, 32)
 	passengerTemp := strconv.FormatFloat(passenger, 'f', -1, 32)
-	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/set_temps?driver_temp=" + driveTemp + "&passenger_temp=" + passengerTemp
-	_, err := ActiveClient.post(apiUrl, nil)
+	apiUrl := BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/set_temps"
+	theJson := `{"driver_temp": "` + driveTemp + `", "passenger_temp":` + passengerTemp + `}`
+	_, err := ActiveClient.post(apiUrl, []byte(theJson))
 	return err
 }
 
