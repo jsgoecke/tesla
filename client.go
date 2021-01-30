@@ -18,7 +18,7 @@ type Auth struct {
 	Password     string `json:"password"`
 	URL          string
 	StreamingURL string
-	HTTPClient   HTTPDoer
+	HTTPClient   HTTPDoer `json:"-"`
 }
 
 // The token and related elements returned after a successful auth
