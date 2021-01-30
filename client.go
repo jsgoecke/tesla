@@ -18,6 +18,7 @@ type Auth struct {
 	Password     string `json:"password"`
 	URL          string
 	StreamingURL string
+	HTTPClient   HTTPDoer
 }
 
 // The token and related elements returned after a successful auth
@@ -29,12 +30,17 @@ type Token struct {
 	Expires     int64
 }
 
+// HTTPDoer is an http.Client implementation
+type HTTPDoer interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 // Provides the client and associated elements for interacting with the
 // Tesla API
 type Client struct {
 	Auth  *Auth
 	Token *Token
-	HTTP  *http.Client
+	HTTP  HTTPDoer
 }
 
 var (
@@ -51,10 +57,13 @@ func NewClient(auth *Auth) (*Client, error) {
 	if auth.StreamingURL == "" {
 		auth.StreamingURL = StreamingURL
 	}
+	if auth.HTTPClient == nil {
+		auth.HTTPClient = &http.Client{}
+	}
 
 	client := &Client{
 		Auth: auth,
-		HTTP: &http.Client{},
+		HTTP: auth.HTTPClient,
 	}
 	token, err := client.authorize(auth)
 	if err != nil {
