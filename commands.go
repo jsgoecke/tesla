@@ -17,7 +17,7 @@ type CommandResponse struct {
 // Required elements to POST an Autopark/Summon request
 // for the vehicle
 type AutoParkRequest struct {
-	VehicleID int     `json:"vehicle_id,omitempty"`
+	VehicleID int64   `json:"vehicle_id,omitempty"`
 	Lat       float64 `json:"lat"`
 	Lon       float64 `json:"lon"`
 	Action    string  `json:"action,omitempty"`
