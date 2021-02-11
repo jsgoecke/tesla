@@ -33,7 +33,7 @@ type StreamEvent struct {
 
 // Requests a stream from the vehicle and returns a Go channel
 func (v Vehicle) Stream() (chan *StreamEvent, chan error, error) {
-	url := StreamingURL + "/stream/" + strconv.FormatInt(v.VehicleID, 10) + "/?values=" + StreamParams
+	url := StreamingURL + "/stream/" + strconv.FormatUint(v.VehicleID, 10) + "/?values=" + StreamParams
 	req, _ := http.NewRequest("GET", url, nil)
 	req.SetBasicAuth(ActiveClient.Auth.Email, v.Tokens[0])
 	resp, err := ActiveClient.HTTP.Do(req)
