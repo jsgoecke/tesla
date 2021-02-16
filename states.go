@@ -2,8 +2,9 @@ package tesla
 
 import (
 	"encoding/json"
-	"strconv"
 	"log"
+	"strconv"
+	"time"
 )
 
 // Contains the current charge states that exist within the vehicle
@@ -60,7 +61,7 @@ type ClimateState struct {
 	LeftTempDirection       float64     `json:"left_temp_direction"`
 	RightTempDirection      float64     `json:"right_temp_direction"`
 	IsAutoConditioningOn    bool        `json:"is_auto_conditioning_on"`
-	IsFrontDefrosterOn      bool         `json:"is_front_defroster_on"`
+	IsFrontDefrosterOn      bool        `json:"is_front_defroster_on"`
 	IsRearDefrosterOn       bool        `json:"is_rear_defroster_on"`
 	FanStatus               interface{} `json:"fan_status"`
 	IsClimateOn             bool        `json:"is_climate_on"`
@@ -136,6 +137,11 @@ type VehicleState struct {
 	WheelType               string  `json:"wheel_type"`
 }
 
+type ServiceData struct {
+	ServiceETC    time.Time `json:"service_etc"`
+	ServiceStatus string    `json:"service_status"`
+}
+
 // Represents the request to get the states of the vehicle
 type StateRequest struct {
 	Response struct {
@@ -144,6 +150,7 @@ type StateRequest struct {
 		*DriveState
 		*GuiSettings
 		*VehicleState
+		*ServiceData
 	} `json:"response"`
 }
 
@@ -209,6 +216,14 @@ func (v Vehicle) VehicleState() (*VehicleState, error) {
 	return stateRequest.Response.VehicleState, nil
 }
 
+func (v Vehicle) ServiceData() (*ServiceData, error) {
+	stateRequest, err := fetchState("/service_data", v.ID)
+	if err != nil {
+		return nil, err
+	}
+	return stateRequest.Response.ServiceData, nil
+}
+
 // A utility function to fetch the appropriate state of the vehicle
 func fetchState(resource string, id int64) (*StateRequest, error) {
 	stateRequest := &StateRequest{}
@@ -226,7 +241,7 @@ func fetchState(resource string, id int64) (*StateRequest, error) {
 // Data : Get data of the vehicle (calling this will not permit the car to sleep)
 func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 
-	log.Println("Retreiving vehicle data") 
+	log.Println("Retreiving vehicle data")
 	stateRequest := &StateRequest{}
 
 	/*log.Println(BaseURL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/vehicle_data")
