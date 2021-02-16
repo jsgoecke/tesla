@@ -2,6 +2,7 @@ package tesla
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -50,41 +51,58 @@ type ChargeState struct {
 	ManagedChargingActive       bool        `json:"managed_charging_active"`
 	ManagedChargingUserCanceled bool        `json:"managed_charging_user_canceled"`
 	ManagedChargingStartTime    interface{} `json:"managed_charging_start_time"`
+	ChargePortcoldWeatherMode   bool        `json:"charge_port_cold_weather_mode"`
+	ConnChargeCable             string      `json:"conn_charge_cable"`
+	FastChargerBrand            string      `json:"fast_charger_brand"`
+	MinutesToFullCharge         int         `json:"minutes_to_full_charge"`
 }
 
 // Contains the current climate states availale from the vehicle
 type ClimateState struct {
-	InsideTemp              float64     `json:"inside_temp"`
-	OutsideTemp             float64     `json:"outside_temp"`
-	DriverTempSetting       float64     `json:"driver_temp_setting"`
-	PassengerTempSetting    float64     `json:"passenger_temp_setting"`
-	LeftTempDirection       float64     `json:"left_temp_direction"`
-	RightTempDirection      float64     `json:"right_temp_direction"`
-	IsAutoConditioningOn    bool        `json:"is_auto_conditioning_on"`
-	IsFrontDefrosterOn      bool        `json:"is_front_defroster_on"`
-	IsRearDefrosterOn       bool        `json:"is_rear_defroster_on"`
-	FanStatus               interface{} `json:"fan_status"`
-	IsClimateOn             bool        `json:"is_climate_on"`
-	MinAvailTemp            float64     `json:"min_avail_temp"`
-	MaxAvailTemp            float64     `json:"max_avail_temp"`
-	SeatHeaterLeft          int         `json:"seat_heater_left"`
-	SeatHeaterRight         int         `json:"seat_heater_right"`
-	SeatHeaterRearLeft      int         `json:"seat_heater_rear_left"`
-	SeatHeaterRearRight     int         `json:"seat_heater_rear_right"`
-	SeatHeaterRearCenter    int         `json:"seat_heater_rear_center"`
-	SeatHeaterRearRightBack int         `json:"seat_heater_rear_right_back"`
-	SeatHeaterRearLeftBack  int         `json:"seat_heater_rear_left_back"`
-	SmartPreconditioning    bool        `json:"smart_preconditioning"`
+	InsideTemp                 float64     `json:"inside_temp"`
+	OutsideTemp                float64     `json:"outside_temp"`
+	DriverTempSetting          float64     `json:"driver_temp_setting"`
+	PassengerTempSetting       float64     `json:"passenger_temp_setting"`
+	LeftTempDirection          float64     `json:"left_temp_direction"`
+	RightTempDirection         float64     `json:"right_temp_direction"`
+	IsAutoConditioningOn       bool        `json:"is_auto_conditioning_on"`
+	IsFrontDefrosterOn         bool        `json:"is_front_defroster_on"`
+	IsRearDefrosterOn          bool        `json:"is_rear_defroster_on"`
+	FanStatus                  interface{} `json:"fan_status"`
+	IsClimateOn                bool        `json:"is_climate_on"`
+	MinAvailTemp               float64     `json:"min_avail_temp"`
+	MaxAvailTemp               float64     `json:"max_avail_temp"`
+	SeatHeaterLeft             int         `json:"seat_heater_left"`
+	SeatHeaterRight            int         `json:"seat_heater_right"`
+	SeatHeaterRearLeft         int         `json:"seat_heater_rear_left"`
+	SeatHeaterRearRight        int         `json:"seat_heater_rear_right"`
+	SeatHeaterRearCenter       int         `json:"seat_heater_rear_center"`
+	SeatHeaterRearRightBack    int         `json:"seat_heater_rear_right_back"`
+	SeatHeaterRearLeftBack     int         `json:"seat_heater_rear_left_back"`
+	SmartPreconditioning       bool        `json:"smart_preconditioning"`
+	BatteryHeater              bool        `json:"battery_heater"`
+	BatteryHeaterNoPower       interface{} `json:"battery_heater_no_power"`
+	ClimateKeeperMode          string      `json:"climate_keeper_mode"`
+	DefrostMode                int         `json:"defrost_mode"`
+	IsPreconditioning          bool        `json:"is_preconditioning"`
+	RemoteHeaterControlEnabled bool        `json:"remote_heater_control_enabled"`
+	SideMirrorHeaters          bool        `json:"side_mirror_heaters"`
+	WiperBladeHeater           bool        `json:"wiper_blade_heater"`
 }
 
 // Contains the current drive state of the vehicle
 type DriveState struct {
-	ShiftState interface{} `json:"shift_state"`
-	Speed      float64     `json:"speed"`
-	Latitude   float64     `json:"latitude"`
-	Longitude  float64     `json:"longitude"`
-	Heading    int         `json:"heading"`
-	GpsAsOf    int64       `json:"gps_as_of"`
+	ShiftState              interface{} `json:"shift_state"`
+	Speed                   float64     `json:"speed"`
+	Latitude                float64     `json:"latitude"`
+	Longitude               float64     `json:"longitude"`
+	Heading                 int         `json:"heading"`
+	GpsAsOf                 int64       `json:"gps_as_of"`
+	NativeLatitude          float64     `json:"native_latitude"`
+	NativeLocationSupported int         `json:"native_location_supported"`
+	NativeLongitude         float64     `json:"native_longitude"`
+	NativeType              string      `json:"native_type"`
+	Power                   int         `json:"power"`
 }
 
 // Contains the current GUI settings of the vehicle
@@ -94,6 +112,7 @@ type GuiSettings struct {
 	GuiChargeRateUnits  string `json:"gui_charge_rate_units"`
 	Gui24HourTime       bool   `json:"gui_24_hour_time"`
 	GuiRangeDisplay     string `json:"gui_range_display"`
+	ShowRangeUnits      bool   `json:"show_range_units"`
 }
 
 // Contains the current state of the vehicle
@@ -135,6 +154,30 @@ type VehicleState struct {
 	ValetMode               bool    `json:"valet_mode"`
 	VehicleName             string  `json:"vehicle_name"`
 	WheelType               string  `json:"wheel_type"`
+	FdWindow                int     `json:"fd_window"`
+	FpWindow                int     `json:"fp_window"`
+	RdWindow                int     `json:"rd_window"`
+	RpWindow                int     `json:"rp_window"`
+	IsUserPresent           bool    `json:"is_user_present"`
+	RemoteStartEnabled      bool    `json:"remote_start_enabled"`
+	ValetPinNeeded          bool    `json:"valet_pin_needed"`
+	MediaState              struct {
+		RemoteControlEnabled bool `json:"remote_control_enabled"`
+	} `json:"media_state"`
+	SoftwareUpdate struct {
+		DownloadPerc        int    `json:"download_perc"`
+		ExpectedDurationSec int    `json:"expected_duration_sec"`
+		InstallPerc         int    `json:"install_perc"`
+		Status              string `json:"status"`
+		Version             string `json:"version"`
+	} `json:"software_update" `
+	SpeedLimitMode struct {
+		Active          bool    `json:"active"`
+		CurrentLimitMph float64 `json:"current_limit_mph"`
+		MaxLimitMph     int     `json:"max_limit_mph"`
+		MinLimitMph     int     `json:"min_limit_mph"`
+		PinCodeSet      bool    `json:"pin_code_set"`
+	} `json:"speed_limit_mode"`
 }
 
 type ServiceData struct {
@@ -145,6 +188,7 @@ type ServiceData struct {
 // Represents the request to get the states of the vehicle
 type StateRequest struct {
 	Response struct {
+		Timestamp int64 `json:"timestamp"`
 		*ChargeState
 		*ClimateState
 		*DriveState
@@ -152,6 +196,8 @@ type StateRequest struct {
 		*VehicleState
 		*ServiceData
 	} `json:"response"`
+	Error            string `json:"error"`
+	ErrorDescription string `json:"error_description"`
 }
 
 // The response when a state is requested
@@ -224,6 +270,17 @@ func (v Vehicle) ServiceData() (*ServiceData, error) {
 	return stateRequest.Response.ServiceData, nil
 }
 
+func stateError(sr *StateRequest) error {
+	if sr.Error == "" {
+		return nil
+	}
+
+	if sr.ErrorDescription != "" {
+		return fmt.Errorf("%s: %s", sr.Error, sr.ErrorDescription)
+	}
+	return fmt.Errorf("%s", sr.Error)
+}
+
 // A utility function to fetch the appropriate state of the vehicle
 func fetchState(resource string, id int64) (*StateRequest, error) {
 	stateRequest := &StateRequest{}
@@ -233,6 +290,9 @@ func fetchState(resource string, id int64) (*StateRequest, error) {
 	}
 	err = json.Unmarshal(body, stateRequest)
 	if err != nil {
+		return nil, err
+	}
+	if err := stateError(stateRequest); err != nil {
 		return nil, err
 	}
 	return stateRequest, nil

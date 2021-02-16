@@ -15,6 +15,7 @@ var (
 	GuiSettingsJSON  = `{"response":{"gui_distance_units":"mi/hr","gui_temperature_units":"F","gui_charge_rate_units":"mi/hr","gui_24_hour_time":true,"gui_range_display":"Rated"}}`
 	VehicleStateJSON = `{"response":{"api_version":3,"calendar_supported":true,"car_type":"s","car_version":"2.9.12","center_display_state":0,"dark_rims":false,"df":0,"dr":0,"exterior_color":"Black","ft":0,"has_spoiler":true,"locked":true,"notifications_supported":true,"odometer":3738.84633,"parsed_calendar_supported":true,"perf_config":"P2","pf":0,"pr":0,"rear_seat_heaters":1,"remote_start":false,"remote_start_supported":true,"rhd":false,"roof_color":"None","rt":0,"seat_type":1,"sun_roof_installed":2,"sun_roof_percent_open":0,"sun_roof_state":"unknown","third_row_seats":"None","valet_mode":false,"vehicle_name":"Macak","wheel_type":"Super21Gray"}}`
 	ServiceDataJSON  = `{"response":{"service_etc": "2019-08-15T14:15:00+02:00", "service_status": "in_service"}}`
+	ErrorJSON        = `{"response":nil,"error":"error message"}`
 )
 
 func TestStatesSpec(t *testing.T) {
@@ -90,7 +91,7 @@ func TestStatesSpec(t *testing.T) {
 		So(status.Rt, ShouldEqual, 0)
 	})
 
-	Convey("Should get serviec data", t, func() {
+	Convey("Should get service data", t, func() {
 		vehicles, err := client.Vehicles()
 		vehicle := vehicles[0]
 		status, err := vehicle.ServiceData()
@@ -101,6 +102,18 @@ func TestStatesSpec(t *testing.T) {
 			t.Fatal(err)
 		}
 		So(status.ServiceETC, ShouldEqual, wantTime)
+	})
+
+	Convey("Should get error", t, func() {
+		vehicles, err := client.Vehicles()
+		vehicle := vehicles[0]
+		orig := VehicleStateJSON
+		defer func() {
+			VehicleStateJSON = orig
+		}()
+		VehicleStateJSON = ErrorJSON
+		_, err = vehicle.VehicleState()
+		So(err, ShouldNotBeNil)
 	})
 
 	AuthURL = previousAuthURL
