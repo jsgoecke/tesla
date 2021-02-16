@@ -1,6 +1,9 @@
 package tesla
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 // Represents the vehicle as returned from the Tesla API
 type Vehicle struct {
@@ -26,31 +29,31 @@ type Vehicle struct {
 }
 
 type VehicleConfig struct {
-	CanAcceptNavigationRequests bool   `json:"can_accept_navigation_requests"`
-	CanActuateTrunks            bool   `json:"can_actuate_trunks"`
-	CarSpecialType              string `json:"car_special_type"`
-	CarType                     string `json:"car_type"`
-	ChargePortType              string `json:"charge_port_type"`
-	DefaultChargeToMax          bool   `json:"default_charge_to_max"`
-	EceRestrictions             bool   `json:"ece_restrictions"`
-	EUVehicle                   bool   `json:"eu_vehicle"`
-	ExteriorColor               string `json:"exterior_color"`
-	HasAirSuspension            bool   `json:"has_air_suspension"`
-	HasLudicrousMode            bool   `json:"has_ludicrous_mode"`
-	MotorizedChargePort         bool   `json:"motorized_charge_port"`
-	Plg                         bool   `json:"plg"`
-	RearSeatHeaters             int    `json:"rear_seat_heaters"`
-	RearSeatType                int    `json:"rear_seat_type"`
-	Rhd                         bool   `json:"rhd"`
-	RoofColor                   string `json:"roof_color"`
-	SeatType                    int    `json:"seat_type"`
-	SpoilerType                 string `json:"spoiler_type"`
-	SunRoofInstalled            int    `json:"sun_roof_installed"`
-	ThirdRowSeats               string `json:"third_row_seats"`
-	Timestamp                   int    `json:"timestamp"`
-	TrimBadging                 string `json:"trim_badging"`
-	UseRangeBadging             bool   `json:"use_range_badging"`
-	WheelType                   string `json:"wheel_type"`
+	CanAcceptNavigationRequests bool      `json:"can_accept_navigation_requests"`
+	CanActuateTrunks            bool      `json:"can_actuate_trunks"`
+	CarSpecialType              string    `json:"car_special_type"`
+	CarType                     string    `json:"car_type"`
+	ChargePortType              string    `json:"charge_port_type"`
+	DefaultChargeToMax          bool      `json:"default_charge_to_max"`
+	EceRestrictions             bool      `json:"ece_restrictions"`
+	EUVehicle                   bool      `json:"eu_vehicle"`
+	ExteriorColor               string    `json:"exterior_color"`
+	HasAirSuspension            bool      `json:"has_air_suspension"`
+	HasLudicrousMode            bool      `json:"has_ludicrous_mode"`
+	MotorizedChargePort         bool      `json:"motorized_charge_port"`
+	Plg                         bool      `json:"plg"`
+	RearSeatHeaters             int       `json:"rear_seat_heaters"`
+	RearSeatType                int       `json:"rear_seat_type"`
+	Rhd                         bool      `json:"rhd"`
+	RoofColor                   string    `json:"roof_color"`
+	SeatType                    int       `json:"seat_type"`
+	SpoilerType                 string    `json:"spoiler_type"`
+	SunRoofInstalled            int       `json:"sun_roof_installed"`
+	ThirdRowSeats               string    `json:"third_row_seats"`
+	Timestamp                   time.Time `json:"timestamp"`
+	TrimBadging                 string    `json:"trim_badging"`
+	UseRangeBadging             bool      `json:"use_range_badging"`
+	WheelType                   string    `json:"wheel_type"`
 }
 
 // The response that contains the vehicle details from the Tesla API

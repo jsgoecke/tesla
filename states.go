@@ -188,7 +188,7 @@ type ServiceData struct {
 // Represents the request to get the states of the vehicle
 type StateRequest struct {
 	Response struct {
-		Timestamp int64 `json:"timestamp"`
+		Timestamp time.Time `json:"timestamp"`
 		*ChargeState
 		*ClimateState
 		*DriveState
