@@ -62,20 +62,14 @@ type VehicleResponse struct {
 	Count    int      `json:"count"`
 }
 
-// Represents the vehicles from an account, as you could have more than
-// one Tesla associated to your account
-type Vehicles []struct {
-	*Vehicle
-}
-
 // The response that contains the vehicles details from the Tesla API
 type VehiclesResponse struct {
-	Response Vehicles `json:"response"`
-	Count    int      `json:"count"`
+	Response []*Vehicle `json:"response"`
+	Count    int        `json:"count"`
 }
 
 // Fetches the vehicles associated to a Tesla account via the API
-func (c *Client) Vehicles() (Vehicles, error) {
+func (c *Client) Vehicles() ([]*Vehicle, error) {
 	vehiclesResponse := &VehiclesResponse{}
 	body, err := c.get(BaseURL + "/vehicles")
 	if err != nil {
