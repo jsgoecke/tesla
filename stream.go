@@ -71,7 +71,7 @@ func readStream(resp *http.Response, eventChan chan *StreamEvent, errChan chan e
 func parseStreamEvent(event string) (*StreamEvent, error) {
 	data := strings.Split(event, ",")
 	if len(data) != 13 {
-		return nil, errors.New("Bad message from Tesla API stream")
+		return nil, errors.New("bad message from Tesla API stream")
 	}
 
 	streamEvent := &StreamEvent{}

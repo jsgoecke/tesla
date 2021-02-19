@@ -258,7 +258,7 @@ func sendCommand(url string, reqBody []byte) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		if response.Response.Result != true && response.Response.Reason != "" {
+		if !response.Response.Result && response.Response.Reason != "" {
 			return nil, errors.New(response.Response.Reason)
 		}
 	}

@@ -36,7 +36,7 @@ func TestStatesSpec(t *testing.T) {
 	client, _ := NewClient(auth)
 
 	Convey("Should get mobile enabled status", t, func() {
-		vehicles, err := client.Vehicles()
+		vehicles, _ := client.Vehicles()
 		vehicle := vehicles[0]
 		status, err := vehicle.MobileEnabled()
 		So(err, ShouldBeNil)
@@ -44,7 +44,7 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get charge state", t, func() {
-		vehicles, err := client.Vehicles()
+		vehicles, _ := client.Vehicles()
 		vehicle := vehicles[0]
 		status, err := vehicle.ChargeState()
 		So(err, ShouldBeNil)
@@ -54,7 +54,7 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get climate state", t, func() {
-		vehicles, err := client.Vehicles()
+		vehicles, _ := client.Vehicles()
 		vehicle := vehicles[0]
 		status, err := vehicle.ClimateState()
 		So(err, ShouldBeNil)
@@ -64,7 +64,7 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get drive state", t, func() {
-		vehicles, err := client.Vehicles()
+		vehicles, _ := client.Vehicles()
 		vehicle := vehicles[0]
 		status, err := vehicle.DriveState()
 		So(err, ShouldBeNil)
@@ -73,7 +73,7 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get GUI settings", t, func() {
-		vehicles, err := client.Vehicles()
+		vehicles, _ := client.Vehicles()
 		vehicle := vehicles[0]
 		status, err := vehicle.GuiSettings()
 		So(err, ShouldBeNil)
@@ -82,7 +82,7 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get Vehicle state", t, func() {
-		vehicles, err := client.Vehicles()
+		vehicles, _ := client.Vehicles()
 		vehicle := vehicles[0]
 		status, err := vehicle.VehicleState()
 		So(err, ShouldBeNil)
@@ -92,7 +92,7 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get service data", t, func() {
-		vehicles, err := client.Vehicles()
+		vehicles, _ := client.Vehicles()
 		vehicle := vehicles[0]
 		status, err := vehicle.ServiceData()
 		So(err, ShouldBeNil)
@@ -105,14 +105,14 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get error", t, func() {
-		vehicles, err := client.Vehicles()
+		vehicles, _ := client.Vehicles()
 		vehicle := vehicles[0]
 		orig := VehicleStateJSON
 		defer func() {
 			VehicleStateJSON = orig
 		}()
 		VehicleStateJSON = ErrorJSON
-		_, err = vehicle.VehicleState()
+		_, err := vehicle.VehicleState()
 		So(err, ShouldNotBeNil)
 	})
 

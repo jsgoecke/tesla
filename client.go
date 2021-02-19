@@ -110,13 +110,6 @@ func (c Client) authorize(auth *Auth) (*Token, error) {
 	return token, nil
 }
 
-// // Calls an HTTP DELETE
-func (c Client) delete(url string) error {
-	req, _ := http.NewRequest("DELETE", url, nil)
-	_, err := c.processRequest(req)
-	return err
-}
-
 // Calls an HTTP GET
 func (c Client) get(url string) ([]byte, error) {
 	req, _ := http.NewRequest("GET", url, nil)
@@ -126,12 +119,6 @@ func (c Client) get(url string) ([]byte, error) {
 // Calls an HTTP POST with a JSON body
 func (c Client) post(url string, body []byte) ([]byte, error) {
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
-	return c.processRequest(req)
-}
-
-// Calls an HTTP PUT
-func (c Client) put(resource string, body []byte) ([]byte, error) {
-	req, _ := http.NewRequest("PUT", BaseURL+resource, bytes.NewBuffer(body))
 	return c.processRequest(req)
 }
 
