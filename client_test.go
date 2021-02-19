@@ -3,11 +3,12 @@ package tesla
 import (
 	"bytes"
 	"encoding/json"
-	. "github.com/smartystreets/goconvey/convey"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestClientSpec(t *testing.T) {
