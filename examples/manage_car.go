@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jsgoecke/tesla"
+	"github.com/bogosj/tesla"
 )
 
 func main() {
