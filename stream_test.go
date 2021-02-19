@@ -46,7 +46,7 @@ func TestStreamSpec(t *testing.T) {
 			case event := <-eventChan:
 				So(event, ShouldBeNil)
 			case err = <-errChan:
-				So(err.Error(), ShouldEqual, "Bad message from Tesla API stream")
+				So(err.Error(), ShouldEqual, "bad message from Tesla API stream")
 			}
 			select {
 			case event := <-eventChan:
