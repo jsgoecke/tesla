@@ -212,8 +212,7 @@ func (v *Vehicle) MobileEnabled() (bool, error) {
 		return false, err
 	}
 	response := &MobileEnabledResponse{}
-	err = json.Unmarshal(body, response)
-	if err != nil {
+	if err := json.Unmarshal(body, response); err != nil {
 		return false, err
 	}
 	return response.Bool, nil
@@ -288,8 +287,7 @@ func fetchState(resource string, id int64) (*StateRequest, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(body, stateRequest)
-	if err != nil {
+	if err := json.Unmarshal(body, stateRequest); err != nil {
 		return nil, err
 	}
 	if err := stateError(stateRequest); err != nil {
@@ -308,8 +306,7 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(body, stateRequest)
-	if err != nil {
+	if err := json.Unmarshal(body, stateRequest); err != nil {
 		return nil, err
 	}*/
 

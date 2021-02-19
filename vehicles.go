@@ -75,8 +75,7 @@ func (c *Client) Vehicles() ([]*Vehicle, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(body, vehiclesResponse)
-	if err != nil {
+	if err := json.Unmarshal(body, vehiclesResponse); err != nil {
 		return nil, err
 	}
 	return vehiclesResponse.Response, nil

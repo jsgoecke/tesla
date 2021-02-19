@@ -102,8 +102,7 @@ func (c Client) authorize(auth *Auth) (*Token, error) {
 		return nil, err
 	}
 	token := &Token{}
-	err = json.Unmarshal(body, token)
-	if err != nil {
+	if err := json.Unmarshal(body, token); err != nil {
 		return nil, err
 	}
 	token.Expires = now.Add(time.Second * time.Duration(token.ExpiresIn)).Unix()

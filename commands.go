@@ -109,8 +109,7 @@ func (v Vehicle) Wakeup() (*Vehicle, error) {
 		return nil, err
 	}
 	vehicleResponse := &VehicleResponse{}
-	err = json.Unmarshal(body, vehicleResponse)
-	if err != nil {
+	if err := json.Unmarshal(body, vehicleResponse); err != nil {
 		return nil, err
 	}
 	return vehicleResponse.Response, nil
@@ -254,8 +253,7 @@ func sendCommand(url string, reqBody []byte) ([]byte, error) {
 	}
 	if len(body) > 0 {
 		response := &CommandResponse{}
-		err = json.Unmarshal(body, response)
-		if err != nil {
+		if err := json.Unmarshal(body, response); err != nil {
 			return nil, err
 		}
 		if !response.Response.Result && response.Response.Reason != "" {

@@ -72,7 +72,6 @@ func TestTokenExpiredSpec(t *testing.T) {
 	Convey("Should have a valid token", t, func() {
 		So(client.TokenExpired(), ShouldBeFalse)
 	})
-
 }
 
 func TestClientWithTokenSpec(t *testing.T) {
@@ -236,7 +235,6 @@ func serveHTTP(t *testing.T) *httptest.Server {
 					passed = true
 				}
 				So(passed, ShouldBeTrue)
-
 			})
 		}
 	}))
