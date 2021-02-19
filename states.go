@@ -201,7 +201,7 @@ type StateRequest struct {
 }
 
 // The response when a state is requested
-type Response struct {
+type MobileEnabledResponse struct {
 	Bool bool `json:"response"`
 }
 
@@ -211,7 +211,7 @@ func (v *Vehicle) MobileEnabled() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	response := &Response{}
+	response := &MobileEnabledResponse{}
 	err = json.Unmarshal(body, response)
 	if err != nil {
 		return false, err
@@ -300,7 +300,6 @@ func fetchState(resource string, id int64) (*StateRequest, error) {
 
 // Data : Get data of the vehicle (calling this will not permit the car to sleep)
 func (v Vehicle) Data(vid int64) (*StateRequest, error) {
-
 	log.Println("Retreiving vehicle data")
 	stateRequest := &StateRequest{}
 
