@@ -131,6 +131,10 @@ func serveHTTP(t *testing.T) *httptest.Server {
 			checkHeaders(t, req)
 			w.WriteHeader(200)
 			w.Write([]byte(VehiclesJSON))
+		case "/api/1/vehicles/1234":
+			checkHeaders(t, req)
+			w.WriteHeader(200)
+			w.Write([]byte(VehicleJSON))
 		case "/api/1/vehicles/1234/mobile_enabled":
 			checkHeaders(t, req)
 			w.WriteHeader(200)

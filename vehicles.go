@@ -2,6 +2,7 @@ package tesla
 
 import (
 	"encoding/json"
+	"strconv"
 	"time"
 )
 
@@ -79,4 +80,17 @@ func (c *Client) Vehicles() ([]*Vehicle, error) {
 		return nil, err
 	}
 	return vehiclesResponse.Response, nil
+}
+
+// Fetches the vehicle by ID associated to a Tesla account via the API
+func (c *Client) Vehicle(vehicleId int64) (*Vehicle, error) {
+	resp := &VehicleResponse{}
+	body, err := c.get(BaseURL + "/vehicles/" + strconv.FormatInt(vehicleId, 10))
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(body, resp); err != nil {
+		return nil, err
+	}
+	return resp.Response, nil
 }
