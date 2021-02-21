@@ -246,7 +246,6 @@ func (v Vehicle) OpenTrunk(trunk string) error {
 
 // Sends a command to the vehicle
 func sendCommand(url string, reqBody []byte) ([]byte, error) {
-
 	body, err := ActiveClient.post(url, reqBody)
 	if err != nil {
 		return nil, err
