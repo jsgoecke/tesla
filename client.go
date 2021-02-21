@@ -16,8 +16,6 @@ type Auth struct {
 	ClientSecret string `json:"client_secret"`
 	Email        string `json:"email"`
 	Password     string `json:"password"`
-	URL          string
-	StreamingURL string
 }
 
 // The token and related elements returned after a successful auth
@@ -32,9 +30,11 @@ type Token struct {
 // Provides the client and associated elements for interacting with the
 // Tesla API
 type Client struct {
-	Auth  *Auth
-	Token *Token
-	HTTP  *http.Client
+	Auth         *Auth
+	Token        *Token
+	HTTP         *http.Client
+	URL          string
+	StreamingURL string
 }
 
 var (
@@ -45,16 +45,11 @@ var (
 
 // Generates a new client for the Tesla API
 func NewClient(auth *Auth) (*Client, error) {
-	if auth.URL == "" {
-		auth.URL = BaseURL
-	}
-	if auth.StreamingURL == "" {
-		auth.StreamingURL = StreamingURL
-	}
-
 	client := &Client{
-		Auth: auth,
-		HTTP: &http.Client{},
+		Auth:         auth,
+		HTTP:         &http.Client{},
+		URL:          BaseURL,
+		StreamingURL: StreamingURL,
 	}
 	token, err := client.authorize(auth)
 	if err != nil {
@@ -67,17 +62,12 @@ func NewClient(auth *Auth) (*Client, error) {
 
 // NewClientWithToken Generates a new client for the Tesla API using an existing token
 func NewClientWithToken(auth *Auth, token *Token) (*Client, error) {
-	if auth.URL == "" {
-		auth.URL = BaseURL
-	}
-	if auth.StreamingURL == "" {
-		auth.StreamingURL = StreamingURL
-	}
-
 	client := &Client{
-		Auth:  auth,
-		HTTP:  &http.Client{},
-		Token: token,
+		Auth:         auth,
+		HTTP:         &http.Client{},
+		Token:        token,
+		URL:          BaseURL,
+		StreamingURL: StreamingURL,
 	}
 	if client.TokenExpired() {
 		return nil, errors.New("supplied token is expired")

@@ -122,8 +122,6 @@ func serveHTTP(t *testing.T) *httptest.Server {
 				So(auth.ClientSecret, ShouldEqual, "def456")
 				So(auth.Email, ShouldEqual, "elon@tesla.com")
 				So(auth.Password, ShouldEqual, "go")
-				So(auth.URL, ShouldEqual, BaseURL)
-				So(auth.StreamingURL, ShouldEqual, StreamingURL)
 			})
 			w.WriteHeader(200)
 			w.Write([]byte("{\"access_token\": \"ghi789\"}"))
