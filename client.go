@@ -33,14 +33,13 @@ type Client struct {
 	Auth         *Auth
 	Token        *Token
 	HTTP         *http.Client
-	URL          string
+	BaseURL      string
 	StreamingURL string
 }
 
 var (
-	AuthURL      = "https://owner-api.teslamotors.com/oauth/token"
-	BaseURL      = "https://owner-api.teslamotors.com/api/1"
-	ActiveClient *Client
+	AuthURL = "https://owner-api.teslamotors.com/oauth/token"
+	BaseURL = "https://owner-api.teslamotors.com/api/1"
 )
 
 // Generates a new client for the Tesla API
@@ -48,7 +47,7 @@ func NewClient(auth *Auth) (*Client, error) {
 	client := &Client{
 		Auth:         auth,
 		HTTP:         &http.Client{},
-		URL:          BaseURL,
+		BaseURL:      BaseURL,
 		StreamingURL: StreamingURL,
 	}
 	token, err := client.authorize(auth)
@@ -56,7 +55,6 @@ func NewClient(auth *Auth) (*Client, error) {
 		return nil, err
 	}
 	client.Token = token
-	ActiveClient = client
 	return client, nil
 }
 
@@ -66,13 +64,12 @@ func NewClientWithToken(auth *Auth, token *Token) (*Client, error) {
 		Auth:         auth,
 		HTTP:         &http.Client{},
 		Token:        token,
-		URL:          BaseURL,
+		BaseURL:      BaseURL,
 		StreamingURL: StreamingURL,
 	}
 	if client.TokenExpired() {
 		return nil, errors.New("supplied token is expired")
 	}
-	ActiveClient = client
 	return client, nil
 }
 

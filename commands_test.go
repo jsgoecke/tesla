@@ -17,9 +17,7 @@ func TestCommandsSpec(t *testing.T) {
 	ts := serveHTTP(t)
 	defer ts.Close()
 	previousAuthURL := AuthURL
-	previousURL := BaseURL
 	AuthURL = ts.URL + "/oauth/token"
-	BaseURL = ts.URL + "/api/1"
 
 	auth := &Auth{
 		GrantType:    "password",
@@ -29,6 +27,7 @@ func TestCommandsSpec(t *testing.T) {
 		Password:     "go",
 	}
 	client, _ := NewClient(auth)
+	client.BaseURL = ts.URL + "/api/1"
 
 	Convey("Should auto park abort Autopark", t, func() {
 		vehicles, err := client.Vehicles()
@@ -221,5 +220,4 @@ func TestCommandsSpec(t *testing.T) {
 	})
 
 	AuthURL = previousAuthURL
-	BaseURL = previousURL
 }

@@ -15,9 +15,7 @@ func TestClientSpec(t *testing.T) {
 	ts := serveHTTP(t)
 	defer ts.Close()
 	previousAuthURL := AuthURL
-	previousURL := BaseURL
 	AuthURL = ts.URL + "/oauth/token"
-	BaseURL = ts.URL + "/api/1"
 
 	auth := &Auth{
 		GrantType:    "password",
@@ -27,6 +25,7 @@ func TestClientSpec(t *testing.T) {
 		Password:     "go",
 	}
 	client, err := NewClient(auth)
+	client.BaseURL = ts.URL + "/api/1"
 
 	Convey("Should set the HTTP headers", t, func() {
 		req, _ := http.NewRequest("GET", "http://foo.com", nil)
@@ -41,7 +40,6 @@ func TestClientSpec(t *testing.T) {
 	})
 
 	AuthURL = previousAuthURL
-	BaseURL = previousURL
 }
 
 func TestTokenExpiredSpec(t *testing.T) {
@@ -78,9 +76,7 @@ func TestClientWithTokenSpec(t *testing.T) {
 	ts := serveHTTP(t)
 	defer ts.Close()
 	previousAuthURL := AuthURL
-	previousURL := BaseURL
 	AuthURL = ts.URL + "/oauth/token"
-	BaseURL = ts.URL + "/api/1"
 
 	auth := &Auth{
 		GrantType:    "password",
@@ -98,6 +94,7 @@ func TestClientWithTokenSpec(t *testing.T) {
 	}
 
 	client, err := NewClientWithToken(auth, validToken)
+	client.BaseURL = ts.URL + "/api/1"
 
 	Convey("Should login with a valid access token", t, func() {
 		So(err, ShouldBeNil)
@@ -105,7 +102,6 @@ func TestClientWithTokenSpec(t *testing.T) {
 	})
 
 	AuthURL = previousAuthURL
-	BaseURL = previousURL
 }
 
 func serveHTTP(t *testing.T) *httptest.Server {

@@ -26,6 +26,8 @@ type Vehicle struct {
 	APIVersion             int            `json:"api_version"`
 	CommandSigning         string         `json:"command_signing"`
 	VehicleConfig          *VehicleConfig `json:"vehicle_config"`
+
+	c *Client
 }
 
 type VehicleConfig struct {
@@ -71,12 +73,15 @@ type VehiclesResponse struct {
 // Fetches the vehicles associated to a Tesla account via the API
 func (c *Client) Vehicles() ([]*Vehicle, error) {
 	vehiclesResponse := &VehiclesResponse{}
-	body, err := c.get(BaseURL + "/vehicles")
+	body, err := c.get(c.BaseURL + "/vehicles")
 	if err != nil {
 		return nil, err
 	}
 	if err := json.Unmarshal(body, vehiclesResponse); err != nil {
 		return nil, err
+	}
+	for _, v := range vehiclesResponse.Response {
+		v.c = c
 	}
 	return vehiclesResponse.Response, nil
 }
