@@ -1,7 +1,6 @@
 package tesla
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -207,15 +206,11 @@ type MobileEnabledResponse struct {
 
 // MobileEnabled returns if the vehicle is mobile enabled for Tesla API control
 func (v *Vehicle) MobileEnabled() (bool, error) {
-	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/mobile_enabled")
-	if err != nil {
+	r := &MobileEnabledResponse{}
+	if err := ActiveClient.getJSON(BaseURL+"/vehicles/"+strconv.FormatInt(v.ID, 10)+"/mobile_enabled", r); err != nil {
 		return false, err
 	}
-	response := &MobileEnabledResponse{}
-	if err := json.Unmarshal(body, response); err != nil {
-		return false, err
-	}
-	return response.Bool, nil
+	return r.Bool, nil
 }
 
 // ChargeState returns the charge state of the vehicle
@@ -283,11 +278,7 @@ func stateError(sr *StateRequest) error {
 // A utility function to fetch the appropriate state of the vehicle
 func fetchState(resource string, id int64) (*StateRequest, error) {
 	stateRequest := &StateRequest{}
-	body, err := ActiveClient.get(BaseURL + "/vehicles/" + strconv.FormatInt(id, 10) + "/data_request" + resource)
-	if err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(body, stateRequest); err != nil {
+	if err := ActiveClient.getJSON(BaseURL+"/vehicles/"+strconv.FormatInt(id, 10)+"/data_request"+resource, stateRequest); err != nil {
 		return nil, err
 	}
 	if err := stateError(stateRequest); err != nil {
