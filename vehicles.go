@@ -26,6 +26,8 @@ type Vehicle struct {
 	APIVersion             int            `json:"api_version"`
 	CommandSigning         string         `json:"command_signing"`
 	VehicleConfig          *VehicleConfig `json:"vehicle_config"`
+
+	c *Client
 }
 
 type VehicleConfig struct {
@@ -71,8 +73,11 @@ type VehiclesResponse struct {
 // Fetches the vehicles associated to a Tesla account via the API
 func (c *Client) Vehicles() ([]*Vehicle, error) {
 	vehiclesResponse := &VehiclesResponse{}
-	if err := c.getJSON(BaseURL+"/vehicles", vehiclesResponse); err != nil {
+	if err := c.getJSON(c.BaseURL+"/vehicles", vehiclesResponse); err != nil {
 		return nil, err
+	}
+	for _, v := range vehiclesResponse.Response {
+		v.c = c
 	}
 	return vehiclesResponse.Response, nil
 }
@@ -80,8 +85,9 @@ func (c *Client) Vehicles() ([]*Vehicle, error) {
 // Fetches the vehicle by ID associated to a Tesla account via the API
 func (c *Client) Vehicle(vehicleId int64) (*Vehicle, error) {
 	resp := &VehicleResponse{}
-	if err := c.getJSON(BaseURL+"/vehicles/"+strconv.FormatInt(vehicleId, 10), resp); err != nil {
+	if err := c.getJSON(c.BaseURL+"/vehicles/"+strconv.FormatInt(vehicleId, 10), resp); err != nil {
 		return nil, err
 	}
+	resp.Response.c = c
 	return resp.Response, nil
 }

@@ -16,8 +16,6 @@ type Auth struct {
 	ClientSecret string `json:"client_secret"`
 	Email        string `json:"email"`
 	Password     string `json:"password"`
-	URL          string
-	StreamingURL string
 }
 
 // The token and related elements returned after a successful auth
@@ -32,57 +30,45 @@ type Token struct {
 // Provides the client and associated elements for interacting with the
 // Tesla API
 type Client struct {
-	Auth  *Auth
-	Token *Token
-	HTTP  *http.Client
+	Auth         *Auth
+	Token        *Token
+	HTTP         *http.Client
+	BaseURL      string
+	StreamingURL string
 }
 
-var (
-	AuthURL      = "https://owner-api.teslamotors.com/oauth/token"
-	BaseURL      = "https://owner-api.teslamotors.com/api/1"
-	ActiveClient *Client
-)
+var AuthURL = "https://owner-api.teslamotors.com/oauth/token"
+
+const BaseURL = "https://owner-api.teslamotors.com/api/1"
 
 // Generates a new client for the Tesla API
 func NewClient(auth *Auth) (*Client, error) {
-	if auth.URL == "" {
-		auth.URL = BaseURL
-	}
-	if auth.StreamingURL == "" {
-		auth.StreamingURL = StreamingURL
-	}
-
 	client := &Client{
-		Auth: auth,
-		HTTP: &http.Client{},
+		Auth:         auth,
+		HTTP:         &http.Client{},
+		BaseURL:      BaseURL,
+		StreamingURL: StreamingURL,
 	}
 	token, err := client.authorize(auth)
 	if err != nil {
 		return nil, err
 	}
 	client.Token = token
-	ActiveClient = client
 	return client, nil
 }
 
 // NewClientWithToken Generates a new client for the Tesla API using an existing token
 func NewClientWithToken(auth *Auth, token *Token) (*Client, error) {
-	if auth.URL == "" {
-		auth.URL = BaseURL
-	}
-	if auth.StreamingURL == "" {
-		auth.StreamingURL = StreamingURL
-	}
-
 	client := &Client{
-		Auth:  auth,
-		HTTP:  &http.Client{},
-		Token: token,
+		Auth:         auth,
+		HTTP:         &http.Client{},
+		Token:        token,
+		BaseURL:      BaseURL,
+		StreamingURL: StreamingURL,
 	}
 	if client.TokenExpired() {
 		return nil, errors.New("supplied token is expired")
 	}
-	ActiveClient = client
 	return client, nil
 }
 

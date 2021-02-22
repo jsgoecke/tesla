@@ -22,9 +22,7 @@ func TestStatesSpec(t *testing.T) {
 	ts := serveHTTP(t)
 	defer ts.Close()
 	previousAuthURL := AuthURL
-	previousURL := BaseURL
 	AuthURL = ts.URL + "/oauth/token"
-	BaseURL = ts.URL + "/api/1"
 
 	auth := &Auth{
 		GrantType:    "password",
@@ -34,6 +32,7 @@ func TestStatesSpec(t *testing.T) {
 		Password:     "go",
 	}
 	client, _ := NewClient(auth)
+	client.BaseURL = ts.URL + "/api/1"
 
 	Convey("Should get mobile enabled status", t, func() {
 		vehicles, _ := client.Vehicles()
@@ -117,5 +116,4 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	AuthURL = previousAuthURL
-	BaseURL = previousURL
 }
