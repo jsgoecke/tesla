@@ -88,5 +88,6 @@ func (c *Client) Vehicle(vehicleId int64) (*Vehicle, error) {
 	if err := c.getJSON(c.BaseURL+"/vehicles/"+strconv.FormatInt(vehicleId, 10), resp); err != nil {
 		return nil, err
 	}
+	resp.Response.c = c
 	return resp.Response, nil
 }
