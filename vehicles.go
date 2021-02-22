@@ -85,7 +85,7 @@ func (c *Client) Vehicles() ([]*Vehicle, error) {
 // Fetches the vehicle by ID associated to a Tesla account via the API
 func (c *Client) Vehicle(vehicleId int64) (*Vehicle, error) {
 	resp := &VehicleResponse{}
-	if err := c.getJSON(BaseURL+"/vehicles/"+strconv.FormatInt(vehicleId, 10), resp); err != nil {
+	if err := c.getJSON(c.BaseURL+"/vehicles/"+strconv.FormatInt(vehicleId, 10), resp); err != nil {
 		return nil, err
 	}
 	return resp.Response, nil

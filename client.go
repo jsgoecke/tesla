@@ -37,10 +37,9 @@ type Client struct {
 	StreamingURL string
 }
 
-var (
-	AuthURL = "https://owner-api.teslamotors.com/oauth/token"
-	BaseURL = "https://owner-api.teslamotors.com/api/1"
-)
+var AuthURL = "https://owner-api.teslamotors.com/oauth/token"
+
+const BaseURL = "https://owner-api.teslamotors.com/api/1"
 
 // Generates a new client for the Tesla API
 func NewClient(auth *Auth) (*Client, error) {

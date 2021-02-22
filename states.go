@@ -207,7 +207,7 @@ type MobileEnabledResponse struct {
 // MobileEnabled returns if the vehicle is mobile enabled for Tesla API control
 func (v *Vehicle) MobileEnabled() (bool, error) {
 	r := &MobileEnabledResponse{}
-	if err := ActiveClient.getJSON(v.c.BaseURL+"/vehicles/"+strconv.FormatInt(v.ID, 10)+"/mobile_enabled", r); err != nil {
+	if err := v.c.getJSON(v.c.BaseURL+"/vehicles/"+strconv.FormatInt(v.ID, 10)+"/mobile_enabled", r); err != nil {
 		return false, err
 	}
 	return r.Bool, nil
