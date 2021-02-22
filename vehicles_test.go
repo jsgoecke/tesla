@@ -64,3 +64,31 @@ func TestVehicle(t *testing.T) {
 	AuthURL = previousAuthURL
 	BaseURL = previousURL
 }
+
+func TestVehicle(t *testing.T) {
+	ts := serveHTTP(t)
+	defer ts.Close()
+	previousAuthURL := AuthURL
+	previousURL := BaseURL
+	AuthURL = ts.URL + "/oauth/token"
+	BaseURL = ts.URL + "/api/1"
+
+	auth := &Auth{
+		GrantType:    "password",
+		ClientID:     "abc123",
+		ClientSecret: "def456",
+		Email:        "elon@tesla.com",
+		Password:     "go",
+	}
+	client, _ := NewClient(auth)
+
+	Convey("Should get vehicle", t, func() {
+		vehicle, err := client.Vehicle(1234)
+		So(err, ShouldBeNil)
+		So(vehicle.DisplayName, ShouldEqual, "Macak")
+		So(vehicle.CalendarEnabled, ShouldBeTrue)
+	})
+
+	AuthURL = previousAuthURL
+	BaseURL = previousURL
+}
