@@ -213,6 +213,68 @@ func (v *Vehicle) MobileEnabled() (bool, error) {
 	return r.Bool, nil
 }
 
+type timeSecs struct {
+	time.Time
+}
+
+func (t *timeSecs) UnmarshalJSON(b []byte) error {
+	i, err := strconv.ParseInt(string(b), 10, 64)
+	if err != nil {
+		return err
+	}
+	t.Time = (time.Unix(i, 0))
+	return nil
+}
+
+type timeUsecs struct {
+	time.Time
+}
+
+func (t *timeUsecs) UnmarshalJSON(b []byte) error {
+	i, err := strconv.ParseInt(string(b), 10, 64)
+	if err != nil {
+		return err
+	}
+	t.Time = (time.Unix(i/1000, i%1000))
+	return nil
+}
+
+type NearbyChargingSitesResponse struct {
+	Response struct {
+		CongestionSyncTimeUtcSecs timeSecs `json:"congestion_sync_time_utc_secs"`
+		DestinationCharging       []struct {
+			Location struct {
+				Lat  float64 `json:"lat"`
+				Long float64 `json:"long"`
+			} `json:"location"`
+			Name          string  `json:"name"`
+			Type          string  `json:"type"`
+			DistanceMiles float64 `json:"distance_miles"`
+		} `json:"destination_charging"`
+		Superchargers []struct {
+			Location struct {
+				Lat  float64 `json:"lat"`
+				Long float64 `json:"long"`
+			} `json:"location"`
+			Name            string  `json:"name"`
+			Type            string  `json:"type"`
+			DistanceMiles   float64 `json:"distance_miles"`
+			AvailableStalls int     `json:"available_stalls"`
+			TotalStalls     int     `json:"total_stalls"`
+			SiteClosed      bool    `json:"site_closed"`
+		} `json:"superchargers"`
+		Timestamp timeUsecs `json:"timestamp"`
+	} `json:"response"`
+}
+
+func (v *Vehicle) NearbyChargingSites() (*NearbyChargingSitesResponse, error) {
+	resp := &NearbyChargingSitesResponse{}
+	if err := v.c.getJSON(v.c.BaseURL+"/vehicles/"+strconv.FormatInt(v.ID, 10)+"/nearby_charging_sites", resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // ChargeState returns the charge state of the vehicle
 func (v *Vehicle) ChargeState() (*ChargeState, error) {
 	stateRequest, err := v.c.fetchState("/charge_state", v.ID)
