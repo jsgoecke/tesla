@@ -102,6 +102,18 @@ func (c Client) get(url string) ([]byte, error) {
 	return c.processRequest(req)
 }
 
+// getJSON performs an HTTP GET and then unmarshals the result into the provided struct.
+func (c Client) getJSON(url string, out interface{}) error {
+	body, err := c.get(url)
+	if err != nil {
+		return err
+	}
+	if err = json.Unmarshal(body, out); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Calls an HTTP POST with a JSON body
 func (c Client) post(url string, body []byte) ([]byte, error) {
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))

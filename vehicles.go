@@ -1,7 +1,6 @@
 package tesla
 
 import (
-	"encoding/json"
 	"strconv"
 	"time"
 )
@@ -74,11 +73,7 @@ type VehiclesResponse struct {
 // Fetches the vehicles associated to a Tesla account via the API
 func (c *Client) Vehicles() ([]*Vehicle, error) {
 	vehiclesResponse := &VehiclesResponse{}
-	body, err := c.get(c.BaseURL + "/vehicles")
-	if err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(body, vehiclesResponse); err != nil {
+	if err := c.getJSON(c.BaseURL+"/vehicles", vehiclesResponse); err != nil {
 		return nil, err
 	}
 	for _, v := range vehiclesResponse.Response {
@@ -90,11 +85,7 @@ func (c *Client) Vehicles() ([]*Vehicle, error) {
 // Fetches the vehicle by ID associated to a Tesla account via the API
 func (c *Client) Vehicle(vehicleId int64) (*Vehicle, error) {
 	resp := &VehicleResponse{}
-	body, err := c.get(BaseURL + "/vehicles/" + strconv.FormatInt(vehicleId, 10))
-	if err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(body, resp); err != nil {
+	if err := c.getJSON(BaseURL+"/vehicles/"+strconv.FormatInt(vehicleId, 10), resp); err != nil {
 		return nil, err
 	}
 	return resp.Response, nil
