@@ -171,11 +171,11 @@ func TestCommandsSpec(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
-	Convey("Should set the temprature", t, func() {
+	Convey("Should set the temperature", t, func() {
 		vehicles, err := client.Vehicles()
 		So(err, ShouldBeNil)
 		vehicle := vehicles[0]
-		err = vehicle.SetTemprature(72.0, 72.0)
+		err = vehicle.SetTemperature(72.0, 72.0)
 		So(err, ShouldBeNil)
 	})
 
