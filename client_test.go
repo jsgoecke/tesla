@@ -148,7 +148,7 @@ func init() {
 	})
 
 	testMux.HandleFunc("/api/1/vehicles/1234/command/set_temps", serveCheck(func(req *http.Request, body []byte) error {
-		if string(body) != `{"driver_temp": "72", "passenger_temp":72}` {
+		if string(body) != `{"driver_temp":"72","passenger_temp":"72"}` {
 			return fmt.Errorf("unexpected body %s", body)
 		}
 		return nil
