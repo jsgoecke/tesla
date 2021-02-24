@@ -24,6 +24,24 @@ go get github.com/bogosj/tesla
 
 Examples can be found in the [/examples project directory](examples).
 
+### OAuth Token
+
+One way to acquire an OAuth token is to run https://github.com/uhthomas/tesla/blob/master/cmd/login/main.go.
+
+```sh
+
+# go get github.com/uhthomas/tesla/cmd/login
+
+# ./bin/login
+✔ Username: email@gmail.com
+✔ Password: ***
+Passcode: 463932
+
+<output>
+```
+
+The output from this binary is currently two JSON dictionaries. Copy the second {} that contains the `access_token` to a file.
+
 ## Credits
 
 Thank you to [Tim Dorr](https://github.com/timdorr) who did the heavy lifting to document the Tesla API and also created the [model-s-api Ruby Gem](https://github.com/timdorr/model-s-api).
