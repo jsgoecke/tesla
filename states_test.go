@@ -1,6 +1,8 @@
 package tesla
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -92,15 +94,20 @@ func TestStatesSpec(t *testing.T) {
 		}
 		So(status.ServiceETC, ShouldEqual, wantTime)
 	})
+}
 
+func TestStatesSpecError(t *testing.T) {
+	mux := new(http.ServeMux)
+	mux.HandleFunc("/oauth/token", serveJSON("{\"access_token\": \"ghi789\"}"))
+	mux.HandleFunc("/api/1/vehicles", serveJSON(VehiclesJSON))
+	mux.HandleFunc("/api/1/vehicles/1234/", serveJSON(ErrorJSON))
+	ts := httptest.NewServer(mux)
+	defer ts.Close()
+
+	client := NewTestClient(ts)
 	Convey("Should get error", t, func() {
 		vehicles, _ := client.Vehicles()
 		vehicle := vehicles[0]
-		orig := VehicleStateJSON
-		defer func() {
-			VehicleStateJSON = orig
-		}()
-		VehicleStateJSON = ErrorJSON
 		_, err := vehicle.VehicleState()
 		So(err, ShouldNotBeNil)
 	})
