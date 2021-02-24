@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-// Represents the vehicle as returned from the Tesla API
+// Vehicle represents the vehicle as returned from the Tesla API.
 type Vehicle struct {
 	Color                  interface{}    `json:"color"`
 	DisplayName            string         `json:"display_name"`
@@ -29,6 +29,7 @@ type Vehicle struct {
 	c *Client
 }
 
+// VehicleConfig represents the configuration of a vehicle.
 type VehicleConfig struct {
 	CanAcceptNavigationRequests bool     `json:"can_accept_navigation_requests"`
 	CanActuateTrunks            bool     `json:"can_actuate_trunks"`
@@ -57,19 +58,19 @@ type VehicleConfig struct {
 	WheelType                   string   `json:"wheel_type"`
 }
 
-// The response that contains the vehicle details from the Tesla API
+// VehicleResponse contains the vehicle details from the Tesla API.
 type VehicleResponse struct {
 	Response *Vehicle `json:"response"`
 	Count    int      `json:"count"`
 }
 
-// The response that contains the vehicles details from the Tesla API
+// VehiclesResponse contains a slice of Vehicles from the Tesla API.
 type VehiclesResponse struct {
 	Response []*Vehicle `json:"response"`
 	Count    int        `json:"count"`
 }
 
-// Fetches the vehicles associated to a Tesla account via the API
+// Vehicles fetches the vehicles associated to a Tesla account via the API.
 func (c *Client) Vehicles() ([]*Vehicle, error) {
 	vehiclesResponse := &VehiclesResponse{}
 	if err := c.getJSON(c.BaseURL+"/vehicles", vehiclesResponse); err != nil {
@@ -81,10 +82,10 @@ func (c *Client) Vehicles() ([]*Vehicle, error) {
 	return vehiclesResponse.Response, nil
 }
 
-// Fetches the vehicle by ID associated to a Tesla account via the API
-func (c *Client) Vehicle(vehicleId int64) (*Vehicle, error) {
+// Vehicle fetches the vehicle by ID associated to a Tesla account via the API.
+func (c *Client) Vehicle(vehicleID int64) (*Vehicle, error) {
 	resp := &VehicleResponse{}
-	if err := c.getJSON(c.BaseURL+"/vehicles/"+strconv.FormatInt(vehicleId, 10), resp); err != nil {
+	if err := c.getJSON(c.BaseURL+"/vehicles/"+strconv.FormatInt(vehicleID, 10), resp); err != nil {
 		return nil, err
 	}
 	resp.Response.c = c

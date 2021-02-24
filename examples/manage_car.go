@@ -68,23 +68,24 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		return
-	} else {
-		for {
-			select {
-			case event := <-eventChan:
-				eventJSON, _ := json.Marshal(event)
-				fmt.Println(string(eventJSON))
-			case err = <-errChan:
-				fmt.Println(err)
-				if err.Error() == "HTTP stream closed" {
-					fmt.Println("Reconnecting!")
-					eventChan, errChan, err = vehicle.Stream(email)
-					if err != nil {
-						fmt.Println(err)
-						return
-					}
+	}
+
+	for {
+		select {
+		case event := <-eventChan:
+			eventJSON, _ := json.Marshal(event)
+			fmt.Println(string(eventJSON))
+		case err = <-errChan:
+			fmt.Println(err)
+			if err.Error() == "HTTP stream closed" {
+				fmt.Println("Reconnecting!")
+				eventChan, errChan, err = vehicle.Stream(email)
+				if err != nil {
+					fmt.Println(err)
+					return
 				}
 			}
 		}
 	}
+
 }

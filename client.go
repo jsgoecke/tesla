@@ -11,22 +11,23 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// Endpoint is the OAuth2 endpoint for authenticating with the Tesla API.
 var Endpoint = oauth2.Endpoint{
 	AuthURL:  "https://auth.tesla.com/oauth2/v3/authorize",
 	TokenURL: "https://auth.tesla.com/oauth2/v3/token",
 }
 
+// BaseURL is the base URL of the standard Tesla API.
 const BaseURL = "https://owner-api.teslamotors.com/api/1"
 
-// Provides the client and associated elements for interacting with the
-// Tesla API
+// Client provides the client and associated elements for interacting with the Tesla API.
 type Client struct {
 	BaseURL      string
 	StreamingURL string
 	hc           *http.Client
 }
 
-// Generates a new client for the Tesla API
+// NewClient creates a new client for the Tesla API with a provided OAuth token.
 func NewClient(ctx context.Context, tok *oauth2.Token) (*Client, error) {
 	config := &oauth2.Config{
 		ClientID:    "ownerapi",
@@ -55,6 +56,7 @@ func loadToken(path string) (*oauth2.Token, error) {
 	return tok, nil
 }
 
+// NewClientFromTokenPath creates a new client for the Tesla API using a JSON serialized token from disk.
 func NewClientFromTokenPath(ctx context.Context, path string) (*Client, error) {
 	t, err := loadToken(path)
 	if err != nil {
