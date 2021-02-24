@@ -43,6 +43,30 @@ func NewClient(ctx context.Context, tok *oauth2.Token) (*Client, error) {
 	return client, nil
 }
 
+func loadToken(path string) (*oauth2.Token, error) {
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	tok := new(oauth2.Token)
+	if err := json.Unmarshal(b, tok); err != nil {
+		return nil, err
+	}
+	return tok, nil
+}
+
+func NewClientFromTokenPath(ctx context.Context, path string) (*Client, error) {
+	t, err := loadToken(path)
+	if err != nil {
+		return nil, err
+	}
+	c, err := NewClient(ctx, t)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
 // Calls an HTTP GET
 func (c Client) get(url string) ([]byte, error) {
 	req, _ := http.NewRequest("GET", url, nil)

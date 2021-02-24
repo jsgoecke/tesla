@@ -4,33 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/bogosj/tesla"
-	"golang.org/x/oauth2"
 )
-
-func loadToken(filePath string) (*oauth2.Token, error) {
-	b, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return nil, err
-	}
-	tok := new(oauth2.Token)
-	if err := json.Unmarshal(b, tok); err != nil {
-		return nil, err
-	}
-	return tok, nil
-}
 
 func main() {
 	ctx := context.Background()
 	email := "email@example.com"
-	tok, err := loadToken("/file/path/to/token.json")
-	if err != nil {
-		panic(err)
-	}
-	client, err := tesla.NewClient(ctx, tok)
+	client, err := tesla.NewClientFromTokenPath(ctx, "/file/path/to/token.json")
 	if err != nil {
 		panic(err)
 	}
