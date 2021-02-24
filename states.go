@@ -187,7 +187,7 @@ type ServiceData struct {
 // Represents the request to get the states of the vehicle
 type StateRequest struct {
 	Response struct {
-		Timestamp time.Time `json:"timestamp"`
+		Timestamp timeMsec `json:"timestamp"`
 		*ChargeState
 		*ClimateState
 		*DriveState
@@ -226,11 +226,11 @@ func (t *timeSecs) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-type timeUsecs struct {
+type timeMsec struct {
 	time.Time
 }
 
-func (t *timeUsecs) UnmarshalJSON(b []byte) error {
+func (t *timeMsec) UnmarshalJSON(b []byte) error {
 	i, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
 		return err
@@ -263,7 +263,7 @@ type NearbyChargingSitesResponse struct {
 			TotalStalls     int     `json:"total_stalls"`
 			SiteClosed      bool    `json:"site_closed"`
 		} `json:"superchargers"`
-		Timestamp timeUsecs `json:"timestamp"`
+		Timestamp timeMsec `json:"timestamp"`
 	} `json:"response"`
 }
 
