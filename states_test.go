@@ -21,18 +21,8 @@ var (
 func TestStatesSpec(t *testing.T) {
 	ts := serveHTTP(t)
 	defer ts.Close()
-	previousAuthURL := AuthURL
-	AuthURL = ts.URL + "/oauth/token"
 
-	auth := &Auth{
-		GrantType:    "password",
-		ClientID:     "abc123",
-		ClientSecret: "def456",
-		Email:        "elon@tesla.com",
-		Password:     "go",
-	}
-	client, _ := NewClient(auth)
-	client.BaseURL = ts.URL + "/api/1"
+	client := NewTestClient(ts)
 
 	Convey("Should get mobile enabled status", t, func() {
 		vehicles, _ := client.Vehicles()
@@ -114,6 +104,4 @@ func TestStatesSpec(t *testing.T) {
 		_, err := vehicle.VehicleState()
 		So(err, ShouldNotBeNil)
 	})
-
-	AuthURL = previousAuthURL
 }

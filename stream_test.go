@@ -14,19 +14,8 @@ var (
 func TestStreamSpec(t *testing.T) {
 	ts := serveHTTP(t)
 	defer ts.Close()
-	previousAuthURL := AuthURL
-	AuthURL = ts.URL + "/oauth/token"
 
-	auth := &Auth{
-		GrantType:    "password",
-		ClientID:     "abc123",
-		ClientSecret: "def456",
-		Email:        "elon@tesla.com",
-		Password:     "go",
-	}
-	client, _ := NewClient(auth)
-	client.BaseURL = ts.URL + "/api/1"
-	client.StreamingURL = ts.URL
+	client := NewTestClient(ts)
 
 	vehicle := &Vehicle{
 		c:         client,
@@ -35,7 +24,7 @@ func TestStreamSpec(t *testing.T) {
 	}
 
 	Convey("Should get stream events", t, func() {
-		eventChan, errChan, err := vehicle.Stream()
+		eventChan, errChan, err := vehicle.Stream("elon@tesla.com")
 		So(err, ShouldBeNil)
 
 		Convey("2 good, 1 bad", func() {
@@ -65,6 +54,4 @@ func TestStreamSpec(t *testing.T) {
 			}
 		})
 	})
-
-	AuthURL = previousAuthURL
 }

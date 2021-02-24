@@ -1,21 +1,36 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/bogosj/tesla"
+	"golang.org/x/oauth2"
 )
 
+func loadToken(filePath string) (*oauth2.Token, error) {
+	b, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+	tok := new(oauth2.Token)
+	if err := json.Unmarshal(b, tok); err != nil {
+		return nil, err
+	}
+	return tok, nil
+}
+
 func main() {
-	client, err := tesla.NewClient(
-		&tesla.Auth{
-			ClientID:     os.Getenv("TESLA_CLIENT_ID"),
-			ClientSecret: os.Getenv("TESLA_CLIENT_SECRET"),
-			Email:        os.Getenv("TESLA_USERNAME"),
-			Password:     os.Getenv("TESLA_PASSWORD"),
-		})
+	ctx := context.Background()
+	email := "email@example.com"
+	tok, err := loadToken("/file/path/to/token.json")
+	if err != nil {
+		panic(err)
+	}
+	client, err := tesla.NewClient(ctx, tok)
 	if err != nil {
 		panic(err)
 	}
@@ -67,7 +82,7 @@ func main() {
 	// Take care with these, as the car will move
 
 	// Stream vehicle events
-	eventChan, errChan, err := vehicle.Stream()
+	eventChan, errChan, err := vehicle.Stream(email)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -81,7 +96,7 @@ func main() {
 				fmt.Println(err)
 				if err.Error() == "HTTP stream closed" {
 					fmt.Println("Reconnecting!")
-					eventChan, errChan, err = vehicle.Stream()
+					eventChan, errChan, err = vehicle.Stream(email)
 					if err != nil {
 						fmt.Println(err)
 						return

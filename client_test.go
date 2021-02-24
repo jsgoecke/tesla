@@ -2,106 +2,55 @@ package tesla
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"golang.org/x/oauth2"
 )
+
+func NewTestClient(ts *httptest.Server) *Client {
+	ctx := context.Background()
+	tok := &oauth2.Token{
+		AccessToken:  "refresh",
+		RefreshToken: "refresh",
+		Expiry:       time.Now().Add(1 * time.Hour),
+	}
+
+	config := &oauth2.Config{
+		ClientID: "ownerapi",
+		Endpoint: oauth2.Endpoint{
+			TokenURL: ts.URL + "/oauth/token",
+		},
+		Scopes: []string{"openid", "email", "offline_access"},
+	}
+
+	client := &Client{
+		BaseURL:      ts.URL + "/api/1",
+		StreamingURL: ts.URL,
+		hc:           config.Client(ctx, tok),
+	}
+	return client
+}
 
 func TestClientSpec(t *testing.T) {
 	ts := serveHTTP(t)
 	defer ts.Close()
-	previousAuthURL := AuthURL
-	AuthURL = ts.URL + "/oauth/token"
 
-	auth := &Auth{
-		GrantType:    "password",
-		ClientID:     "abc123",
-		ClientSecret: "def456",
-		Email:        "elon@tesla.com",
-		Password:     "go",
-	}
-	client, err := NewClient(auth)
-	client.BaseURL = ts.URL + "/api/1"
+	client := NewTestClient(ts)
 
 	Convey("Should set the HTTP headers", t, func() {
 		req, _ := http.NewRequest("GET", "http://foo.com", nil)
 		client.setHeaders(req)
-		So(req.Header.Get("Authorization"), ShouldEqual, "Bearer ghi789")
 		So(req.Header.Get("Accept"), ShouldEqual, "application/json")
 		So(req.Header.Get("Content-Type"), ShouldEqual, "application/json")
 	})
-	Convey("Should login and get an access token", t, func() {
-		So(err, ShouldBeNil)
-		So(client.Token.AccessToken, ShouldEqual, "ghi789")
-	})
-
-	AuthURL = previousAuthURL
-}
-
-func TestTokenExpiredSpec(t *testing.T) {
-	// Expired token
-	expiredToken := &Token{
-		AccessToken: "foo",
-		TokenType:   "bar",
-		ExpiresIn:   1,
-		Expires:     0,
-	}
-
-	validToken := &Token{
-		AccessToken: "foo",
-		TokenType:   "bar",
-		ExpiresIn:   1,
-		Expires:     9999999999999,
-	}
-
-	client := &Client{
-		Token: expiredToken,
-	}
-
-	Convey("Should have an expired token", t, func() {
-		So(client.TokenExpired(), ShouldBeTrue)
-	})
-
-	client.Token = validToken
-	Convey("Should have a valid token", t, func() {
-		So(client.TokenExpired(), ShouldBeFalse)
-	})
-}
-
-func TestClientWithTokenSpec(t *testing.T) {
-	ts := serveHTTP(t)
-	defer ts.Close()
-	previousAuthURL := AuthURL
-	AuthURL = ts.URL + "/oauth/token"
-
-	auth := &Auth{
-		GrantType:    "password",
-		ClientID:     "abc123",
-		ClientSecret: "def456",
-		Email:        "elon@tesla.com",
-		Password:     "go",
-	}
-
-	validToken := &Token{
-		AccessToken: "foo",
-		TokenType:   "bar",
-		ExpiresIn:   1,
-		Expires:     99999999999,
-	}
-
-	client, err := NewClientWithToken(auth, validToken)
-	client.BaseURL = ts.URL + "/api/1"
-
-	Convey("Should login with a valid access token", t, func() {
-		So(err, ShouldBeNil)
-		So(client.Token.AccessToken, ShouldEqual, "foo")
-	})
-
-	AuthURL = previousAuthURL
 }
 
 func serveHTTP(t *testing.T) *httptest.Server {
@@ -112,12 +61,14 @@ func serveHTTP(t *testing.T) *httptest.Server {
 		case "/oauth/token":
 			checkHeaders(t, req)
 			Convey("Request body should be set correctly", t, func() {
-				auth := &Auth{}
-				json.Unmarshal(body, auth)
-				So(auth.ClientID, ShouldEqual, "abc123")
-				So(auth.ClientSecret, ShouldEqual, "def456")
-				So(auth.Email, ShouldEqual, "elon@tesla.com")
-				So(auth.Password, ShouldEqual, "go")
+				/*
+					auth := &Auth{}
+					json.Unmarshal(body, auth)
+					So(auth.ClientID, ShouldEqual, "abc123")
+					So(auth.ClientSecret, ShouldEqual, "def456")
+					So(auth.Email, ShouldEqual, "elon@tesla.com")
+					So(auth.Password, ShouldEqual, "go")
+				*/
 			})
 			w.WriteHeader(200)
 			w.Write([]byte("{\"access_token\": \"ghi789\"}"))
