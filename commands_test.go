@@ -35,19 +35,19 @@ func TestCommandsSpec(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
+	Convey("Should auto park car reverse", t, func() {
+		vehicles, err := client.Vehicles()
+		So(err, ShouldBeNil)
+		vehicle := vehicles[0]
+		err = vehicle.AutoparkReverse()
+		So(err, ShouldBeNil)
+	})
+
 	Convey("Should turn on sentry mode", t, func() {
 		vehicles, err := client.Vehicles()
 		So(err, ShouldBeNil)
 		vehicle := vehicles[0]
 		err = vehicle.EnableSentry()
-		So(err, ShouldBeNil)
-	})
-
-	Convey("Should auto park car forward", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.AutoparkReverse()
 		So(err, ShouldBeNil)
 	})
 
