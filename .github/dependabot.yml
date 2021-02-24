@@ -1,0 +1,7 @@
+version: 2
+updates:
+  # Enable version updates for gomod
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "daily"
