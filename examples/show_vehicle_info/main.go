@@ -2,14 +2,11 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/bogosj/tesla"
-	"golang.org/x/oauth2"
 )
 
 var tokenPath = flag.String("token", "", "path to token file")
@@ -28,24 +25,8 @@ func main() {
 	}
 }
 
-func LoadToken(filePath string) (*oauth2.Token, error) {
-	b, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return nil, err
-	}
-	tok := new(oauth2.Token)
-	if err := json.Unmarshal(b, tok); err != nil {
-		return nil, err
-	}
-	return tok, nil
-}
-
 func run(ctx context.Context, tokenPath string) error {
-	tok, err := LoadToken(tokenPath)
-	if err != nil {
-		return err
-	}
-	c, err := tesla.NewClient(ctx, tok)
+	c, err := tesla.NewClientFromTokenPath(ctx, tokenPath)
 	if err != nil {
 		return err
 	}
