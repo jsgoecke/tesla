@@ -56,8 +56,8 @@ func loadToken(path string) (*oauth2.Token, error) {
 	return tok, nil
 }
 
-// NewClientFromTokenPath creates a new client for the Tesla API using a JSON serialized token from disk.
-func NewClientFromTokenPath(ctx context.Context, path string) (*Client, error) {
+// NewClientFromTokenFile creates a new client for the Tesla API using a JSON serialized token from disk.
+func NewClientFromTokenFile(ctx context.Context, path string) (*Client, error) {
 	t, err := loadToken(path)
 	if err != nil {
 		return nil, err

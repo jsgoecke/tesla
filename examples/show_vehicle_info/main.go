@@ -26,7 +26,7 @@ func main() {
 }
 
 func run(ctx context.Context, tokenPath string) error {
-	c, err := tesla.NewClientFromTokenPath(ctx, tokenPath)
+	c, err := tesla.NewClientFromTokenFile(ctx, tokenPath)
 	if err != nil {
 		return err
 	}

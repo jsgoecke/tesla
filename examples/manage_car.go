@@ -12,7 +12,7 @@ import (
 func main() {
 	ctx := context.Background()
 	email := "email@example.com"
-	client, err := tesla.NewClientFromTokenPath(ctx, "/file/path/to/token.json")
+	client, err := tesla.NewClientFromTokenFile(ctx, "/file/path/to/token.json")
 	if err != nil {
 		panic(err)
 	}
