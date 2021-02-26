@@ -36,7 +36,7 @@ func pkce() (verifier, challenge string, err error) {
 	return verifier, challenge, nil
 }
 
-func selectDevice(ctx context.Context, devices []Device) (d Device, passcode string, err error) {
+func selectDevice(ctx context.Context, devices []device) (d device, passcode string, err error) {
 	var i int
 	if len(devices) > 1 {
 		var err error
@@ -46,7 +46,7 @@ func selectDevice(ctx context.Context, devices []Device) (d Device, passcode str
 			Pointer: promptui.PipeCursor,
 		}).Run()
 		if err != nil {
-			return Device{}, "", fmt.Errorf("select device: %w", err)
+			return device{}, "", fmt.Errorf("select device: %w", err)
 		}
 	}
 	d = devices[i]
@@ -62,12 +62,12 @@ func selectDevice(ctx context.Context, devices []Device) (d Device, passcode str
 		},
 	}).Run()
 	if err != nil {
-		return Device{}, "", err
+		return device{}, "", err
 	}
 	return d, passcode, nil
 }
 
-func Main(ctx context.Context) error {
+func login(ctx context.Context) error {
 	username, err := (&promptui.Prompt{
 		Label:   "Username",
 		Pointer: promptui.PipeCursor,
@@ -113,7 +113,7 @@ func Main(ctx context.Context) error {
 		},
 	}
 
-	code, err := (&Auth{
+	code, err := (&auth{
 		AuthURL: c.AuthCodeURL(state(), oauth2.AccessTypeOffline,
 			oauth2.SetAuthURLParam("code_challenge", challenge),
 			oauth2.SetAuthURLParam("code_challenge_method", "S256"),
@@ -140,7 +140,7 @@ func Main(ctx context.Context) error {
 }
 
 func main() {
-	if err := Main(context.Background()); err != nil {
+	if err := login(context.Background()); err != nil {
 		log.Fatal(err)
 	}
 }

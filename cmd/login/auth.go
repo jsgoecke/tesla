@@ -16,7 +16,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-type Device struct {
+type device struct {
 	DispatchRequired bool      `json:"dispatchRequired"`
 	ID               string    `json:"id"`
 	Name             string    `json:"name"`
@@ -27,13 +27,13 @@ type Device struct {
 	Updated          time.Time `json:"updatedAt"`
 }
 
-type Auth struct {
+type auth struct {
 	Client       *http.Client
 	AuthURL      string
-	SelectDevice func(ctx context.Context, devices []Device) (d Device, passcode string, err error)
+	SelectDevice func(ctx context.Context, devices []device) (d device, passcode string, err error)
 }
 
-func (a *Auth) Do(ctx context.Context, username, password string) (code string, err error) {
+func (a *auth) Do(ctx context.Context, username, password string) (code string, err error) {
 	if a.Client == nil {
 		a.Client = &http.Client{
 			Transport: &http.Transport{
@@ -98,7 +98,7 @@ func (a *Auth) Do(ctx context.Context, username, password string) (code string, 
 	return a.commit(ctx, transactionID)
 }
 
-func (a *Auth) login(ctx context.Context, username, password string) (*http.Response, url.Values, error) {
+func (a *auth) login(ctx context.Context, username, password string) (*http.Response, url.Values, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.AuthURL, nil)
 	if err != nil {
 		return nil, nil, fmt.Errorf("new request: %w", err)
@@ -148,7 +148,7 @@ func (a *Auth) login(ctx context.Context, username, password string) (*http.Resp
 	return res, v, err
 }
 
-func (a *Auth) listDevices(ctx context.Context, transactionID string) ([]Device, error) {
+func (a *auth) listDevices(ctx context.Context, transactionID string) ([]device, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, (&url.URL{
 		Scheme:   "https",
 		Host:     "auth.tesla.com",
@@ -171,7 +171,7 @@ func (a *Auth) listDevices(ctx context.Context, transactionID string) ([]Device,
 	}
 
 	var out struct {
-		Data []Device `json:"data"`
+		Data []device `json:"data"`
 	}
 	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
 		return nil, fmt.Errorf("json decode: %w", err)
@@ -179,7 +179,7 @@ func (a *Auth) listDevices(ctx context.Context, transactionID string) ([]Device,
 	return out.Data, nil
 }
 
-func (a *Auth) verify(ctx context.Context, transactionID string, d Device, passcode string) error {
+func (a *auth) verify(ctx context.Context, transactionID string, d device, passcode string) error {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(map[string]string{
 		"transaction_id": transactionID,
@@ -217,7 +217,7 @@ func (a *Auth) verify(ctx context.Context, transactionID string, d Device, passc
 	return nil
 }
 
-func (a *Auth) commit(ctx context.Context, transactionID string) (code string, err error) {
+func (a *auth) commit(ctx context.Context, transactionID string) (code string, err error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, a.AuthURL, strings.NewReader(url.Values{
 		"transaction_id": {transactionID},
 	}.Encode()))
