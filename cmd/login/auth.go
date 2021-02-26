@@ -37,19 +37,23 @@ type auth struct {
 	SelectDevice func(ctx context.Context, devices []device) (d device, passcode string, err error)
 }
 
+func (a *auth) initClient() {
+	a.Client = &http.Client{
+		Transport: &http.Transport{
+			Dial: (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+			}).Dial,
+			TLSHandshakeTimeout:   10 * time.Second,
+			ResponseHeaderTimeout: 10 * time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
+		},
+	}
+}
+
 func (a *auth) Do(ctx context.Context, username, password string) (code string, err error) {
 	if a.Client == nil {
-		a.Client = &http.Client{
-			Transport: &http.Transport{
-				Dial: (&net.Dialer{
-					Timeout:   30 * time.Second,
-					KeepAlive: 30 * time.Second,
-				}).Dial,
-				TLSHandshakeTimeout:   10 * time.Second,
-				ResponseHeaderTimeout: 10 * time.Second,
-				ExpectContinueTimeout: 1 * time.Second,
-			},
-		}
+		a.initClient()
 	}
 
 	if a.Client.Jar == nil {
