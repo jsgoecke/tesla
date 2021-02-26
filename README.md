@@ -26,21 +26,19 @@ Examples can be found in the [/examples project directory](examples).
 
 ### OAuth Token
 
-One way to acquire an OAuth token is to run https://github.com/uhthomas/tesla/blob/master/cmd/login/main.go.
+One way to acquire an OAuth token is to run cmd/login.
 
 ```sh
 
-# go get github.com/uhthomas/tesla/cmd/login
+# cd cmd/login
 
-# ./bin/login
+# go run . -o ~/tesla.token
 ✔ Username: email@gmail.com
 ✔ Password: ***
 Passcode: 463932
-
-<output>
 ```
 
-The output from this binary is currently two JSON dictionaries. Copy the second {} that contains the `access_token` to a file.
+This will output a token to the `tesla.token` file in your home directory.
 
 ## Credits
 
