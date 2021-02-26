@@ -133,7 +133,9 @@ func login(ctx context.Context) error {
 
 	e := json.NewEncoder(os.Stdout)
 	e.SetIndent("", "\t")
-	e.Encode(t)
+	if err := e.Encode(t); err != nil {
+		log.Fatal(err)
+	}
 
 	return nil
 }

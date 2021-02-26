@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
@@ -66,7 +67,7 @@ func (a *auth) Do(ctx context.Context, username, password string) (code string, 
 	if err != nil {
 		return "", fmt.Errorf("login: %w", err)
 	}
-	defer res.Body.Close()
+	defer quietClose(res.Body)
 
 	switch res.StatusCode {
 	case http.StatusOK:
@@ -109,7 +110,7 @@ func (a *auth) login(ctx context.Context, username, password string) (*http.Resp
 	if err != nil {
 		return nil, nil, fmt.Errorf("do: %w", err)
 	}
-	defer res.Body.Close()
+	defer quietClose(res.Body)
 
 	if res.StatusCode != http.StatusOK {
 		return nil, nil, fmt.Errorf("unexpected status code %d", res.StatusCode)
@@ -164,7 +165,7 @@ func (a *auth) listDevices(ctx context.Context, transactionID string) ([]device,
 	if err != nil {
 		return nil, fmt.Errorf("do: %w", err)
 	}
-	defer res.Body.Close()
+	defer quietClose(res.Body)
 
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code %d", res.StatusCode)
@@ -200,7 +201,7 @@ func (a *auth) verify(ctx context.Context, transactionID string, d device, passc
 	if err != nil {
 		return fmt.Errorf("do: %w", err)
 	}
-	defer res.Body.Close()
+	defer quietClose(res.Body)
 
 	var out struct {
 		Data struct {
@@ -231,7 +232,7 @@ func (a *auth) commit(ctx context.Context, transactionID string) (code string, e
 	if err != nil {
 		return "", fmt.Errorf("do: %w", err)
 	}
-	defer res.Body.Close()
+	defer quietClose(res.Body)
 
 	if res.StatusCode != http.StatusFound {
 		return "", fmt.Errorf("unexpected status code %d", res.StatusCode)
@@ -245,4 +246,8 @@ func codeFromResponse(res *http.Response) (code string, err error) {
 		return "", fmt.Errorf("response location: %w", err)
 	}
 	return u.Query().Get("code"), nil
+}
+
+func quietClose(c io.ReadCloser) {
+	_ = c.Close()
 }
