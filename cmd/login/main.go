@@ -16,6 +16,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
+const (
+	mfaPasscodeLength = 6
+)
+
 func state() string {
 	var b [9]byte
 	if _, err := io.ReadFull(rand.Reader, b[:]); err != nil {
@@ -55,7 +59,7 @@ func selectDevice(ctx context.Context, devices []device) (d device, passcode str
 		Label:   "Passcode",
 		Pointer: promptui.PipeCursor,
 		Validate: func(s string) error {
-			if len(s) != 6 {
+			if len(s) != mfaPasscodeLength {
 				return errors.New("len(s) != 6")
 			}
 			return nil
@@ -67,7 +71,7 @@ func selectDevice(ctx context.Context, devices []device) (d device, passcode str
 	return d, passcode, nil
 }
 
-func login(ctx context.Context) error {
+func getUsernameAndPassword() (string, string, error) {
 	username, err := (&promptui.Prompt{
 		Label:   "Username",
 		Pointer: promptui.PipeCursor,
@@ -79,7 +83,7 @@ func login(ctx context.Context) error {
 		},
 	}).Run()
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
 	password, err := (&promptui.Prompt{
@@ -94,7 +98,16 @@ func login(ctx context.Context) error {
 		},
 	}).Run()
 	if err != nil {
-		return err
+		return "", "", err
+	}
+
+	return username, password, nil
+}
+
+func login(ctx context.Context) error {
+	username, password, err := getUsernameAndPassword()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	verifier, challenge, err := pkce()
