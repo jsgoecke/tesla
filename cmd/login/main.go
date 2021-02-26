@@ -162,7 +162,7 @@ func login(ctx context.Context) error {
 		if err := os.MkdirAll(filepath.Dir(out), 0755); err != nil && !os.IsExist(err) {
 			return fmt.Errorf("mkdir all: %w", err)
 		}
-		f, err := os.OpenFile(filepath.Clean(out), os.O_CREATE|os.O_WRONLY, 0755)
+		f, err := os.OpenFile(filepath.Clean(out), os.O_CREATE|os.O_WRONLY, 0600)
 		if err != nil {
 			return fmt.Errorf("open: %w", err)
 		}
