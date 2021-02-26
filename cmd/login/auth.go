@@ -35,6 +35,7 @@ type auth struct {
 	Client       *http.Client
 	AuthURL      string
 	SelectDevice func(ctx context.Context, devices []device) (d device, passcode string, err error)
+	userAgent    string
 }
 
 func (a *auth) initClient() {
@@ -49,6 +50,7 @@ func (a *auth) initClient() {
 			ExpectContinueTimeout: 1 * time.Second,
 		},
 	}
+	a.userAgent = "hackney/1.17.0"
 }
 
 func (a *auth) Do(ctx context.Context, username, password string) (code string, err error) {
@@ -74,7 +76,7 @@ func (a *auth) Do(ctx context.Context, username, password string) (code string, 
 	if err != nil {
 		return "", fmt.Errorf("login: %w", err)
 	}
-	defer func() { _ = res.Body.Close() }()
+	defer res.Body.Close()
 
 	switch res.StatusCode {
 	case http.StatusOK:
@@ -111,13 +113,13 @@ func (a *auth) login(ctx context.Context, username, password string) (*http.Resp
 	if err != nil {
 		return nil, nil, fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", "")
+	req.Header.Set("User-Agent", a.userAgent)
 
 	res, err := a.Client.Do(req)
 	if err != nil {
 		return nil, nil, fmt.Errorf("do: %w", err)
 	}
-	defer func() { _ = res.Body.Close() }()
+	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
 		return nil, nil, fmt.Errorf("unexpected status code %d", res.StatusCode)
@@ -149,7 +151,7 @@ func (a *auth) login(ctx context.Context, username, password string) (*http.Resp
 	if err != nil {
 		return nil, nil, fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", "")
+	req.Header.Set("User-Agent", a.userAgent)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err = a.Client.Do(req)
@@ -166,13 +168,13 @@ func (a *auth) listDevices(ctx context.Context, transactionID string) ([]device,
 	if err != nil {
 		return nil, fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", "")
+	req.Header.Set("User-Agent", a.userAgent)
 
 	res, err := a.Client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("do: %w", err)
 	}
-	defer func() { _ = res.Body.Close() }()
+	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code %d", res.StatusCode)
@@ -201,14 +203,14 @@ func (a *auth) verify(ctx context.Context, transactionID string, d device, passc
 	if err != nil {
 		return fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", "")
+	req.Header.Set("User-Agent", a.userAgent)
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := a.Client.Do(req)
 	if err != nil {
 		return fmt.Errorf("do: %w", err)
 	}
-	defer func() { _ = res.Body.Close() }()
+	defer res.Body.Close()
 
 	var out struct {
 		Data struct {
@@ -232,14 +234,14 @@ func (a *auth) commit(ctx context.Context, transactionID string) (code string, e
 	if err != nil {
 		return "", fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", "")
+	req.Header.Set("User-Agent", a.userAgent)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err := a.Client.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("do: %w", err)
 	}
-	defer func() { _ = res.Body.Close() }()
+	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusFound {
 		return "", fmt.Errorf("unexpected status code %d", res.StatusCode)
