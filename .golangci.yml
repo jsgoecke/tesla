@@ -40,3 +40,9 @@ linters:
     - unused
     - varcheck
     - whitespace
+
+linters-settings:
+  gomnd:
+    settings:
+      mnd:
+        ignored-files: auth.go
