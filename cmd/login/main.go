@@ -84,7 +84,7 @@ func login(ctx context.Context) error {
 
 	password, err := (&promptui.Prompt{
 		Label:   "Password",
-		Mask:    ' ',
+		Mask:    '*',
 		Pointer: promptui.PipeCursor,
 		Validate: func(s string) error {
 			if len(s) == 0 {
@@ -133,7 +133,6 @@ func login(ctx context.Context) error {
 
 	e := json.NewEncoder(os.Stdout)
 	e.SetIndent("", "\t")
-	e.Encode(c)
 	e.Encode(t)
 
 	return nil
