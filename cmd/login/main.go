@@ -13,7 +13,6 @@ import (
 	"os"
 
 	"github.com/manifoldco/promptui"
-	"github.com/uhthomas/tesla"
 	"golang.org/x/oauth2"
 )
 
@@ -37,7 +36,7 @@ func pkce() (verifier, challenge string, err error) {
 	return verifier, challenge, nil
 }
 
-func selectDevice(ctx context.Context, devices []tesla.Device) (d tesla.Device, passcode string, err error) {
+func selectDevice(ctx context.Context, devices []Device) (d Device, passcode string, err error) {
 	var i int
 	if len(devices) > 1 {
 		var err error
@@ -47,7 +46,7 @@ func selectDevice(ctx context.Context, devices []tesla.Device) (d tesla.Device, 
 			Pointer: promptui.PipeCursor,
 		}).Run()
 		if err != nil {
-			return tesla.Device{}, "", fmt.Errorf("select device: %w", err)
+			return Device{}, "", fmt.Errorf("select device: %w", err)
 		}
 	}
 	d = devices[i]
@@ -63,7 +62,7 @@ func selectDevice(ctx context.Context, devices []tesla.Device) (d tesla.Device, 
 		},
 	}).Run()
 	if err != nil {
-		return tesla.Device{}, "", err
+		return Device{}, "", err
 	}
 	return d, passcode, nil
 }
@@ -114,7 +113,7 @@ func Main(ctx context.Context) error {
 		},
 	}
 
-	code, err := (&tesla.Auth{
+	code, err := (&Auth{
 		AuthURL: c.AuthCodeURL(state(), oauth2.AccessTypeOffline,
 			oauth2.SetAuthURLParam("code_challenge", challenge),
 			oauth2.SetAuthURLParam("code_challenge_method", "S256"),
