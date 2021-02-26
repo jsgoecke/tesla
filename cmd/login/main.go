@@ -7,10 +7,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/manifoldco/promptui"
 	"golang.org/x/oauth2"
@@ -104,7 +106,16 @@ func getUsernameAndPassword() (string, string, error) {
 	return username, password, nil
 }
 
+func shortLongStringFlag(name, short, value, usage string) *string {
+	s := flag.String(name, value, usage)
+	flag.StringVar(s, short, value, usage)
+	return s
+}
+
 func login(ctx context.Context) error {
+	out := shortLongStringFlag("out", "o", "", "Token JSON output path. Leave blank or use '-' to write to stdout.")
+	flag.Parse()
+
 	username, password, err := getUsernameAndPassword()
 	if err != nil {
 		log.Fatal(err)
@@ -144,12 +155,26 @@ func login(ctx context.Context) error {
 		return fmt.Errorf("exchange: %w", err)
 	}
 
-	e := json.NewEncoder(os.Stdout)
-	e.SetIndent("", "\t")
-	if err := e.Encode(t); err != nil {
-		log.Fatal(err)
+	w := os.Stdout
+	switch out := *out; out {
+	case "", "-":
+	default:
+		if err := os.MkdirAll(filepath.Dir(out), 0755); err != nil && !os.IsExist(err) {
+			return fmt.Errorf("mkdir all: %w", err)
+		}
+		f, err := os.OpenFile(filepath.Clean(out), os.O_CREATE|os.O_WRONLY, 0755)
+		if err != nil {
+			return fmt.Errorf("open: %w", err)
+		}
+		defer f.Close()
+		w = f
 	}
 
+	e := json.NewEncoder(w)
+	e.SetIndent("", "\t")
+	if err := e.Encode(t); err != nil {
+		return fmt.Errorf("json encode: %w", err)
+	}
 	return nil
 }
 
