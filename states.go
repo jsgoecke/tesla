@@ -219,6 +219,9 @@ type timeSecs struct {
 }
 
 func (t *timeSecs) UnmarshalJSON(b []byte) error {
+	if string(b) == "null" {
+		return nil
+	}
 	i, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
 		return err
@@ -232,6 +235,9 @@ type timeMsec struct {
 }
 
 func (t *timeMsec) UnmarshalJSON(b []byte) error {
+	if string(b) == "null" {
+		return nil
+	}
 	i, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
 		return err
