@@ -38,7 +38,7 @@ type ChargeState struct {
 	ChargeRate                  float64     `json:"charge_rate"`
 	ChargePortDoorOpen          bool        `json:"charge_port_door_open"`
 	MotorizedChargePort         bool        `json:"motorized_charge_port"`
-	ScheduledChargingStartTime  interface{} `json:"scheduled_charging_start_time"`
+	ScheduledChargingStartTime  timeSecs    `json:"scheduled_charging_start_time"`
 	ScheduledChargingPending    bool        `json:"scheduled_charging_pending"`
 	UserChargeEnableRequest     interface{} `json:"user_charge_enable_request"`
 	ChargeEnableRequest         bool        `json:"charge_enable_request"`
