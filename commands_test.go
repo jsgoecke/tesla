@@ -18,179 +18,118 @@ func TestCommandsSpec(t *testing.T) {
 	defer ts.Close()
 
 	client := NewTestClient(ts)
+	vehicles, err := client.Vehicles()
+	if err != nil {
+		t.Fatal(err)
+	}
+	vehicle := vehicles[0]
 
 	Convey("Should auto park abort Autopark", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.AutoparkAbort()
+		err := vehicle.AutoparkAbort()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should auto park car forward", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.AutoparkForward()
+		err := vehicle.AutoparkForward()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should auto park car reverse", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.AutoparkReverse()
+		err := vehicle.AutoparkReverse()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should turn on sentry mode", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.EnableSentry()
+		err := vehicle.EnableSentry()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should toggle the garage door based on Homelink", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.TriggerHomelink()
+		err := vehicle.TriggerHomelink()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should wakeup the car", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		_, err = vehicle.Wakeup()
+		_, err := vehicle.Wakeup()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should flash lights", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.FlashLights()
+		err := vehicle.FlashLights()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should honk the horn", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.HonkHorn()
+		err := vehicle.HonkHorn()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should open the charge port", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.OpenChargePort()
+		err := vehicle.OpenChargePort()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should reset the valet pin", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.ResetValetPIN()
+		err := vehicle.ResetValetPIN()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should set the car charge limit", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.SetChargeLimit(50)
+		err := vehicle.SetChargeLimit(50)
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should set the car to standard charge level", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.SetChargeLimitStandard()
+		err := vehicle.SetChargeLimitStandard()
 		So(err.Error(), ShouldEqual, "already_standard")
 	})
 
 	Convey("Should attempt to charge the car", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.StartCharging()
+		err := vehicle.StartCharging()
 		So(err.Error(), ShouldEqual, "complete")
 	})
 
 	Convey("Should attempt to stop charging the car", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.StopCharging()
+		err := vehicle.StopCharging()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should set charge limit maximum", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.SetChargeLimitMax()
+		err := vehicle.SetChargeLimitMax()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should set air conditioning on", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.StartAirConditioning()
+		err := vehicle.StartAirConditioning()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should set air conditioning off", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.StopAirConditioning()
+		err := vehicle.StopAirConditioning()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should unlock the doors", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.UnlockDoors()
+		err := vehicle.UnlockDoors()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should lock the doors", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.LockDoors()
+		err := vehicle.LockDoors()
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should set the temperature", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.SetTemperature(72.0, 72.0)
+		err := vehicle.SetTemperature(72.0, 72.0)
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should start the car", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
-		err = vehicle.Start("foo")
+		err := vehicle.Start("foo")
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Should move the Pano Roof around", t, func() {
-		vehicles, err := client.Vehicles()
-		So(err, ShouldBeNil)
-		vehicle := vehicles[0]
 		Convey("Should vent the pano roof", func() {
 			err := vehicle.MovePanoRoof("vent", 0)
 			So(err, ShouldBeNil)

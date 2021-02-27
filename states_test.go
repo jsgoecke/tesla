@@ -25,18 +25,19 @@ func TestStatesSpec(t *testing.T) {
 	defer ts.Close()
 
 	client := NewTestClient(ts)
+	vehicles, err := client.Vehicles()
+	if err != nil {
+		t.Fatal(err)
+	}
+	vehicle := vehicles[0]
 
 	Convey("Should get mobile enabled status", t, func() {
-		vehicles, _ := client.Vehicles()
-		vehicle := vehicles[0]
 		status, err := vehicle.MobileEnabled()
 		So(err, ShouldBeNil)
 		So(status, ShouldBeTrue)
 	})
 
 	Convey("Should get charge state", t, func() {
-		vehicles, _ := client.Vehicles()
-		vehicle := vehicles[0]
 		status, err := vehicle.ChargeState()
 		So(err, ShouldBeNil)
 		So(status.BatteryLevel, ShouldEqual, 90)
@@ -45,8 +46,6 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get climate state", t, func() {
-		vehicles, _ := client.Vehicles()
-		vehicle := vehicles[0]
 		status, err := vehicle.ClimateState()
 		So(err, ShouldBeNil)
 		So(status.DriverTempSetting, ShouldEqual, 22.0)
@@ -55,8 +54,6 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get drive state", t, func() {
-		vehicles, _ := client.Vehicles()
-		vehicle := vehicles[0]
 		status, err := vehicle.DriveState()
 		So(err, ShouldBeNil)
 		So(status.Latitude, ShouldEqual, 35.1)
@@ -64,8 +61,6 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get GUI settings", t, func() {
-		vehicles, _ := client.Vehicles()
-		vehicle := vehicles[0]
 		status, err := vehicle.GuiSettings()
 		So(err, ShouldBeNil)
 		So(status.GuiDistanceUnits, ShouldEqual, "mi/hr")
@@ -73,8 +68,6 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get Vehicle state", t, func() {
-		vehicles, _ := client.Vehicles()
-		vehicle := vehicles[0]
 		status, err := vehicle.VehicleState()
 		So(err, ShouldBeNil)
 		So(status.APIVersion, ShouldEqual, 3)
@@ -83,8 +76,6 @@ func TestStatesSpec(t *testing.T) {
 	})
 
 	Convey("Should get service data", t, func() {
-		vehicles, _ := client.Vehicles()
-		vehicle := vehicles[0]
 		status, err := vehicle.ServiceData()
 		So(err, ShouldBeNil)
 		So(status.ServiceStatus, ShouldEqual, "in_service")
