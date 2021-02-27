@@ -72,7 +72,7 @@ func TestStatesSpec(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(status.APIVersion, ShouldEqual, 3)
 		So(status.CalendarSupported, ShouldBeTrue)
-		So(status.Rt, ShouldEqual, 0)
+		So(status.RearTrunk, ShouldEqual, 0)
 	})
 
 	Convey("Should get service data", t, func() {
