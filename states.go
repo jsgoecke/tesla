@@ -139,7 +139,7 @@ type VehicleState struct {
 	RearSeatHeaters         int     `json:"rear_seat_heaters"`
 	RemoteStart             bool    `json:"remote_start"`
 	RemoteStartSupported    bool    `json:"remote_start_supported"`
-	Rhd                     bool    `json:"rhd"`
+	RightHandDrive          bool    `json:"rhd"`
 	RoofColor               string  `json:"roof_color"`
 	RearTrunk               int     `json:"rt"`
 	SentryMode              bool    `json:"sentry_mode"`
