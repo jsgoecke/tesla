@@ -134,8 +134,8 @@ type VehicleState struct {
 	Odometer                float64 `json:"odometer"`
 	ParsedCalendarSupported bool    `json:"parsed_calendar_supported"`
 	PerfConfig              string  `json:"perf_config"`
-	PassengerFront          int     `json:"pf"`
-	PassengerRear           int     `json:"pr"`
+	PassengerFrontDoor      int     `json:"pf"`
+	PassengerRearDoor       int     `json:"pr"`
 	RearSeatHeaters         int     `json:"rear_seat_heaters"`
 	RemoteStart             bool    `json:"remote_start"`
 	RemoteStartSupported    bool    `json:"remote_start_supported"`
