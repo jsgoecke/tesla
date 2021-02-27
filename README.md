@@ -1,6 +1,6 @@
 # tesla
 
-<img src="https://raw.githubusercontent.com/bogosj/tesla/main/images/gotesla.png" width="200px">
+<img src="https://raw.githubusercontent.com/bogosj/tesla/main/.github/images/gotesla.png" width="200px">
 
 This library provides a wrapper around the API to easily query and command a [Tesla](https://www.tesla.com/) remotely in Go.
 
