@@ -25,6 +25,7 @@ type Client struct {
 	BaseURL      string
 	StreamingURL string
 	hc           *http.Client
+	oc           *oauth2.Config
 	token        *oauth2.Token
 }
 
@@ -50,19 +51,26 @@ func WithTokenFile(path string) ClientOption {
 	return WithToken(t)
 }
 
+// WithOAuth2Config allows a consumer to provide a different configuration from the default.
+func WithOAuth2Config(oc *oauth2.Config) ClientOption {
+	return func(c *Client) error {
+		c.oc = oc
+		return nil
+	}
+}
+
 // New creates a new Tesla API client. You must provided one of WithToken or WithTokenFile
 // functional options to initialize the client with an OAuth token.
 func NewClient(ctx context.Context, options ...ClientOption) (*Client, error) {
-	config := &oauth2.Config{
-		ClientID:    "ownerapi",
-		RedirectURL: "https://auth.tesla.com/void/callback",
-		Endpoint:    Endpoint,
-		Scopes:      []string{"openid", "email", "offline_access"},
-	}
-
 	client := &Client{
 		BaseURL:      BaseURL,
 		StreamingURL: StreamingURL,
+		oc: &oauth2.Config{
+			ClientID:    "ownerapi",
+			RedirectURL: "https://auth.tesla.com/void/callback",
+			Endpoint:    Endpoint,
+			Scopes:      []string{"openid", "email", "offline_access"},
+		},
 	}
 
 	for _, option := range options {
@@ -76,7 +84,7 @@ func NewClient(ctx context.Context, options ...ClientOption) (*Client, error) {
 		return nil, errors.New("an OAuth2 token must be provided")
 	}
 
-	client.hc = config.Client(ctx, client.token)
+	client.hc = client.oc.Client(ctx, client.token)
 
 	return client, nil
 }
