@@ -25,10 +25,34 @@ type Client struct {
 	BaseURL      string
 	StreamingURL string
 	hc           *http.Client
+	token        *oauth2.Token
 }
 
-// NewClient creates a new client for the Tesla API with a provided OAuth token.
-func NewClient(ctx context.Context, tok *oauth2.Token) (*Client, error) {
+type ClientOption func(c *Client) error
+
+// WithToken provides an oauth2.Token to the client for auth.
+func WithToken(t *oauth2.Token) ClientOption {
+	return func(c *Client) error {
+		c.token = t
+		return nil
+	}
+}
+
+// WithTokenFile reads a JSON serialized oauth2.Token struct from disk and provides it
+// to the client for auth.
+func WithTokenFile(path string) ClientOption {
+	t, err := loadToken(path)
+	if err != nil {
+		return func(c *Client) error {
+			return err
+		}
+	}
+	return WithToken(t)
+}
+
+// New creates a new Tesla API client. You must provided one of WithToken or WithTokenFile
+// functional options to initialize the client with an OAuth token.
+func NewClient(ctx context.Context, options ...ClientOption) (*Client, error) {
 	config := &oauth2.Config{
 		ClientID:    "ownerapi",
 		RedirectURL: "https://auth.tesla.com/void/callback",
@@ -39,8 +63,21 @@ func NewClient(ctx context.Context, tok *oauth2.Token) (*Client, error) {
 	client := &Client{
 		BaseURL:      BaseURL,
 		StreamingURL: StreamingURL,
-		hc:           config.Client(ctx, tok),
 	}
+
+	for _, option := range options {
+		err := option(client)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if client.token == nil {
+		return nil, errors.New("an OAuth2 token must be provided")
+	}
+
+	client.hc = config.Client(ctx, client.token)
+
 	return client, nil
 }
 
@@ -54,19 +91,6 @@ func loadToken(path string) (*oauth2.Token, error) {
 		return nil, err
 	}
 	return tok, nil
-}
-
-// NewClientFromTokenFile creates a new client for the Tesla API using a JSON serialized token from disk.
-func NewClientFromTokenFile(ctx context.Context, path string) (*Client, error) {
-	t, err := loadToken(path)
-	if err != nil {
-		return nil, err
-	}
-	c, err := NewClient(ctx, t)
-	if err != nil {
-		return nil, err
-	}
-	return c, nil
 }
 
 // Calls an HTTP GET
