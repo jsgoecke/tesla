@@ -73,7 +73,7 @@ type VehiclesResponse struct {
 // Vehicles fetches the vehicles associated to a Tesla account via the API.
 func (c *Client) Vehicles() ([]*Vehicle, error) {
 	vehiclesResponse := &VehiclesResponse{}
-	if err := c.getJSON(c.BaseURL+"/vehicles", vehiclesResponse); err != nil {
+	if err := c.getJSON(c.baseURL+"/vehicles", vehiclesResponse); err != nil {
 		return nil, err
 	}
 	for _, v := range vehiclesResponse.Response {
@@ -85,7 +85,7 @@ func (c *Client) Vehicles() ([]*Vehicle, error) {
 // Vehicle fetches the vehicle by ID associated to a Tesla account via the API.
 func (c *Client) Vehicle(vehicleID int64) (*Vehicle, error) {
 	resp := &VehicleResponse{}
-	if err := c.getJSON(c.BaseURL+"/vehicles/"+strconv.FormatInt(vehicleID, 10), resp); err != nil {
+	if err := c.getJSON(c.baseURL+"/vehicles/"+strconv.FormatInt(vehicleID, 10), resp); err != nil {
 		return nil, err
 	}
 	resp.Response.c = c

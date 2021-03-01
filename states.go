@@ -208,7 +208,7 @@ type MobileEnabledResponse struct {
 // MobileEnabled returns if the vehicle is mobile enabled for Tesla API control
 func (v *Vehicle) MobileEnabled() (bool, error) {
 	r := &MobileEnabledResponse{}
-	if err := v.c.getJSON(v.c.BaseURL+"/vehicles/"+strconv.FormatInt(v.ID, 10)+"/mobile_enabled", r); err != nil {
+	if err := v.c.getJSON(v.c.baseURL+"/vehicles/"+strconv.FormatInt(v.ID, 10)+"/mobile_enabled", r); err != nil {
 		return false, err
 	}
 	return r.Bool, nil
@@ -272,7 +272,8 @@ type NearbyChargingSitesResponse struct {
 // NearbyChargingSites returns the charging sites near the vehicle.
 func (v *Vehicle) NearbyChargingSites() (*NearbyChargingSitesResponse, error) {
 	resp := &NearbyChargingSitesResponse{}
-	if err := v.c.getJSON(v.c.BaseURL+"/vehicles/"+strconv.FormatInt(v.ID, 10)+"/nearby_charging_sites", resp); err != nil {
+	if err := v.c.getJSON(
+		v.c.baseURL+"/vehicles/"+strconv.FormatInt(v.ID, 10)+"/nearby_charging_sites", resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -346,7 +347,8 @@ func stateError(sr *StateRequest) error {
 // A utility function to fetch the appropriate state of the vehicle
 func (c *Client) fetchState(resource string, id int64) (*StateRequest, error) {
 	stateRequest := &StateRequest{}
-	if err := c.getJSON(c.BaseURL+"/vehicles/"+strconv.FormatInt(id, 10)+"/data_request"+resource, stateRequest); err != nil {
+	if err := c.getJSON(
+		c.baseURL+"/vehicles/"+strconv.FormatInt(id, 10)+"/data_request"+resource, stateRequest); err != nil {
 		return nil, err
 	}
 	if err := stateError(stateRequest); err != nil {

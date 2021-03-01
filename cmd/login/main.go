@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/bogosj/tesla"
 	"github.com/manifoldco/promptui"
 	"golang.org/x/oauth2"
 )
@@ -126,16 +127,7 @@ func login(ctx context.Context) error {
 		return fmt.Errorf("pkce: %w", err)
 	}
 
-	c := &oauth2.Config{
-		ClientID:     "ownerapi",
-		ClientSecret: "",
-		RedirectURL:  "https://auth.tesla.com/void/callback",
-		Scopes:       []string{"openid email offline_access"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://auth.tesla.com/oauth2/v3/authorize",
-			TokenURL: "https://auth.tesla.com/oauth2/v3/token",
-		},
-	}
+	c := tesla.DefaultOAuth2Config
 
 	code, err := (&auth{
 		AuthURL: c.AuthCodeURL(state(), oauth2.AccessTypeOffline,
