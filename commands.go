@@ -3,6 +3,7 @@ package tesla
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -224,6 +225,23 @@ func (v Vehicle) StopAirConditioning() error {
 	apiURL := v.c.baseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/auto_conditioning_stop"
 	_, err := v.sendCommand(apiURL, nil)
 	return err
+}
+
+// Sets the specified seat's heater level.
+func (v Vehicle) SetSeatHeater(heater int, level int) error {
+	url := v.c.baseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/remote_seat_heater_request"
+	payload := fmt.Sprintf(`{"heater":%d, "level":%d}`, heater, level)
+	_, err := v.c.post(url, []byte(payload))
+	return err
+}
+
+// Turn steering wheel heater on or off.
+func (v Vehicle) SetSteeringWheelHeater(on bool) error {
+	url := v.c.baseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/remote_steering_wheel_heater_request"
+	payload := fmt.Sprintf(`{"on":%t}`, on)
+	_, err := v.c.post(url, []byte(payload))
+	return err
+
 }
 
 // MovePanoRoof sets the desired state of the panoramic roof. The approximate percent open
