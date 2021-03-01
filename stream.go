@@ -12,9 +12,6 @@ import (
 var (
 	// StreamParams are all of the parameters requested from the streaming API.
 	StreamParams = "speed,odometer,soc,elevation,est_heading,est_lat,est_lng,power,shift_state,range,est_range,heading"
-
-	// StreamingURL is the base URL of the streaming API.
-	StreamingURL = "https://streaming.vn.teslamotors.com"
 )
 
 // StreamEvent is the event returned by the vehicle by the Tesla API.
@@ -36,7 +33,7 @@ type StreamEvent struct {
 
 // Stream requests a stream from the vehicle and returns a Go channel.
 func (v Vehicle) Stream(email string) (chan *StreamEvent, chan error, error) {
-	url := v.c.StreamingURL + "/stream/" + strconv.FormatUint(v.VehicleID, 10) + "/?values=" + StreamParams
+	url := v.c.streamingURL + "/stream/" + strconv.FormatUint(v.VehicleID, 10) + "/?values=" + StreamParams
 	req, _ := http.NewRequest("GET", url, nil)
 	req.SetBasicAuth(email, v.Tokens[0])
 	resp, err := v.c.hc.Do(req)
