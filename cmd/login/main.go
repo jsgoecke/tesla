@@ -2,48 +2,23 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/bogosj/tesla"
 	"github.com/manifoldco/promptui"
-	"golang.org/x/oauth2"
 )
 
 const (
 	mfaPasscodeLength = 6
 )
 
-func state() string {
-	var b [9]byte
-	if _, err := io.ReadFull(rand.Reader, b[:]); err != nil {
-		panic(err)
-	}
-	return base64.RawURLEncoding.EncodeToString(b[:])
-}
-
-// https://www.oauth.com/oauth2-servers/pkce/
-func pkce() (verifier, challenge string, err error) {
-	var p [87]byte
-	if _, err := io.ReadFull(rand.Reader, p[:]); err != nil {
-		return "", "", fmt.Errorf("rand read full: %w", err)
-	}
-	verifier = base64.RawURLEncoding.EncodeToString(p[:])
-	b := sha256.Sum256([]byte(challenge))
-	challenge = base64.RawURLEncoding.EncodeToString(b[:])
-	return verifier, challenge, nil
-}
-
-func selectDevice(ctx context.Context, devices []device) (d device, passcode string, err error) {
+func selectDevice(ctx context.Context, devices []tesla.Device) (d tesla.Device, passcode string, err error) {
 	var i int
 	if len(devices) > 1 {
 		var err error
@@ -53,7 +28,7 @@ func selectDevice(ctx context.Context, devices []device) (d device, passcode str
 			Pointer: promptui.PipeCursor,
 		}).Run()
 		if err != nil {
-			return device{}, "", fmt.Errorf("select device: %w", err)
+			return tesla.Device{}, "", fmt.Errorf("select device: %w", err)
 		}
 	}
 	d = devices[i]
@@ -69,7 +44,7 @@ func selectDevice(ctx context.Context, devices []device) (d device, passcode str
 		},
 	}).Run()
 	if err != nil {
-		return device{}, "", err
+		return tesla.Device{}, "", err
 	}
 	return d, passcode, nil
 }
@@ -122,30 +97,16 @@ func login(ctx context.Context) error {
 		log.Fatal(err)
 	}
 
-	verifier, challenge, err := pkce()
-	if err != nil {
-		return fmt.Errorf("pkce: %w", err)
-	}
-
-	c := tesla.DefaultOAuth2Config
-
-	code, err := (&auth{
-		AuthURL: c.AuthCodeURL(state(), oauth2.AccessTypeOffline,
-			oauth2.SetAuthURLParam("code_challenge", challenge),
-			oauth2.SetAuthURLParam("code_challenge_method", "S256"),
-		),
-		SelectDevice: selectDevice,
-	}).Do(ctx, username, password)
+	client, err := tesla.NewClient(
+		context.Background(),
+		tesla.WithMFAHandler(selectDevice),
+		tesla.WithCredentials(username, password),
+	)
 	if err != nil {
 		return err
 	}
 
-	t, err := c.Exchange(ctx, code,
-		oauth2.SetAuthURLParam("code_verifier", verifier),
-	)
-	if err != nil {
-		return fmt.Errorf("exchange: %w", err)
-	}
+	t := client.Token()
 
 	w := os.Stdout
 	switch out := *out; out {
