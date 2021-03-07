@@ -227,7 +227,7 @@ func (v Vehicle) StopAirConditioning() error {
 	return err
 }
 
-// Sets the specified seat's heater level.
+// SetSeatHeater sets the specified seat's heater level.
 func (v Vehicle) SetSeatHeater(heater int, level int) error {
 	url := v.c.baseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/remote_seat_heater_request"
 	payload := fmt.Sprintf(`{"heater":%d, "level":%d}`, heater, level)
@@ -235,7 +235,7 @@ func (v Vehicle) SetSeatHeater(heater int, level int) error {
 	return err
 }
 
-// Turn steering wheel heater on or off.
+// SetSteeringWheelHeater turns steering wheel heater on or off.
 func (v Vehicle) SetSteeringWheelHeater(on bool) error {
 	url := v.c.baseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/remote_steering_wheel_heater_request"
 	payload := fmt.Sprintf(`{"on":%t}`, on)

@@ -7,6 +7,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// ClientOption can be passed when creating the client
 type ClientOption func(c *Client) error
 
 // WithToken provides an oauth2.Token to the client for auth.

@@ -31,7 +31,7 @@ type Client struct {
 	token        *oauth2.Token
 }
 
-// New creates a new Tesla API client. You must provided one of WithToken or WithTokenFile
+// NewClient creates a new Tesla API client. You must provided one of WithToken or WithTokenFile
 // functional options to initialize the client with an OAuth token.
 func NewClient(ctx context.Context, options ...ClientOption) (*Client, error) {
 	client := &Client{
