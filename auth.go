@@ -1,4 +1,4 @@
-package main
+package tesla
 
 import (
 	"bytes"
@@ -20,7 +20,8 @@ const (
 	mfaVerifyURL = "https://auth.tesla.com/oauth2/v3/authorize/mfa/verify"
 )
 
-type device struct {
+// Device is the multi-factor device returned by the /authorize/mfa/factors endpoint
+type Device struct {
 	DispatchRequired bool      `json:"dispatchRequired"`
 	ID               string    `json:"id"`
 	Name             string    `json:"name"`
@@ -34,7 +35,7 @@ type device struct {
 type auth struct {
 	Client       *http.Client
 	AuthURL      string
-	SelectDevice func(ctx context.Context, devices []device) (d device, passcode string, err error)
+	SelectDevice func(ctx context.Context, devices []Device) (d Device, passcode string, err error)
 	userAgent    string
 }
 
@@ -158,7 +159,7 @@ func (a *auth) login(ctx context.Context, username, password string) (*http.Resp
 	return res, v, err
 }
 
-func (a *auth) listDevices(ctx context.Context, transactionID string) ([]device, error) {
+func (a *auth) listDevices(ctx context.Context, transactionID string) ([]Device, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, (&url.URL{
 		Scheme:   "https",
 		Host:     "auth.tesla.com",
@@ -181,7 +182,7 @@ func (a *auth) listDevices(ctx context.Context, transactionID string) ([]device,
 	}
 
 	var out struct {
-		Data []device `json:"data"`
+		Data []Device `json:"data"`
 	}
 	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
 		return nil, fmt.Errorf("json decode: %w", err)
@@ -189,7 +190,7 @@ func (a *auth) listDevices(ctx context.Context, transactionID string) ([]device,
 	return out.Data, nil
 }
 
-func (a *auth) verify(ctx context.Context, transactionID string, d device, passcode string) error {
+func (a *auth) verify(ctx context.Context, transactionID string, d Device, passcode string) error {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(map[string]string{
 		"transaction_id": transactionID,
