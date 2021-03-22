@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -11,7 +10,6 @@ import (
 
 func main() {
 	ctx := context.Background()
-	email := "email@example.com"
 	client, err := tesla.NewClient(ctx, tesla.WithTokenFile("/file/path/to/token.json"))
 	if err != nil {
 		panic(err)
@@ -62,30 +60,4 @@ func main() {
 	fmt.Println(vehicle.AutoparkForward())
 	fmt.Println(vehicle.AutoparkReverse())
 	// Take care with these, as the car will move
-
-	// Stream vehicle events
-	eventChan, errChan, err := vehicle.Stream(email)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	for {
-		select {
-		case event := <-eventChan:
-			eventJSON, _ := json.Marshal(event)
-			fmt.Println(string(eventJSON))
-		case err = <-errChan:
-			fmt.Println(err)
-			if err.Error() == "HTTP stream closed" {
-				fmt.Println("Reconnecting!")
-				eventChan, errChan, err = vehicle.Stream(email)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-			}
-		}
-	}
-
 }

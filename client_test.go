@@ -1,7 +1,6 @@
 package tesla
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -100,15 +99,6 @@ func serveCheck(c func(req *http.Request, body []byte) error) http.HandlerFunc {
 	}
 }
 
-func serveStream(w http.ResponseWriter, req *http.Request) {
-	w.WriteHeader(200)
-	events := StreamEventString + "\n" +
-		StreamEventString + "\n" +
-		BadStreamEventString + "\n"
-	b := bytes.NewBufferString(events)
-	b.WriteTo(w)
-}
-
 func init() {
 	testMux.HandleFunc("/oauth/token", serveJSON("{\"access_token\": \"ghi789\"}"))
 	testMux.HandleFunc("/api/1/vehicles", serveJSON(VehiclesJSON))
@@ -133,7 +123,6 @@ func init() {
 	testMux.HandleFunc("/api/1/vehicles/1234/data_request/vehicle_state", serveJSON(VehicleStateJSON))
 	testMux.HandleFunc("/api/1/vehicles/1234/mobile_enabled", serveJSON(TrueJSON))
 	testMux.HandleFunc("/api/1/vehicles/1234/wake_up", serveJSON(WakeupResponseJSON))
-	testMux.HandleFunc("/stream/", serveStream)
 
 	testMux.HandleFunc("/api/1/vehicles/1234/command/remote_start_drive", func(w http.ResponseWriter, req *http.Request) {
 		if err := req.ParseForm(); err != nil {
