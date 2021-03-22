@@ -40,6 +40,12 @@ Passcode: 463932
 
 This will output a token to the `tesla.token` file in your home directory.
 
+## Differences from jsgoecke/tesla
+
+### Streaming API
+
+The implementation of the Streaming API is not working. The code was removed [in this commit](https://github.com/bogosj/tesla/commit/19f79e1dc7a6c5d5ea5d5c8e0f4f0f2c42673404). If you are interested in getting this working again feel free to send a PR reverting these changes and providing a fix.
+
 ## Credits
 
 Thank you to [Tim Dorr](https://github.com/timdorr) who did the heavy lifting to document the Tesla API and also created the [model-s-api Ruby Gem](https://github.com/timdorr/model-s-api).
