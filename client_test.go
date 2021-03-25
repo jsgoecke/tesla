@@ -70,7 +70,7 @@ func serveJSON(j string) http.HandlerFunc {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(j))
+		_, _ = w.Write([]byte(j))
 	}
 }
 
