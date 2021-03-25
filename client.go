@@ -29,6 +29,7 @@ type Client struct {
 	hc           *http.Client
 	oc           *oauth2.Config
 	token        *oauth2.Token
+	ts           oauth2.TokenSource
 	authHandler  *authHandler
 }
 
@@ -68,14 +69,15 @@ func NewClient(ctx context.Context, options ...ClientOption) (*Client, error) {
 		return nil, errors.New("an OAuth2 token must be provided")
 	}
 
-	client.hc = client.oc.Client(ctx, client.token)
+	client.ts = client.oc.TokenSource(ctx, client.token)
+	client.hc = oauth2.NewClient(ctx, client.ts)
 
 	return client, nil
 }
 
-// Token returns the OAuth2 token
-func (c Client) Token() *oauth2.Token {
-	return c.token
+// Token returns the oauth token
+func (c Client) Token() (*oauth2.Token, error) {
+	return c.ts.Token()
 }
 
 // Calls an HTTP GET
