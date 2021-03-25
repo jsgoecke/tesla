@@ -24,12 +24,13 @@ var DefaultOAuth2Config = &oauth2.Config{
 
 // Client provides the client and associated elements for interacting with the Tesla API.
 type Client struct {
-	baseURL      string
-	streamingURL string
-	hc           *http.Client
-	oc           *oauth2.Config
-	token        *oauth2.Token
-	authHandler  *authHandler
+	baseURL            string
+	streamingURL       string
+	hc                 *http.Client
+	oc                 *oauth2.Config
+	token              *oauth2.Token
+	authHandler        *authHandler
+	oauth2.TokenSource // will expose the Token() method
 }
 
 // NewClient creates a new Tesla API client. You must provided one of WithToken or WithTokenFile
@@ -68,14 +69,10 @@ func NewClient(ctx context.Context, options ...ClientOption) (*Client, error) {
 		return nil, errors.New("an OAuth2 token must be provided")
 	}
 
-	client.hc = client.oc.Client(ctx, client.token)
+	client.TokenSource = client.oc.TokenSource(ctx, client.token)
+	client.hc = oauth2.NewClient(ctx, client.TokenSource)
 
 	return client, nil
-}
-
-// Token returns the OAuth2 token
-func (c Client) Token() *oauth2.Token {
-	return c.token
 }
 
 // Calls an HTTP GET
