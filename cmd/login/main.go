@@ -94,7 +94,7 @@ func login(ctx context.Context) error {
 
 	username, password, err := getUsernameAndPassword()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	client, err := tesla.NewClient(
@@ -106,7 +106,10 @@ func login(ctx context.Context) error {
 		return err
 	}
 
-	t := client.Token()
+	t, err := client.Token()
+	if err != nil {
+		return err
+	}
 
 	w := os.Stdout
 	switch out := *out; out {
