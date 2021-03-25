@@ -11,8 +11,8 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// DefaultOAuth2Config is the OAuth2 configuration for authenticating with the Tesla API.
-var DefaultOAuth2Config = &oauth2.Config{
+// OAuth2Config is the OAuth2 configuration for authenticating with the Tesla API.
+var OAuth2Config = &oauth2.Config{
 	ClientID:    "ownerapi",
 	RedirectURL: "https://auth.tesla.com/void/callback",
 	Endpoint: oauth2.Endpoint{
@@ -38,7 +38,7 @@ func NewClient(ctx context.Context, options ...ClientOption) (*Client, error) {
 	client := &Client{
 		baseURL:      "https://owner-api.teslamotors.com/api/1",
 		streamingURL: "https://streaming.vn.teslamotors.com",
-		oc:           DefaultOAuth2Config,
+		oc:           OAuth2Config,
 	}
 
 	for _, option := range options {
