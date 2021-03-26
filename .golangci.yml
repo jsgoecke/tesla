@@ -10,7 +10,7 @@ linters:
     - dupl
     - errcheck
     - exhaustive
-    - funlen
+    # - funlen
     - gochecknoinits
     - goconst
     - gocritic
@@ -18,16 +18,16 @@ linters:
     - gofmt
     - goimports
     - golint
-    - gomnd
+    # - gomnd
     - goprintffuncname
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - lll
+    # - lll
     - misspell
     - nakedret
-    - noctx
+    # - noctx
     - nolintlint
     - rowserrcheck
     - scopelint
@@ -40,9 +40,3 @@ linters:
     - unused
     - varcheck
     - whitespace
-
-linters-settings:
-  gomnd:
-    settings:
-      mnd:
-        ignored-files: auth.go

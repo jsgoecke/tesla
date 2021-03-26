@@ -241,7 +241,6 @@ func (v Vehicle) SetSteeringWheelHeater(on bool) error {
 	payload := fmt.Sprintf(`{"on":%t}`, on)
 	_, err := v.c.post(url, []byte(payload))
 	return err
-
 }
 
 // MovePanoRoof sets the desired state of the panoramic roof. The approximate percent open

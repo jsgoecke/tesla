@@ -98,7 +98,7 @@ func login(ctx context.Context) error {
 	}
 
 	client, err := tesla.NewClient(
-		context.Background(),
+		ctx,
 		tesla.WithMFAHandler(selectDevice),
 		tesla.WithCredentials(username, password),
 	)
