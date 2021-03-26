@@ -55,7 +55,7 @@ func TestClientSpec(t *testing.T) {
 
 var testMux = &http.ServeMux{}
 
-func serveHTTP(t *testing.T) *httptest.Server {
+func serveHTTP(_ *testing.T) *httptest.Server {
 	return httptest.NewServer(testMux)
 }
 
