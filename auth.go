@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/oauth2"
 )
 
 const (
@@ -36,10 +37,14 @@ type auth struct {
 	Client       *http.Client
 	AuthURL      string
 	SelectDevice func(ctx context.Context, devices []Device) (d Device, passcode string, err error)
-	userAgent    string
 }
 
-func (a *auth) initClient() {
+func (a *auth) initClient(ctx context.Context) {
+	if client, ok := ctx.Value(oauth2.HTTPClient).(*http.Client); ok {
+		a.Client = client
+		return
+	}
+
 	a.Client = &http.Client{
 		Transport: &http.Transport{
 			Dial: (&net.Dialer{
@@ -51,12 +56,11 @@ func (a *auth) initClient() {
 			ExpectContinueTimeout: 1 * time.Second,
 		},
 	}
-	a.userAgent = "hackney/1.17.0"
 }
 
 func (a *auth) Do(ctx context.Context, username, password string) (code string, err error) {
 	if a.Client == nil {
-		a.initClient()
+		a.initClient(ctx)
 	}
 
 	if a.Client.Jar == nil {
@@ -114,7 +118,6 @@ func (a *auth) login(ctx context.Context, username, password string) (*http.Resp
 	if err != nil {
 		return nil, nil, fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", a.userAgent)
 
 	res, err := a.Client.Do(req)
 	if err != nil {
@@ -152,7 +155,6 @@ func (a *auth) login(ctx context.Context, username, password string) (*http.Resp
 	if err != nil {
 		return nil, nil, fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", a.userAgent)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err = a.Client.Do(req)
@@ -169,7 +171,6 @@ func (a *auth) listDevices(ctx context.Context, transactionID string) ([]Device,
 	if err != nil {
 		return nil, fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", a.userAgent)
 
 	res, err := a.Client.Do(req)
 	if err != nil {
@@ -204,7 +205,6 @@ func (a *auth) verify(ctx context.Context, transactionID string, d Device, passc
 	if err != nil {
 		return fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", a.userAgent)
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := a.Client.Do(req)
@@ -235,7 +235,6 @@ func (a *auth) commit(ctx context.Context, transactionID string) (code string, e
 	if err != nil {
 		return "", fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Set("User-Agent", a.userAgent)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err := a.Client.Do(req)
