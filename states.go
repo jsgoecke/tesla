@@ -124,24 +124,24 @@ type VehicleState struct {
 	CarVersion              string  `json:"car_version"`
 	CenterDisplayState      int     `json:"center_display_state"`
 	DarkRims                bool    `json:"dark_rims"`
-	Df                      int     `json:"df"`
-	Dr                      int     `json:"dr"`
+	DriverFrontDoor         int     `json:"df"`
+	DriverRearDoor          int     `json:"dr"`
 	ExteriorColor           string  `json:"exterior_color"`
-	Ft                      int     `json:"ft"`
+	FrontTrunk              int     `json:"ft"`
 	HasSpoiler              bool    `json:"has_spoiler"`
 	Locked                  bool    `json:"locked"`
 	NotificationsSupported  bool    `json:"notifications_supported"`
 	Odometer                float64 `json:"odometer"`
 	ParsedCalendarSupported bool    `json:"parsed_calendar_supported"`
 	PerfConfig              string  `json:"perf_config"`
-	Pf                      int     `json:"pf"`
-	Pr                      int     `json:"pr"`
+	PassengerFrontDoor      int     `json:"pf"`
+	PassengerRearDoor       int     `json:"pr"`
 	RearSeatHeaters         int     `json:"rear_seat_heaters"`
 	RemoteStart             bool    `json:"remote_start"`
 	RemoteStartSupported    bool    `json:"remote_start_supported"`
-	Rhd                     bool    `json:"rhd"`
+	RightHandDrive          bool    `json:"rhd"`
 	RoofColor               string  `json:"roof_color"`
-	Rt                      int     `json:"rt"`
+	RearTrunk               int     `json:"rt"`
 	SentryMode              bool    `json:"sentry_mode"`
 	SentryModeAvailable     bool    `json:"sentry_mode_available"`
 	SeatType                int     `json:"seat_type"`
@@ -153,10 +153,10 @@ type VehicleState struct {
 	ValetMode               bool    `json:"valet_mode"`
 	VehicleName             string  `json:"vehicle_name"`
 	WheelType               string  `json:"wheel_type"`
-	FdWindow                int     `json:"fd_window"`
-	FpWindow                int     `json:"fp_window"`
-	RdWindow                int     `json:"rd_window"`
-	RpWindow                int     `json:"rp_window"`
+	FrontDriverWindow       int     `json:"fd_window"`
+	FrontPassengerWindow    int     `json:"fp_window"`
+	RearDriverWindow        int     `json:"rd_window"`
+	RearPassengerWindow     int     `json:"rp_window"`
 	IsUserPresent           bool    `json:"is_user_present"`
 	RemoteStartEnabled      bool    `json:"remote_start_enabled"`
 	ValetPinNeeded          bool    `json:"valet_pin_needed"`
