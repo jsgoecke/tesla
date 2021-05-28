@@ -11,6 +11,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// Set to true to make the json decoder fail to decode if it encounters an
+// unknown field.
+const disallowUnknownFields = false
+
 // OAuth2Config is the OAuth2 configuration for authenticating with the Tesla API.
 var OAuth2Config = &oauth2.Config{
 	ClientID:    "ownerapi",
@@ -95,7 +99,11 @@ func (c Client) getJSON(url string, out interface{}) error {
 	if err != nil {
 		return err
 	}
-	if err = json.Unmarshal(body, out); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(body))
+	if disallowUnknownFields {
+		decoder.DisallowUnknownFields()
+	}
+	if err = decoder.Decode(out); err != nil {
 		return err
 	}
 	return nil
