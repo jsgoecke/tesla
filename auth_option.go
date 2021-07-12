@@ -66,6 +66,7 @@ func defaultHandler() *authHandler {
 	return &authHandler{
 		auth: &auth{
 			SelectDevice: mfaUnsupported,
+			SolveCaptcha: captchaUnsupported,
 		},
 	}
 }
@@ -84,6 +85,22 @@ func WithMFAHandler(handler func(context.Context, []Device) (Device, string, err
 
 func mfaUnsupported(_ context.Context, _ []Device) (Device, string, error) {
 	return Device{}, "", errors.New("multi factor authentication is not supported")
+}
+
+// WithCaptchaHandler allows a consumer to provide a different configuration from the default.
+func WithCaptchaHandler(handler func(context.Context, io.Reader) (string, error)) ClientOption {
+	return func(c *Client) error {
+		if c.authHandler == nil {
+			c.authHandler = defaultHandler()
+		}
+
+		c.authHandler.auth.SolveCaptcha = handler
+		return nil
+	}
+}
+
+func captchaUnsupported(_ context.Context, _ io.Reader) (string, error) {
+	return "", errors.New("captcha solving is not supported")
 }
 
 // WithCredentials allows a consumer to provide a different configuration from the default.

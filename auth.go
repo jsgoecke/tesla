@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
@@ -37,6 +38,7 @@ type auth struct {
 	Client       *http.Client
 	AuthURL      string
 	SelectDevice func(ctx context.Context, devices []Device) (d Device, passcode string, err error)
+	SolveCaptcha func(ctx context.Context, captcha io.Reader) (res string, err error)
 }
 
 func (a *auth) initClient(ctx context.Context) {
@@ -139,17 +141,38 @@ func (a *auth) login(ctx context.Context, username, password string) (*http.Resp
 		return nil, nil, fmt.Errorf("new document: %w", err)
 	}
 
-	d.Find("input[type=hidden]").Each(func(_ int, s *goquery.Selection) {
+	d.Find("input[type=hidden],input[name=captcha]").Each(func(_ int, s *goquery.Selection) {
 		name, ok := s.Attr("name")
 		if !ok {
 			return
 		}
 		value, ok := s.Attr("value")
+		if name == "captcha" {
+			ok = true
+		}
 		if !ok {
 			return
 		}
 		v.Set(name, value)
 	})
+
+	if _, required := v["captcha"]; required {
+		u, _ := url.Parse(a.AuthURL)
+		u.Path = "/captcha"
+
+		res, err := a.Client.Get(u.String())
+		if err != nil {
+			return nil, nil, fmt.Errorf("access captcha: %w", err)
+		}
+		defer res.Body.Close()
+
+		solution, err := a.SolveCaptcha(ctx, res.Body)
+		if err != nil {
+			return nil, nil, fmt.Errorf("solve captcha: %w", err)
+		}
+
+		v["captcha"] = []string{solution}
+	}
 
 	req, err = http.NewRequestWithContext(ctx, http.MethodPost, a.AuthURL, strings.NewReader(v.Encode()))
 	if err != nil {

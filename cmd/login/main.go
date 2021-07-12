@@ -6,12 +6,16 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/bogosj/tesla"
 	"github.com/manifoldco/promptui"
+	"github.com/skratchdot/open-golang/open"
 )
 
 const (
@@ -82,6 +86,38 @@ func getUsernameAndPassword() (string, string, error) {
 	return username, password, nil
 }
 
+func solveCaptcha(ctx context.Context, svg io.Reader) (string, error) {
+	tmpFile, err := ioutil.TempFile(os.TempDir(), "captcha-*.svg")
+	if err != nil {
+		return "", fmt.Errorf("cannot create temp file: %w", err)
+	}
+
+	if _, err := io.Copy(tmpFile, svg); err != nil {
+		return "", fmt.Errorf("cannot write temp file: %w", err)
+	}
+
+	_ = tmpFile.Close()
+
+	if err := open.Run(tmpFile.Name()); err != nil {
+		return "", fmt.Errorf("cannot open captcha for display: %w", err)
+	}
+
+	fmt.Println("Captcha is now being opened in default application for svg files.")
+
+	captcha, err := (&promptui.Prompt{
+		Label:   "Captcha",
+		Pointer: promptui.PipeCursor,
+		Validate: func(s string) error {
+			if len(s) < 4 {
+				return errors.New("len(s) < 4")
+			}
+			return nil
+		},
+	}).Run()
+
+	return strings.TrimSpace(captcha), err
+}
+
 func shortLongStringFlag(name, short, value, usage string) *string {
 	s := flag.String(name, value, usage)
 	flag.StringVar(s, short, value, usage)
@@ -100,6 +136,7 @@ func login(ctx context.Context) error {
 	client, err := tesla.NewClient(
 		ctx,
 		tesla.WithMFAHandler(selectDevice),
+		tesla.WithCaptchaHandler(solveCaptcha),
 		tesla.WithCredentials(username, password),
 	)
 	if err != nil {
