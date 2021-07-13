@@ -261,7 +261,7 @@ func (v Vehicle) Start(password string) error {
 
 // OpenTrunk opens the trunk, where values may be 'front' or 'rear'.
 func (v Vehicle) OpenTrunk(trunk string) error {
-	apiURL := v.c.baseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/trunk_open" // ?which_trunk=" + trunk
+	apiURL := v.c.baseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/actuate_trunk" // ?which_trunk=" + trunk
 	payload := `{"which_trunk": "` + trunk + `"}`
 	_, err := v.c.post(apiURL, []byte(payload))
 	return err
