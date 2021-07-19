@@ -252,6 +252,16 @@ func (v Vehicle) MovePanoRoof(state string, percent int) error {
 	return err
 }
 
+// Controls the windows. Will vent or close all windows simultaneously. command can be "vent" or "close".
+// lat and lon values must be near the current location of the car for close operation to succeed.
+// For vent, the lat and lon values are ignored, and may both be 0 (which has been observed from the app itself).
+func (v Vehicle) WindowControl(command string, lat, lon float64) error {
+	apiURL := v.c.baseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/window_control"
+	payload := fmt.Sprintf(`{"command":"%s", "lat": %f, "lon": %f}`, command, lat, lon)
+	_, err := v.c.post(apiURL, []byte(payload))
+	return err
+}
+
 // Start starts the car by turning it on, requires the password to be sent again.
 func (v Vehicle) Start(password string) error {
 	apiURL := v.c.baseURL + "/vehicles/" + strconv.FormatInt(v.ID, 10) + "/command/remote_start_drive?password=" + password
