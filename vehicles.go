@@ -2,6 +2,7 @@ package tesla
 
 import (
 	"strconv"
+	"strings"
 )
 
 // Vehicle represents the vehicle as returned from the Tesla API.
@@ -90,4 +91,16 @@ func (c *Client) Vehicle(vehicleID int64) (*Vehicle, error) {
 	}
 	resp.Response.c = c
 	return resp.Response, nil
+}
+
+func (v *Vehicle) basePath() string {
+	return strings.Join([]string{v.c.baseURL, "vehicles", strconv.FormatInt(v.ID, 10)}, "/")
+}
+
+func (v *Vehicle) commandPath(command string) string {
+	return strings.Join([]string{v.basePath(), "command", command}, "/")
+}
+
+func (v *Vehicle) wakePath() string {
+	return strings.Join([]string{v.basePath(), "wake_up"}, "/")
 }

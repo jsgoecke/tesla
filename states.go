@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -273,8 +274,8 @@ type NearbyChargingSitesResponse struct {
 // NearbyChargingSites returns the charging sites near the vehicle.
 func (v *Vehicle) NearbyChargingSites() (*NearbyChargingSitesResponse, error) {
 	resp := &NearbyChargingSitesResponse{}
-	if err := v.c.getJSON(
-		v.c.baseURL+"/vehicles/"+strconv.FormatInt(v.ID, 10)+"/nearby_charging_sites", resp); err != nil {
+	path := strings.Join([]string{v.c.baseURL, "vehicles", strconv.FormatInt(v.ID, 10), "nearby_charging_sites"}, "/")
+	if err := v.c.getJSON(path, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -282,7 +283,7 @@ func (v *Vehicle) NearbyChargingSites() (*NearbyChargingSitesResponse, error) {
 
 // ChargeState returns the charge state of the vehicle.
 func (v *Vehicle) ChargeState() (*ChargeState, error) {
-	stateRequest, err := v.c.fetchState("/charge_state", v.ID)
+	stateRequest, err := v.c.fetchState("charge_state", v.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -291,7 +292,7 @@ func (v *Vehicle) ChargeState() (*ChargeState, error) {
 
 // ClimateState returns the climate state of the vehicle.
 func (v Vehicle) ClimateState() (*ClimateState, error) {
-	stateRequest, err := v.c.fetchState("/climate_state", v.ID)
+	stateRequest, err := v.c.fetchState("climate_state", v.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -300,7 +301,7 @@ func (v Vehicle) ClimateState() (*ClimateState, error) {
 
 // DriveState returns the drive state of the vehicle.
 func (v Vehicle) DriveState() (*DriveState, error) {
-	stateRequest, err := v.c.fetchState("/drive_state", v.ID)
+	stateRequest, err := v.c.fetchState("drive_state", v.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -309,7 +310,7 @@ func (v Vehicle) DriveState() (*DriveState, error) {
 
 // GuiSettings returns the GUI settings of the vehicle.
 func (v Vehicle) GuiSettings() (*GuiSettings, error) {
-	stateRequest, err := v.c.fetchState("/gui_settings", v.ID)
+	stateRequest, err := v.c.fetchState("gui_settings", v.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -318,7 +319,7 @@ func (v Vehicle) GuiSettings() (*GuiSettings, error) {
 
 // VehicleState returns the state of the vehicle.
 func (v Vehicle) VehicleState() (*VehicleState, error) {
-	stateRequest, err := v.c.fetchState("/vehicle_state", v.ID)
+	stateRequest, err := v.c.fetchState("vehicle_state", v.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -327,7 +328,7 @@ func (v Vehicle) VehicleState() (*VehicleState, error) {
 
 // ServiceData returns the service data for the vehicle.
 func (v Vehicle) ServiceData() (*ServiceData, error) {
-	stateRequest, err := v.c.fetchState("/service_data", v.ID)
+	stateRequest, err := v.c.fetchState("service_data", v.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -348,8 +349,8 @@ func stateError(sr *StateRequest) error {
 // A utility function to fetch the appropriate state of the vehicle
 func (c *Client) fetchState(resource string, id int64) (*StateRequest, error) {
 	stateRequest := &StateRequest{}
-	if err := c.getJSON(
-		c.baseURL+"/vehicles/"+strconv.FormatInt(id, 10)+"/data_request"+resource, stateRequest); err != nil {
+	path := strings.Join([]string{c.baseURL, "vehicles", strconv.FormatInt(id, 10), "data_request", resource}, "/")
+	if err := c.getJSON(path, stateRequest); err != nil {
 		return nil, err
 	}
 	if err := stateError(stateRequest); err != nil {
@@ -363,17 +364,8 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 	log.Println("Retreiving vehicle data")
 	stateRequest := &StateRequest{}
 
-	/*log.Println(v.c.URL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/vehicle_data")
-	body, err := v.c.get(v.c.URL + "/vehicles/" + strconv.FormatInt(vid, 10) + "/vehicle_data")
-	if err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(body, stateRequest); err != nil {
-		return nil, err
-	}*/
-
 	// climate_state
-	stateRequestClimate, err := v.c.fetchState("/climate_state", v.ID)
+	stateRequestClimate, err := v.c.fetchState("climate_state", v.ID)
 	if err != nil {
 		log.Println("Error getting climate_state")
 		return nil, err
@@ -381,7 +373,7 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 	stateRequest.Response.ClimateState = stateRequestClimate.Response.ClimateState
 
 	// drive_state
-	stateRequestGui, err := v.c.fetchState("/drive_state", v.ID)
+	stateRequestGui, err := v.c.fetchState("drive_state", v.ID)
 	if err != nil {
 		log.Println("Error getting drive_state")
 		return nil, err
@@ -389,7 +381,7 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 	stateRequest.Response.DriveState = stateRequestGui.Response.DriveState
 
 	// gui_settings
-	stateRequestSettings, err := v.c.fetchState("/gui_settings", v.ID)
+	stateRequestSettings, err := v.c.fetchState("gui_settings", v.ID)
 	if err != nil {
 		log.Println("Error getting gui_settings")
 		return nil, err
@@ -397,7 +389,7 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 	stateRequest.Response.GuiSettings = stateRequestSettings.Response.GuiSettings
 
 	// vehicle_state
-	stateRequestVehicle, err := v.c.fetchState("/vehicle_state", v.ID)
+	stateRequestVehicle, err := v.c.fetchState("vehicle_state", v.ID)
 	if err != nil {
 		log.Println("Error getting vehicle_state")
 		return nil, err
@@ -405,7 +397,7 @@ func (v Vehicle) Data(vid int64) (*StateRequest, error) {
 	stateRequest.Response.VehicleState = stateRequestVehicle.Response.VehicleState
 
 	// charge_state
-	stateRequestCharge, err := v.c.fetchState("/charge_state", v.ID)
+	stateRequestCharge, err := v.c.fetchState("charge_state", v.ID)
 	if err != nil {
 		log.Println("Error getting charge_state")
 		return nil, err

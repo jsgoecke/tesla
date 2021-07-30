@@ -38,3 +38,15 @@ func TestVehicle(t *testing.T) {
 		So(vehicle.CalendarEnabled, ShouldBeTrue)
 	})
 }
+
+func TestVehicle_CommandPath(t *testing.T) {
+	ts := serveHTTP(t)
+	defer ts.Close()
+
+	client := NewTestClient(ts)
+	v := &Vehicle{ID: 1, c: client}
+
+	Convey("Should have a URL with /command/", t, func() {
+		So(v.commandPath("honk_horn"), ShouldEndWith, "/api/1/vehicles/1/command/honk_horn")
+	})
+}
