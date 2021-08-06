@@ -122,15 +122,11 @@ func (c Client) processRequest(req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
 	if res.StatusCode != 200 {
 		return nil, errors.New(res.Status)
 	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	return body, nil
+	return ioutil.ReadAll(res.Body)
 }
 
 // Sets the required headers for calls to the Tesla API
