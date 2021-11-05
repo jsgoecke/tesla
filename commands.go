@@ -113,6 +113,7 @@ func (v Vehicle) Wakeup() (*Vehicle, error) {
 	if err := json.Unmarshal(body, vehicleResponse); err != nil {
 		return nil, err
 	}
+	vehicleResponse.Response.c = v.c
 	return vehicleResponse.Response, nil
 }
 
