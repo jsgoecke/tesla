@@ -152,6 +152,14 @@ func (v Vehicle) SetChargeLimit(percent int) error {
 	return err
 }
 
+// SetChargingAmps set the charge limit to a custom percentage.
+func (v Vehicle) SetChargingAmps(amps int) error {
+	apiURL := v.commandPath("set_charging_amps")
+	payload := `{"charging_amps": ` + strconv.Itoa(amps) + `}`
+	_, err := v.c.post(apiURL, []byte(payload))
+	return err
+}
+
 // StartCharging starts the charging of the vehicle after you have inserted the charging cable.
 func (v Vehicle) StartCharging() error {
 	apiURL := v.commandPath("charge_start")
