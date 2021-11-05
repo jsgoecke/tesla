@@ -38,13 +38,20 @@ type VehicleConfig struct {
 	CarType                     string   `json:"car_type"`
 	ChargePortType              string   `json:"charge_port_type"`
 	DefaultChargeToMax          bool     `json:"default_charge_to_max"`
+	DriverAssist                string   `json:"driver_assist"`
 	EceRestrictions             bool     `json:"ece_restrictions"`
+	EfficiencyPackage           string   `json:"efficiency_package"`
 	EUVehicle                   bool     `json:"eu_vehicle"`
 	ExteriorColor               string   `json:"exterior_color"`
+	ExteriorTrim                string   `json:"exterior_trim"`
 	HasAirSuspension            bool     `json:"has_air_suspension"`
 	HasLudicrousMode            bool     `json:"has_ludicrous_mode"`
+	InteriorTrimType            string   `json:"interior_trim_type"`
+	KeyVersion                  int      `json:"key_version"`
 	MotorizedChargePort         bool     `json:"motorized_charge_port"`
+	PerformancePackage          string   `json:"performance_package"`
 	Plg                         bool     `json:"plg"`
+	RearDriveUnit               string   `json:"rear_drive_unit"`
 	RearSeatHeaters             int      `json:"rear_seat_heaters"`
 	RearSeatType                int      `json:"rear_seat_type"`
 	Rhd                         bool     `json:"rhd"`

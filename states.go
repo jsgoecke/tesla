@@ -39,6 +39,8 @@ type ChargeState struct {
 	ChargeRate                  float64     `json:"charge_rate"`
 	ChargePortDoorOpen          bool        `json:"charge_port_door_open"`
 	MotorizedChargePort         bool        `json:"motorized_charge_port"`
+	ScheduledChargingMode       string      `json:"scheduled_charging_mode"`
+	ScheduledDepatureTime       interface{} `json:"scheduled_departure_time"`
 	ScheduledChargingStartTime  interface{} `json:"scheduled_charging_start_time"`
 	ScheduledChargingPending    bool        `json:"scheduled_charging_pending"`
 	UserChargeEnableRequest     interface{} `json:"user_charge_enable_request"`
@@ -48,6 +50,12 @@ type ChargeState struct {
 	ChargePortLatch             string      `json:"charge_port_latch"`
 	ChargeCurrentRequest        int         `json:"charge_current_request"`
 	ChargeCurrentRequestMax     int         `json:"charge_current_request_max"`
+	ChargeAmps                  int         `json:"charge_amps"`
+	OffPeakChargingEnabled      bool        `json:"off_peak_charging_enabled"`
+	OffPeakChargingTimes        string      `json:"off_peak_charging_times"`
+	OffPeakHoursEndTime         int         `json:"off_peak_hours_end_time"`
+	PreconditioningEnabled      bool        `json:"preconditioning_enabled"`
+	PreconditioningTimes        string      `json:"preconditioning_times"`
 	ManagedChargingActive       bool        `json:"managed_charging_active"`
 	ManagedChargingUserCanceled bool        `json:"managed_charging_user_canceled"`
 	ManagedChargingStartTime    interface{} `json:"managed_charging_start_time"`
