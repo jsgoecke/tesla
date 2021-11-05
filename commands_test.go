@@ -84,6 +84,11 @@ func TestCommandsSpec(t *testing.T) {
 		So(err.Error(), ShouldEqual, "already_standard")
 	})
 
+	Convey("Should set the car charging amps", t, func() {
+		err := vehicle.SetChargingAmps(12)
+		So(err, ShouldBeNil)
+	})
+
 	Convey("Should attempt to charge the car", t, func() {
 		err := vehicle.StartCharging()
 		So(err.Error(), ShouldEqual, "complete")

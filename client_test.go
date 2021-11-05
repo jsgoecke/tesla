@@ -150,6 +150,13 @@ func init() {
 		return nil
 	}))
 
+	testMux.HandleFunc("/api/1/vehicles/1234/command/set_charging_amps", serveCheck(func(req *http.Request, body []byte) error {
+		if string(body) != `{"charging_amps": 12}` {
+			return fmt.Errorf("unexpected body %s", body)
+		}
+		return nil
+	}))
+
 	testMux.HandleFunc("/api/1/vehicles/1234/command/autopark_request", serveCheck(func(req *http.Request, body []byte) error {
 		apr := &AutoParkRequest{}
 		if err := json.Unmarshal(body, apr); err != nil {
