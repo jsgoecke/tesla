@@ -25,16 +25,15 @@ type ChargeState struct {
 	IdealBatteryRange           float64     `json:"ideal_battery_range"`
 	BatteryLevel                int         `json:"battery_level"`
 	UsableBatteryLevel          int         `json:"usable_battery_level"`
-	BatteryCurrent              interface{} `json:"battery_current"`
 	ChargeEnergyAdded           float64     `json:"charge_energy_added"`
 	ChargeMilesAddedRated       float64     `json:"charge_miles_added_rated"`
 	ChargeMilesAddedIdeal       float64     `json:"charge_miles_added_ideal"`
-	ChargerVoltage              interface{} `json:"charger_voltage"`
-	ChargerPilotCurrent         interface{} `json:"charger_pilot_current"`
-	ChargerActualCurrent        interface{} `json:"charger_actual_current"`
-	ChargerPower                interface{} `json:"charger_power"`
+	ChargerVoltage              int         `json:"charger_voltage"`
+	ChargerPilotCurrent         int         `json:"charger_pilot_current"`
+	ChargerActualCurrent        int         `json:"charger_actual_current"`
+	ChargerPower                int         `json:"charger_power"`
 	TimeToFullCharge            float64     `json:"time_to_full_charge"`
-	TripCharging                interface{} `json:"trip_charging"`
+	TripCharging                bool        `json:"trip_charging"`
 	ChargeRate                  float64     `json:"charge_rate"`
 	ChargePortDoorOpen          bool        `json:"charge_port_door_open"`
 	MotorizedChargePort         bool        `json:"motorized_charge_port"`
@@ -45,7 +44,7 @@ type ChargeState struct {
 	UserChargeEnableRequest     interface{} `json:"user_charge_enable_request"`
 	ChargeEnableRequest         bool        `json:"charge_enable_request"`
 	EuVehicle                   bool        `json:"eu_vehicle"`
-	ChargerPhases               interface{} `json:"charger_phases"`
+	ChargerPhases               int         `json:"charger_phases"`
 	ChargePortLatch             string      `json:"charge_port_latch"`
 	ChargeCurrentRequest        int         `json:"charge_current_request"`
 	ChargeCurrentRequestMax     int         `json:"charge_current_request_max"`
