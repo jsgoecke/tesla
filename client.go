@@ -20,8 +20,8 @@ var OAuth2Config = &oauth2.Config{
 	ClientID:    "ownerapi",
 	RedirectURL: "https://auth.tesla.com/void/callback",
 	Endpoint: oauth2.Endpoint{
-		AuthURL:  "https://auth.tesla.com/oauth2/v3/authorize",
-		TokenURL: "https://auth.tesla.com/oauth2/v3/token",
+		AuthURL:   "https://auth.tesla.com/oauth2/v3/authorize",
+		TokenURL:  "https://auth.tesla.com/oauth2/v3/token",
 		AuthStyle: oauth2.AuthStyleInParams,
 	},
 	Scopes: []string{"openid", "email", "offline_access"},
