@@ -8,7 +8,7 @@ type Vehicle struct {
 	DisplayName            string      `json:"display_name"`
 	ID                     int64       `json:"id"`
 	OptionCodes            string      `json:"option_codes"`
-	VehicleID              int         `json:"vehicle_id"`
+	VehicleID              int64       `json:"vehicle_id"`
 	Vin                    string      `json:"vin"`
 	Tokens                 []string    `json:"tokens"`
 	State                  string      `json:"state"`
