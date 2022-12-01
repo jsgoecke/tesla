@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"golang.org/x/oauth2"
@@ -127,7 +127,7 @@ func (c Client) processRequest(req *http.Request) ([]byte, error) {
 	if res.StatusCode != 200 {
 		return nil, errors.New(res.Status)
 	}
-	return ioutil.ReadAll(res.Body)
+	return io.ReadAll(res.Body)
 }
 
 // Sets the required headers for calls to the Tesla API

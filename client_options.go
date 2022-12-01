@@ -2,7 +2,7 @@ package tesla
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
 	"golang.org/x/oauth2"
 )
@@ -19,7 +19,7 @@ func WithToken(t *oauth2.Token) ClientOption {
 }
 
 func loadToken(path string) (*oauth2.Token, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
