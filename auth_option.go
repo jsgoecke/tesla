@@ -28,7 +28,7 @@ func pkce() (verifier, challenge string, err error) {
 		return "", "", fmt.Errorf("rand read full: %w", err)
 	}
 	verifier = base64.RawURLEncoding.EncodeToString(p[:])
-	b := sha256.Sum256([]byte(challenge))
+	b := sha256.Sum256([]byte(verifier))
 	challenge = base64.RawURLEncoding.EncodeToString(b[:])
 	return verifier, challenge, nil
 }
