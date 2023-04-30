@@ -46,11 +46,11 @@ func (v *Vehicle) AutoparkReverse() error {
 // Performs the actual auto park/summon request for the vehicle
 func (v *Vehicle) autoPark(action string) error {
 	apiURL := v.commandPath("autopark_request")
-	driveState, _ := v.DriveState()
+	data, _ := v.Data()
 	autoParkRequest := &AutoParkRequest{
 		VehicleID: v.VehicleID,
-		Lat:       driveState.Latitude,
-		Lon:       driveState.Longitude,
+		Lat:       data.Response.DriveState.Latitude,
+		Lon:       data.Response.DriveState.Longitude,
 		Action:    action,
 	}
 	body, _ := json.Marshal(autoParkRequest)
@@ -91,10 +91,10 @@ func (v *Vehicle) EnableSentry() error {
 // a major limitation of Homelink.
 func (v *Vehicle) TriggerHomelink() error {
 	apiURL := v.commandPath("trigger_homelink")
-	driveState, _ := v.DriveState()
+	data, _ := v.Data()
 	autoParkRequest := &AutoParkRequest{
-		Lat: driveState.Latitude,
-		Lon: driveState.Longitude,
+		Lat: data.Response.DriveState.Latitude,
+		Lon: data.Response.DriveState.Longitude,
 	}
 	body, _ := json.Marshal(autoParkRequest)
 

@@ -27,11 +27,7 @@ func main() {
 	}
 
 	fmt.Println(status)
-	fmt.Println(vehicle.ChargeState())
-	fmt.Println(vehicle.ClimateState())
-	fmt.Println(vehicle.DriveState())
-	fmt.Println(vehicle.GuiSettings())
-	fmt.Println(vehicle.VehicleState())
+	fmt.Println(vehicle.Data())
 	fmt.Println(vehicle.HonkHorn())
 	fmt.Println(vehicle.FlashLights())
 	fmt.Println(vehicle.Wakeup())

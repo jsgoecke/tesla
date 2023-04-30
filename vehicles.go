@@ -5,27 +5,48 @@ import (
 	"strings"
 )
 
+// VehiclePartialResponse represents the vehicle response root data as returned from the Tesla API.
+type VehiclePartialResponse struct {
+	Color                  interface{} `json:"color"`
+	DisplayName            string      `json:"display_name"`
+	ID                     int64       `json:"id"`
+	OptionCodes            string      `json:"option_codes"`
+	VehicleID              uint64      `json:"vehicle_id"`
+	Vin                    string      `json:"vin"`
+	Tokens                 []string    `json:"tokens"`
+	State                  string      `json:"state"`
+	IDS                    string      `json:"id_s"`
+	RemoteStartEnabled     bool        `json:"remote_start_enabled"`
+	CalendarEnabled        bool        `json:"calendar_enabled"`
+	NotificationsEnabled   bool        `json:"notifications_enabled"`
+	BackseatToken          interface{} `json:"backseat_token"`
+	BackseatTokenUpdatedAt interface{} `json:"backseat_token_updated_at"`
+	AccessType             string      `json:"access_type"`
+	InService              bool        `json:"in_service"`
+	APIVersion             int         `json:"api_version"`
+	CommandSigning         string      `json:"command_signing"`
+}
+
 // Vehicle represents the vehicle as returned from the Tesla API.
 type Vehicle struct {
-	Color                  interface{}    `json:"color"`
-	DisplayName            string         `json:"display_name"`
-	ID                     int64          `json:"id"`
-	OptionCodes            string         `json:"option_codes"`
-	VehicleID              uint64         `json:"vehicle_id"`
-	Vin                    string         `json:"vin"`
-	Tokens                 []string       `json:"tokens"`
-	State                  string         `json:"state"`
-	IDS                    string         `json:"id_s"`
-	RemoteStartEnabled     bool           `json:"remote_start_enabled"`
-	CalendarEnabled        bool           `json:"calendar_enabled"`
-	NotificationsEnabled   bool           `json:"notifications_enabled"`
-	BackseatToken          interface{}    `json:"backseat_token"`
-	BackseatTokenUpdatedAt interface{}    `json:"backseat_token_updated_at"`
-	AccessType             string         `json:"access_type"`
-	InService              bool           `json:"in_service"`
-	APIVersion             int            `json:"api_version"`
-	CommandSigning         string         `json:"command_signing"`
-	VehicleConfig          *VehicleConfig `json:"vehicle_config"`
+	Color                  interface{} `json:"color"`
+	DisplayName            string      `json:"display_name"`
+	ID                     int64       `json:"id"`
+	OptionCodes            string      `json:"option_codes"`
+	VehicleID              uint64      `json:"vehicle_id"`
+	Vin                    string      `json:"vin"`
+	Tokens                 []string    `json:"tokens"`
+	State                  string      `json:"state"`
+	IDS                    string      `json:"id_s"`
+	RemoteStartEnabled     bool        `json:"remote_start_enabled"`
+	CalendarEnabled        bool        `json:"calendar_enabled"`
+	NotificationsEnabled   bool        `json:"notifications_enabled"`
+	BackseatToken          interface{} `json:"backseat_token"`
+	BackseatTokenUpdatedAt interface{} `json:"backseat_token_updated_at"`
+	AccessType             string      `json:"access_type"`
+	InService              bool        `json:"in_service"`
+	APIVersion             int         `json:"api_version"`
+	CommandSigning         string      `json:"command_signing"`
 
 	c *Client
 }

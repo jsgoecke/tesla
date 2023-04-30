@@ -9,6 +9,7 @@ import (
 
 // ChargeState contains the current charge states that exist within the vehicle.
 type ChargeState struct {
+	Timestamp                   timeMsec    `json:"timestamp"`
 	ChargingState               string      `json:"charging_state"`
 	ChargeLimitSoc              int         `json:"charge_limit_soc"`
 	ChargeLimitSocStd           int         `json:"charge_limit_soc_std"`
@@ -65,6 +66,7 @@ type ChargeState struct {
 
 // ClimateState contains the current climate states availale from the vehicle.
 type ClimateState struct {
+	Timestamp                  timeMsec    `json:"timestamp"`
 	InsideTemp                 float64     `json:"inside_temp"`
 	OutsideTemp                float64     `json:"outside_temp"`
 	DriverTempSetting          float64     `json:"driver_temp_setting"`
@@ -98,6 +100,7 @@ type ClimateState struct {
 
 // DriveState contains the current drive state of the vehicle.
 type DriveState struct {
+	Timestamp               timeMsec    `json:"timestamp"`
 	ShiftState              interface{} `json:"shift_state"`
 	Speed                   float64     `json:"speed"`
 	Latitude                float64     `json:"latitude"`
@@ -113,61 +116,63 @@ type DriveState struct {
 
 // GuiSettings contains the current GUI settings of the vehicle.
 type GuiSettings struct {
-	GuiDistanceUnits    string `json:"gui_distance_units"`
-	GuiTemperatureUnits string `json:"gui_temperature_units"`
-	GuiChargeRateUnits  string `json:"gui_charge_rate_units"`
-	Gui24HourTime       bool   `json:"gui_24_hour_time"`
-	GuiRangeDisplay     string `json:"gui_range_display"`
-	ShowRangeUnits      bool   `json:"show_range_units"`
+	Timestamp           timeMsec `json:"timestamp"`
+	GuiDistanceUnits    string   `json:"gui_distance_units"`
+	GuiTemperatureUnits string   `json:"gui_temperature_units"`
+	GuiChargeRateUnits  string   `json:"gui_charge_rate_units"`
+	Gui24HourTime       bool     `json:"gui_24_hour_time"`
+	GuiRangeDisplay     string   `json:"gui_range_display"`
+	ShowRangeUnits      bool     `json:"show_range_units"`
 }
 
 // VehicleState contains the current state of the vehicle.
 type VehicleState struct {
-	APIVersion              int     `json:"api_version"`
-	AutoParkState           string  `json:"autopark_state"`
-	AutoParkStateV2         string  `json:"autopark_state_v2"`
-	AutoParkStateV3         string  `json:"autopark_state_v3"`
-	CalendarSupported       bool    `json:"calendar_supported"`
-	CarType                 string  `json:"car_type"`
-	CarVersion              string  `json:"car_version"`
-	CenterDisplayState      int     `json:"center_display_state"`
-	DarkRims                bool    `json:"dark_rims"`
-	DriverFrontDoor         int     `json:"df"`
-	DriverRearDoor          int     `json:"dr"`
-	ExteriorColor           string  `json:"exterior_color"`
-	FrontTrunk              int     `json:"ft"`
-	HasSpoiler              bool    `json:"has_spoiler"`
-	Locked                  bool    `json:"locked"`
-	NotificationsSupported  bool    `json:"notifications_supported"`
-	Odometer                float64 `json:"odometer"`
-	ParsedCalendarSupported bool    `json:"parsed_calendar_supported"`
-	PerfConfig              string  `json:"perf_config"`
-	PassengerFrontDoor      int     `json:"pf"`
-	PassengerRearDoor       int     `json:"pr"`
-	RearSeatHeaters         int     `json:"rear_seat_heaters"`
-	RemoteStart             bool    `json:"remote_start"`
-	RemoteStartSupported    bool    `json:"remote_start_supported"`
-	RightHandDrive          bool    `json:"rhd"`
-	RoofColor               string  `json:"roof_color"`
-	RearTrunk               int     `json:"rt"`
-	SentryMode              bool    `json:"sentry_mode"`
-	SentryModeAvailable     bool    `json:"sentry_mode_available"`
-	SeatType                int     `json:"seat_type"`
-	SpoilerType             string  `json:"spoiler_type"`
-	SunRoofInstalled        int     `json:"sun_roof_installed"`
-	SunRoofPercentOpen      int     `json:"sun_roof_percent_open"`
-	SunRoofState            string  `json:"sun_roof_state"`
-	ThirdRowSeats           string  `json:"third_row_seats"`
-	ValetMode               bool    `json:"valet_mode"`
-	VehicleName             string  `json:"vehicle_name"`
-	WheelType               string  `json:"wheel_type"`
-	FrontDriverWindow       int     `json:"fd_window"`
-	FrontPassengerWindow    int     `json:"fp_window"`
-	RearDriverWindow        int     `json:"rd_window"`
-	RearPassengerWindow     int     `json:"rp_window"`
-	IsUserPresent           bool    `json:"is_user_present"`
-	RemoteStartEnabled      bool    `json:"remote_start_enabled"`
-	ValetPinNeeded          bool    `json:"valet_pin_needed"`
+	Timestamp               timeMsec `json:"timestamp"`
+	APIVersion              int      `json:"api_version"`
+	AutoParkState           string   `json:"autopark_state"`
+	AutoParkStateV2         string   `json:"autopark_state_v2"`
+	AutoParkStateV3         string   `json:"autopark_state_v3"`
+	CalendarSupported       bool     `json:"calendar_supported"`
+	CarType                 string   `json:"car_type"`
+	CarVersion              string   `json:"car_version"`
+	CenterDisplayState      int      `json:"center_display_state"`
+	DarkRims                bool     `json:"dark_rims"`
+	DriverFrontDoor         int      `json:"df"`
+	DriverRearDoor          int      `json:"dr"`
+	ExteriorColor           string   `json:"exterior_color"`
+	FrontTrunk              int      `json:"ft"`
+	HasSpoiler              bool     `json:"has_spoiler"`
+	Locked                  bool     `json:"locked"`
+	NotificationsSupported  bool     `json:"notifications_supported"`
+	Odometer                float64  `json:"odometer"`
+	ParsedCalendarSupported bool     `json:"parsed_calendar_supported"`
+	PerfConfig              string   `json:"perf_config"`
+	PassengerFrontDoor      int      `json:"pf"`
+	PassengerRearDoor       int      `json:"pr"`
+	RearSeatHeaters         int      `json:"rear_seat_heaters"`
+	RemoteStart             bool     `json:"remote_start"`
+	RemoteStartSupported    bool     `json:"remote_start_supported"`
+	RightHandDrive          bool     `json:"rhd"`
+	RoofColor               string   `json:"roof_color"`
+	RearTrunk               int      `json:"rt"`
+	SentryMode              bool     `json:"sentry_mode"`
+	SentryModeAvailable     bool     `json:"sentry_mode_available"`
+	SeatType                int      `json:"seat_type"`
+	SpoilerType             string   `json:"spoiler_type"`
+	SunRoofInstalled        int      `json:"sun_roof_installed"`
+	SunRoofPercentOpen      int      `json:"sun_roof_percent_open"`
+	SunRoofState            string   `json:"sun_roof_state"`
+	ThirdRowSeats           string   `json:"third_row_seats"`
+	ValetMode               bool     `json:"valet_mode"`
+	VehicleName             string   `json:"vehicle_name"`
+	WheelType               string   `json:"wheel_type"`
+	FrontDriverWindow       int      `json:"fd_window"`
+	FrontPassengerWindow    int      `json:"fp_window"`
+	RearDriverWindow        int      `json:"rd_window"`
+	RearPassengerWindow     int      `json:"rp_window"`
+	IsUserPresent           bool     `json:"is_user_present"`
+	RemoteStartEnabled      bool     `json:"remote_start_enabled"`
+	ValetPinNeeded          bool     `json:"valet_pin_needed"`
 	MediaState              struct {
 		RemoteControlEnabled bool `json:"remote_control_enabled"`
 	} `json:"media_state"`
@@ -189,20 +194,21 @@ type VehicleState struct {
 
 // ServiceData contains the service data of the vehicle.
 type ServiceData struct {
+	Timestamp     timeMsec  `json:"timestamp"`
 	ServiceETC    time.Time `json:"service_etc"`
 	ServiceStatus string    `json:"service_status"`
 }
 
-// StateRequest represents the request to get the states of the vehicle.
-type StateRequest struct {
+// VehicleData represents the states of the vehicle.
+type VehicleData struct {
 	Response struct {
-		Timestamp timeMsec `json:"timestamp"`
-		*ChargeState
-		*ClimateState
-		*DriveState
-		*GuiSettings
-		*VehicleState
-		*ServiceData
+		ChargeState   ChargeState   `json:"charge_state"`
+		ClimateState  ClimateState  `json:"climate_state"`
+		DriveState    DriveState    `json:"drive_state"`
+		VehicleState  VehicleState  `json:"vehicle_state"`
+		GuiSettings   GuiSettings   `json:"gui_settings"`
+		VehicleConfig VehicleConfig `json:"vehicle_config"`
+		// ServiceData   ServiceData   `json:"service_data"`
 	} `json:"response"`
 	Error            string `json:"error"`
 	ErrorDescription string `json:"error_description"`
@@ -287,61 +293,7 @@ func (v *Vehicle) NearbyChargingSites() (*NearbyChargingSitesResponse, error) {
 	return resp, nil
 }
 
-// ChargeState returns the charge state of the vehicle.
-func (v *Vehicle) ChargeState() (*ChargeState, error) {
-	stateRequest, err := v.c.fetchState("charge_state", v.ID)
-	if err != nil {
-		return nil, err
-	}
-	return stateRequest.Response.ChargeState, nil
-}
-
-// ClimateState returns the climate state of the vehicle.
-func (v Vehicle) ClimateState() (*ClimateState, error) {
-	stateRequest, err := v.c.fetchState("climate_state", v.ID)
-	if err != nil {
-		return nil, err
-	}
-	return stateRequest.Response.ClimateState, nil
-}
-
-// DriveState returns the drive state of the vehicle.
-func (v Vehicle) DriveState() (*DriveState, error) {
-	stateRequest, err := v.c.fetchState("drive_state", v.ID)
-	if err != nil {
-		return nil, err
-	}
-	return stateRequest.Response.DriveState, nil
-}
-
-// GuiSettings returns the GUI settings of the vehicle.
-func (v Vehicle) GuiSettings() (*GuiSettings, error) {
-	stateRequest, err := v.c.fetchState("gui_settings", v.ID)
-	if err != nil {
-		return nil, err
-	}
-	return stateRequest.Response.GuiSettings, nil
-}
-
-// VehicleState returns the state of the vehicle.
-func (v Vehicle) VehicleState() (*VehicleState, error) {
-	stateRequest, err := v.c.fetchState("vehicle_state", v.ID)
-	if err != nil {
-		return nil, err
-	}
-	return stateRequest.Response.VehicleState, nil
-}
-
-// ServiceData returns the service data for the vehicle.
-func (v Vehicle) ServiceData() (*ServiceData, error) {
-	stateRequest, err := v.c.fetchState("service_data", v.ID)
-	if err != nil {
-		return nil, err
-	}
-	return stateRequest.Response.ServiceData, nil
-}
-
-func stateError(sr *StateRequest) error {
+func stateError(sr *VehicleData) error {
 	if sr.Error == "" {
 		return nil
 	}
@@ -353,56 +305,19 @@ func stateError(sr *StateRequest) error {
 }
 
 // A utility function to fetch the appropriate state of the vehicle
-func (c *Client) fetchState(resource string, id int64) (*StateRequest, error) {
-	stateRequest := &StateRequest{}
-	path := strings.Join([]string{c.baseURL, "vehicles", strconv.FormatInt(id, 10), "data_request", resource}, "/")
-	if err := c.getJSON(path, stateRequest); err != nil {
+func (c *Client) fetchState(id int64) (*VehicleData, error) {
+	var res VehicleData
+	path := strings.Join([]string{c.baseURL, "vehicles", strconv.FormatInt(id, 10), "vehicle_data"}, "/")
+	if err := c.getJSON(path, &res); err != nil {
 		return nil, err
 	}
-	if err := stateError(stateRequest); err != nil {
+	if err := stateError(&res); err != nil {
 		return nil, err
 	}
-	return stateRequest, nil
+	return &res, nil
 }
 
 // Data : Get data of the vehicle (calling this will not permit the car to sleep)
-func (v Vehicle) Data(vid int64) (*StateRequest, error) {
-	stateRequest := &StateRequest{}
-
-	// climate_state
-	stateRequestClimate, err := v.c.fetchState("climate_state", v.ID)
-	if err != nil {
-		return nil, fmt.Errorf("getting climate_state failed: %w", err)
-	}
-	stateRequest.Response.ClimateState = stateRequestClimate.Response.ClimateState
-
-	// drive_state
-	stateRequestGui, err := v.c.fetchState("drive_state", v.ID)
-	if err != nil {
-		return nil, fmt.Errorf("getting drive_state failed: %w", err)
-	}
-	stateRequest.Response.DriveState = stateRequestGui.Response.DriveState
-
-	// gui_settings
-	stateRequestSettings, err := v.c.fetchState("gui_settings", v.ID)
-	if err != nil {
-		return nil, fmt.Errorf("getting gui_settings failed: %w", err)
-	}
-	stateRequest.Response.GuiSettings = stateRequestSettings.Response.GuiSettings
-
-	// vehicle_state
-	stateRequestVehicle, err := v.c.fetchState("vehicle_state", v.ID)
-	if err != nil {
-		return nil, fmt.Errorf("getting vehicle_state failed: %w", err)
-	}
-	stateRequest.Response.VehicleState = stateRequestVehicle.Response.VehicleState
-
-	// charge_state
-	stateRequestCharge, err := v.c.fetchState("charge_state", v.ID)
-	if err != nil {
-		return nil, fmt.Errorf("getting charge_state failed: %w", err)
-	}
-	stateRequest.Response.ChargeState = stateRequestCharge.Response.ChargeState
-
-	return stateRequest, nil
+func (v Vehicle) Data() (*VehicleData, error) {
+	return v.c.fetchState(v.ID)
 }

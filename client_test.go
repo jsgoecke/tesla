@@ -115,12 +115,7 @@ func init() {
 	testMux.HandleFunc("/api/1/vehicles/1234/command/flash_lights", serveJSON(CommandResponseJSON))
 	testMux.HandleFunc("/api/1/vehicles/1234/command/honk_horn", serveJSON(CommandResponseJSON))
 	testMux.HandleFunc("/api/1/vehicles/1234/command/reset_valet_pin", serveJSON(CommandResponseJSON))
-	testMux.HandleFunc("/api/1/vehicles/1234/data_request/charge_state", serveJSON(ChargeStateJSON))
-	testMux.HandleFunc("/api/1/vehicles/1234/data_request/climate_state", serveJSON(ClimateStateJSON))
-	testMux.HandleFunc("/api/1/vehicles/1234/data_request/drive_state", serveJSON(DriveStateJSON))
-	testMux.HandleFunc("/api/1/vehicles/1234/data_request/gui_settings", serveJSON(GuiSettingsJSON))
-	testMux.HandleFunc("/api/1/vehicles/1234/data_request/service_data", serveJSON(ServiceDataJSON))
-	testMux.HandleFunc("/api/1/vehicles/1234/data_request/vehicle_state", serveJSON(VehicleStateJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/vehicle_data", serveJSON(DataJSON))
 	testMux.HandleFunc("/api/1/vehicles/1234/mobile_enabled", serveJSON(TrueJSON))
 	testMux.HandleFunc("/api/1/vehicles/1234/wake_up", serveJSON(WakeupResponseJSON))
 
