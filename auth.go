@@ -83,6 +83,7 @@ func (a *auth) Do(ctx context.Context, username, password string) (code string, 
 	if err != nil {
 		return "", fmt.Errorf("login: %w", err)
 	}
+
 	defer res.Body.Close()
 
 	switch res.StatusCode {
@@ -109,7 +110,8 @@ func (a *auth) Do(ctx context.Context, username, password string) (code string, 
 		return "", fmt.Errorf("select device: %w", err)
 	}
 
-	if err := a.verify(ctx, transactionID, d, passcode); err != nil {
+	csrf := v.Get("_csrf")
+	if err := a.verify(ctx, csrf, transactionID, d, passcode); err != nil {
 		return "", fmt.Errorf("verify: %w", err)
 	}
 	return a.commit(ctx, transactionID)
@@ -174,13 +176,29 @@ func (a *auth) login(ctx context.Context, username, password string) (*http.Resp
 		v["captcha"] = []string{solution}
 	}
 
+	v.Set("_phase", "authenticate")
+	v.Set("_process", "1")
+
 	req, err = http.NewRequestWithContext(ctx, http.MethodPost, a.AuthURL, strings.NewReader(v.Encode()))
 	if err != nil {
 		return nil, nil, fmt.Errorf("new request: %w", err)
 	}
+
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
+	for _, cookie := range res.Cookies() {
+		cookie := &http.Cookie{
+			Name:  cookie.Name,
+			Value: cookie.Value,
+		}
+		req.AddCookie(cookie)
+	}
+
 	res, err = a.Client.Do(req)
+	if err != nil {
+		return nil, nil, fmt.Errorf("do request: %w", err)
+	}
+
 	return res, v, err
 }
 
@@ -214,12 +232,18 @@ func (a *auth) listDevices(ctx context.Context, transactionID string) ([]Device,
 	return out.Data, nil
 }
 
-func (a *auth) verify(ctx context.Context, transactionID string, d Device, passcode string) error {
+func (a *auth) verify(ctx context.Context, csrf string, transactionID string, d Device, passcode string) error {
+
+	if csrf == "" {
+		return errors.New("csrf token is missing for verifing MFA")
+	}
+
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(map[string]string{
 		"transaction_id": transactionID,
 		"factor_id":      d.ID,
 		"passcode":       passcode,
+		"_csrf":          csrf,
 	}); err != nil {
 		return fmt.Errorf("json encode: %w", err)
 	}
@@ -236,12 +260,13 @@ func (a *auth) verify(ctx context.Context, transactionID string, d Device, passc
 	}
 	defer res.Body.Close()
 
-	var out struct {
-		Data struct {
-			Approved bool `json:"approved"`
-		} `json:"data"`
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		return fmt.Errorf("read body: %w", err)
 	}
-	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
+
+	var out MFAVerify
+	if err := json.Unmarshal(b, &out); err != nil {
 		return fmt.Errorf("json decode: %w", err)
 	}
 
@@ -264,6 +289,7 @@ func (a *auth) commit(ctx context.Context, transactionID string) (code string, e
 	if err != nil {
 		return "", fmt.Errorf("do: %w", err)
 	}
+
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusFound {
