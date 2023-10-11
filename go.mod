@@ -17,8 +17,8 @@ require (
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/smarty/assertions v1.15.0 // indirect
-	golang.org/x/net v0.15.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 )
