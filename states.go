@@ -307,7 +307,7 @@ func stateError(sr *VehicleData) error {
 // A utility function to fetch the appropriate state of the vehicle
 func (c *Client) fetchState(id int64) (*VehicleData, error) {
 	var res VehicleData
-	path := strings.Join([]string{c.baseURL, "vehicles", strconv.FormatInt(id, 10), "vehicle_data"}, "/")
+	path := strings.Join([]string{c.baseURL, "vehicles", strconv.FormatInt(id, 10), "vehicle_data?endpoints=charge_state%3Bclimate_state%3Bclosures_state%3Bdrive_state%3Bgui_settings%3Blocation_data%3Bvehicle_config%3Bvehicle_state%3Bvehicle_data_combo"}, "/")
 	if err := c.getJSON(path, &res); err != nil {
 		return nil, err
 	}
