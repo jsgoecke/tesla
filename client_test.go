@@ -1,253 +1,211 @@
 package tesla
 
 import (
-	"bytes"
+	"context"
 	"encoding/json"
-	. "github.com/smartystreets/goconvey/convey"
-	"io/ioutil"
+	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
+
+	"golang.org/x/oauth2"
 )
+
+func NewTestClient(ts *httptest.Server) *Client {
+	ctx := context.Background()
+	tok := &oauth2.Token{
+		AccessToken:  "refresh",
+		RefreshToken: "refresh",
+		Expiry:       time.Now().Add(1 * time.Hour),
+	}
+
+	config := &oauth2.Config{
+		ClientID: "ownerapi",
+		Endpoint: oauth2.Endpoint{
+			TokenURL: ts.URL + "/oauth/token",
+		},
+		Scopes: []string{"openid", "email", "offline_access"},
+	}
+
+	client := &Client{
+		baseURL:      ts.URL + "/api/1",
+		streamingURL: ts.URL,
+		hc:           config.Client(ctx, tok),
+	}
+	return client
+}
 
 func TestClientSpec(t *testing.T) {
 	ts := serveHTTP(t)
 	defer ts.Close()
-	previousAuthURL := AuthURL
-	previousURL := BaseURL
-	AuthURL = ts.URL + "/oauth/token"
-	BaseURL = ts.URL + "/api/1"
 
-	auth := &Auth{
-		GrantType:    "password",
-		ClientID:     "abc123",
-		ClientSecret: "def456",
-		Email:        "elon@tesla.com",
-		Password:     "go",
-	}
-	client, err := NewClient(auth)
+	client := NewTestClient(ts)
 
 	Convey("Should set the HTTP headers", t, func() {
 		req, _ := http.NewRequest("GET", "http://foo.com", nil)
 		client.setHeaders(req)
-		So(req.Header.Get("Authorization"), ShouldEqual, "Bearer ghi789")
 		So(req.Header.Get("Accept"), ShouldEqual, "application/json")
 		So(req.Header.Get("Content-Type"), ShouldEqual, "application/json")
 	})
-	Convey("Should login and get an access token", t, func() {
-		So(err, ShouldBeNil)
-		So(client.Token.AccessToken, ShouldEqual, "ghi789")
-	})
-
-	AuthURL = previousAuthURL
-	BaseURL = previousURL
 }
 
-func TestTokenExpiredSpec(t *testing.T) {
-	// Expired token
-	expiredToken := &Token{
-		AccessToken: "foo",
-		TokenType:   "bar",
-		ExpiresIn:   1,
-		Expires:     0,
-	}
+var testMux = &http.ServeMux{}
 
-	validToken := &Token{
-		AccessToken: "foo",
-		TokenType:   "bar",
-		ExpiresIn:   1,
-		Expires:     9999999999999,
-	}
-
-	client := &Client{
-		Token: expiredToken,
-	}
-
-	Convey("Should have an expired token", t, func() {
-		So(client.TokenExpired(), ShouldBeTrue)
-	})
-
-	client.Token = validToken
-	Convey("Should have a valid token", t, func() {
-		So(client.TokenExpired(), ShouldBeFalse)
-	})
-
+func serveHTTP(_ *testing.T) *httptest.Server {
+	return httptest.NewServer(testMux)
 }
 
-func TestClientWithTokenSpec(t *testing.T) {
-	ts := serveHTTP(t)
-	defer ts.Close()
-	previousAuthURL := AuthURL
-	previousURL := BaseURL
-	AuthURL = ts.URL + "/oauth/token"
-	BaseURL = ts.URL + "/api/1"
-
-	auth := &Auth{
-		GrantType:    "password",
-		ClientID:     "abc123",
-		ClientSecret: "def456",
-		Email:        "elon@tesla.com",
-		Password:     "go",
-	}
-
-	validToken := &Token{
-		AccessToken: "foo",
-		TokenType:   "bar",
-		ExpiresIn:   1,
-		Expires:     99999999999,
-	}
-
-	client, err := NewClientWithToken(auth, validToken)
-
-	Convey("Should login with a valid access token", t, func() {
-		So(err, ShouldBeNil)
-		So(client.Token.AccessToken, ShouldEqual, "foo")
-	})
-
-	AuthURL = previousAuthURL
-	BaseURL = previousURL
-}
-
-func serveHTTP(t *testing.T) *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		body, _ := ioutil.ReadAll(req.Body)
-		defer req.Body.Close()
-		switch req.URL.String() {
-		case "/oauth/token":
-			checkHeaders(t, req)
-			Convey("Request body should be set correctly", t, func() {
-				auth := &Auth{}
-				json.Unmarshal(body, auth)
-				So(auth.ClientID, ShouldEqual, "abc123")
-				So(auth.ClientSecret, ShouldEqual, "def456")
-				So(auth.Email, ShouldEqual, "elon@tesla.com")
-				So(auth.Password, ShouldEqual, "go")
-				So(auth.URL, ShouldEqual, BaseURL)
-				So(auth.StreamingURL, ShouldEqual, StreamingURL)
-			})
-			w.WriteHeader(200)
-			w.Write([]byte("{\"access_token\": \"ghi789\"}"))
-		case "/api/1/vehicles":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(VehiclesJSON))
-		case "/api/1/vehicles/1234/mobile_enabled":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(TrueJSON))
-		case "/api/1/vehicles/1234/data_request/charge_state":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(ChargeStateJSON))
-		case "/api/1/vehicles/1234/data_request/climate_state":
-			w.WriteHeader(200)
-			w.Write([]byte(ClimateStateJSON))
-		case "/api/1/vehicles/1234/data_request/drive_state":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(DriveStateJSON))
-		case "/api/1/vehicles/1234/data_request/gui_settings":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(GuiSettingsJSON))
-		case "/api/1/vehicles/1234/data_request/vehicle_state":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(VehicleStateJSON))
-		case "/api/1/vehicles/1234/wake_up":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(WakeupResponseJSON))
-		case "/api/1/vehicles/1234/command/set_charge_limit":
-			w.WriteHeader(200)
-			Convey("Should receive a set charge limit request", t, func() {
-				So(string(body), ShouldEqual, `{"percent": 50}`)
-			})
-		case "/api/1/vehicles/1234/command/charge_standard":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(ChargeAlreadySetJSON))
-		case "/api/1/vehicles/1234/command/charge_start":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(ChargedJSON))
-		case "/api/1/vehicles/1234/command/charge_stop",
-			"/api/1/vehicles/1234/command/charge_max_range",
-			"/api/1/vehicles/1234/command/charge_port_door_open",
-			"/api/1/vehicles/1234/command/flash_lights",
-			"/api/1/vehicles/1234/command/honk_horn",
-			"/api/1/vehicles/1234/command/auto_conditioning_start",
-			"/api/1/vehicles/1234/command/auto_conditioning_stop",
-			"/api/1/vehicles/1234/command/door_unlock",
-			"/api/1/vehicles/1234/command/door_lock",
-			"/api/1/vehicles/1234/command/reset_valet_pin",
-			"/api/1/vehicles/1234/command/set_temps?driver_temp=72&passenger_temp=72",
-			"/api/1/vehicles/1234/command/remote_start_drive?password=foo":
-			checkHeaders(t, req)
-			w.WriteHeader(200)
-			w.Write([]byte(CommandResponseJSON))
-		case "/stream/123/?values=speed,odometer,soc,elevation,est_heading,est_lat,est_lng,power,shift_state,range,est_range,heading":
-			w.WriteHeader(200)
-			events := StreamEventString + "\n" +
-				StreamEventString + "\n" +
-				BadStreamEventString + "\n"
-			b := bytes.NewBufferString(events)
-			b.WriteTo(w)
-		case "/api/1/vehicles/1234/command/autopark_request":
-			w.WriteHeader(200)
-			Convey("Auto park request should have appropriate body", t, func() {
-				autoParkRequest := &AutoParkRequest{}
-				err := json.Unmarshal(body, autoParkRequest)
-				So(err, ShouldBeNil)
-				So(autoParkRequest.Action, shouldBeValidAutoparkCommand)
-				So(autoParkRequest.VehicleID, ShouldEqual, 456)
-				So(autoParkRequest.Lat, ShouldEqual, 35.1)
-				So(autoParkRequest.Lon, ShouldEqual, 20.2)
-			})
-		case "/api/1/vehicles/1234/command/trigger_homelink":
-			w.WriteHeader(200)
-			Convey("Auto park request should have appropriate body", t, func() {
-				autoParkRequest := &AutoParkRequest{}
-				err := json.Unmarshal(body, autoParkRequest)
-				So(err, ShouldBeNil)
-				So(autoParkRequest.Lat, ShouldEqual, 35.1)
-				So(autoParkRequest.Lon, ShouldEqual, 20.2)
-			})
-		case "/api/1/vehicles/1234/command/sun_roof_control":
-			w.WriteHeader(200)
-			Convey("Should set the Pano roof appropriately", t, func() {
-				passed := false
-				strBody := string(body)
-				if strBody == `{"state": "vent", "percent":0}` {
-					passed = true
-				}
-				if strBody == `{"state": "open", "percent":0}` {
-					passed = true
-				}
-				if strBody == `{"state": "move", "percent":50}` {
-					passed = true
-				}
-				if strBody == `{"state": "close", "percent":0}` {
-					passed = true
-				}
-				So(passed, ShouldBeTrue)
-
-			})
+func serveJSON(j string) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		if req.Header.Get("Accept") != "application/json" {
+			w.WriteHeader(http.StatusUnsupportedMediaType)
+			return
 		}
-	}))
-}
-
-func checkHeaders(t *testing.T, req *http.Request) {
-	Convey("HTTP headers should be present", t, func() {
-		So(req.Header["Accept"][0], ShouldEqual, "application/json")
-		So(req.Header["Content-Type"][0], ShouldEqual, "application/json")
-	})
-}
-
-func shouldBeValidAutoparkCommand(actual interface{}, expected ...interface{}) string {
-	if actual == "start_forward" || actual == "start_reverse" || actual == "abort" {
-		return ""
-	} else {
-		return "The Autopark command should pass start_forward, start_reverse or abort"
+		if req.Header.Get("Content-Type") != "application/json" {
+			w.WriteHeader(http.StatusUnsupportedMediaType)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(j))
 	}
+}
+
+func serveCheck(c func(req *http.Request, body []byte) error) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		if req.Header.Get("Accept") != "application/json" {
+			w.WriteHeader(http.StatusUnsupportedMediaType)
+			return
+		}
+		if req.Header.Get("Content-Type") != "application/json" {
+			w.WriteHeader(http.StatusUnsupportedMediaType)
+			return
+		}
+		body, err := io.ReadAll(req.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err := c(req, body); err != nil {
+			fmt.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func init() {
+	testMux.HandleFunc("/oauth/token", serveJSON("{\"access_token\": \"ghi789\"}"))
+	testMux.HandleFunc("/api/1/vehicles", serveJSON(VehiclesJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234", serveJSON(VehicleJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/auto_conditioning_start", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/auto_conditioning_stop", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/charge_max_range", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/charge_port_door_open", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/charge_standard", serveJSON(ChargeAlreadySetJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/charge_start", serveJSON(ChargedJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/charge_stop", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/door_lock", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/door_unlock", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/flash_lights", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/honk_horn", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/command/reset_valet_pin", serveJSON(CommandResponseJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/vehicle_data", serveJSON(DataJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/mobile_enabled", serveJSON(TrueJSON))
+	testMux.HandleFunc("/api/1/vehicles/1234/wake_up", serveJSON(WakeupResponseJSON))
+
+	testMux.HandleFunc("/api/1/vehicles/1234/command/remote_start_drive", func(w http.ResponseWriter, req *http.Request) {
+		if err := req.ParseForm(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if got, want := req.FormValue("password"), "foo"; got != want {
+			http.Error(w, "password expected to be foo", http.StatusPreconditionFailed)
+			return
+		}
+		serveJSON(CommandResponseJSON)
+	})
+
+	testMux.HandleFunc("/api/1/vehicles/1234/command/set_temps", serveCheck(func(req *http.Request, body []byte) error {
+		if string(body) != `{"driver_temp":"72","passenger_temp":"72"}` {
+			return fmt.Errorf("unexpected body %s", body)
+		}
+		return nil
+	}))
+
+	testMux.HandleFunc("/api/1/vehicles/1234/command/set_charge_limit", serveCheck(func(req *http.Request, body []byte) error {
+		if string(body) != `{"percent": 50}` {
+			return fmt.Errorf("unexpected body %s", body)
+		}
+		return nil
+	}))
+
+	testMux.HandleFunc("/api/1/vehicles/1234/command/set_charging_amps", serveCheck(func(req *http.Request, body []byte) error {
+		if string(body) != `{"charging_amps": 12}` {
+			return fmt.Errorf("unexpected body %s", body)
+		}
+		return nil
+	}))
+
+	testMux.HandleFunc("/api/1/vehicles/1234/command/autopark_request", serveCheck(func(req *http.Request, body []byte) error {
+		apr := &AutoParkRequest{}
+		if err := json.Unmarshal(body, apr); err != nil {
+			return err
+		}
+		switch apr.Action {
+		case "start_forward", "start_reverse", "abort":
+		default:
+			return fmt.Errorf("The Autopark command should pass start_forward, start_reverse or abort")
+		}
+		if g, w := apr.VehicleID, uint64(456); g != w {
+			return fmt.Errorf("unexpected vehicle id: got %d want %d", g, w)
+		}
+		if g, w := apr.Lat, 35.1; g != w {
+			return fmt.Errorf("unexpected lat: got %f want %f", g, w)
+		}
+		if g, w := apr.Lon, 20.2; g != w {
+			return fmt.Errorf("unexpected lon: got %f want %f", g, w)
+		}
+		return nil
+	}))
+
+	testMux.HandleFunc("/api/1/vehicles/1234/command/trigger_homelink", serveCheck(func(req *http.Request, body []byte) error {
+		apr := &AutoParkRequest{}
+		if err := json.Unmarshal(body, apr); err != nil {
+			return err
+		}
+		if g, w := apr.Lat, 35.1; g != w {
+			return fmt.Errorf("unexpected lat: got %f want %f", g, w)
+		}
+		if g, w := apr.Lon, 20.2; g != w {
+			return fmt.Errorf("unexpected lon: got %f want %f", g, w)
+		}
+		return nil
+	}))
+
+	testMux.HandleFunc("/api/1/vehicles/1234/command/sun_roof_control", serveCheck(func(req *http.Request, body []byte) error {
+		switch string(body) {
+		case `{"state": "vent", "percent":0}`:
+		case `{"state": "open", "percent":0}`:
+		case `{"state": "move", "percent":50}`:
+		case `{"state": "close", "percent":0}`:
+		default:
+			return fmt.Errorf("unknown request %s", body)
+		}
+		return nil
+	}))
+
+	testMux.HandleFunc("/api/1/vehicles/1234/command/set_sentry_mode", serveCheck(func(req *http.Request, body []byte) error {
+		switch string(body) {
+		case `{"on":"true"}`:
+		default:
+			return fmt.Errorf("unknown request %s", body)
+		}
+		return nil
+	}))
 }

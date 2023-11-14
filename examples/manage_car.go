@@ -1,21 +1,16 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 	"os"
 
-	"github.com/jsgoecke/tesla"
+	"github.com/bogosj/tesla"
 )
 
 func main() {
-	client, err := tesla.NewClient(
-		&tesla.Auth{
-			ClientID:     os.Getenv("TESLA_CLIENT_ID"),
-			ClientSecret: os.Getenv("TESLA_CLIENT_SECRET"),
-			Email:        os.Getenv("TESLA_USERNAME"),
-			Password:     os.Getenv("TESLA_PASSWORD"),
-		})
+	ctx := context.Background()
+	client, err := tesla.NewClient(ctx, tesla.WithTokenFile("/file/path/to/token.json"))
 	if err != nil {
 		panic(err)
 	}
@@ -32,11 +27,7 @@ func main() {
 	}
 
 	fmt.Println(status)
-	fmt.Println(vehicle.ChargeState())
-	fmt.Println(vehicle.ClimateState())
-	fmt.Println(vehicle.DriveState())
-	fmt.Println(vehicle.GuiSettings())
-	fmt.Println(vehicle.VehicleState())
+	fmt.Println(vehicle.Data())
 	fmt.Println(vehicle.HonkHorn())
 	fmt.Println(vehicle.FlashLights())
 	fmt.Println(vehicle.Wakeup())
@@ -51,7 +42,7 @@ func main() {
 	fmt.Println(vehicle.StopAirConditioning())
 	fmt.Println(vehicle.UnlockDoors())
 	fmt.Println(vehicle.LockDoors())
-	fmt.Println(vehicle.SetTemprature(72.0, 72.0))
+	fmt.Println(vehicle.SetTemperature(72.0, 72.0))
 	fmt.Println(vehicle.Start(os.Getenv("TESLA_PASSWORD")))
 	fmt.Println(vehicle.OpenTrunk("rear"))
 	fmt.Println(vehicle.OpenTrunk("front"))
@@ -65,29 +56,4 @@ func main() {
 	fmt.Println(vehicle.AutoparkForward())
 	fmt.Println(vehicle.AutoparkReverse())
 	// Take care with these, as the car will move
-
-	// Stream vehicle events
-	eventChan, errChan, err := vehicle.Stream()
-	if err != nil {
-		fmt.Println(err)
-		return
-	} else {
-		for {
-			select {
-			case event := <-eventChan:
-				eventJSON, _ := json.Marshal(event)
-				fmt.Println(string(eventJSON))
-			case err = <-errChan:
-				fmt.Println(err)
-				if err.Error() == "HTTP stream closed" {
-					fmt.Println("Reconnecting!")
-					eventChan, errChan, err = vehicle.Stream()
-					if err != nil {
-						fmt.Println(err)
-						return
-					}
-				}
-			}
-		}
-	}
 }
